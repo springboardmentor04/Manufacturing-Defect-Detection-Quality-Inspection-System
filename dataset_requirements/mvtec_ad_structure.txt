@@ -1,0 +1,50 @@
+================================================================================
+MVTec Anomaly Detection (MVTec AD) Dataset Directory Structure
+================================================================================
+
+To run offline training or local inference with the MVTec AD dataset, download
+and extract the official dataset from MVTec Software GmbH into the following structure:
+
+/dataset_requirements/mvtec_ad/
+├── bottle/
+│   ├── train/
+│   │   └── good/                  # Normal defect-free images for unsupervised training
+│   ├── test/
+│   │   ├── broken_large/          # Structural defect samples
+│   │   ├── broken_small/          # Minor cosmetic crack samples
+│   │   ├── contamination/         # Surface spot samples
+│   │   └── good/                  # Test set validation samples
+│   └── ground_truth/              # Binary mask PNG files for defect localization evaluation
+├── cable/
+│   ├── test/ (bent_wire, cable_swap, cut, missing_cable, missing_wire, poke_wire)
+├── capsule/
+│   ├── test/ (crack, faulty_imprint, poke, scratch, squeeze)
+├── carpet/
+│   ├── test/ (color, cut, hole, metal_contamination, thread)
+├── grid/
+│   ├── test/ (bent, broken, glue, metal_contamination, thread)
+├── hazelnut/
+│   ├── test/ (crack, cut, hole, print)
+├── leather/
+│   ├── test/ (color, cut, fold, glue, poke)
+├── metal_nut/
+│   ├── test/ (bent, color, flip, scratch)
+├── pill/
+│   ├── test/ (color, combined, contamination, crack, faulty_imprint, pill_type, scratch)
+├── screw/
+│   ├── test/ (manipulated_front, scratch_head, scratch_neck, thread_side, thread_top)
+├── tile/
+│   ├── test/ (crack, glue_strip, gray_stroke, oil, rough)
+├── toothbrush/
+│   ├── test/ (defective)
+├── transistor/
+│   ├── test/ (bent_lead, cut_lead, damaged_case, misplaced)
+├── wood/
+│   ├── test/ (color, combined, hole, scratch)
+└── zipper/
+    └── test/ (broken_teeth, combined, fabric_border, fabric_interior, split, squeezed_teeth)
+
+Notes:
+- Image format: RGB PNG (resolution 700x700 to 1024x1024)
+- Ground Truth masks: Single-channel grayscale PNG (255 = defect region, 0 = background)
+- Preprocessing step resizes input images to 256x256 or 512x512 before passing to OpenCV/YOLO pipeline.

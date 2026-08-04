@@ -1,0 +1,6 @@
+{
+  "name": "VisionInspect AI",
+  "description": "Manufacturing Defect Detection & Quality Inspection System with role-based dashboards, image preprocessing, AI anomaly localization, and severity scoring.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

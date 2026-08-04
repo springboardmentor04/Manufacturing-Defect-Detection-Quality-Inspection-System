@@ -1,0 +1,21 @@
+{
+  "model_name": "YOLOv8-Industrial-Anomaly-Seg",
+  "version": "8.1.0",
+  "framework": "PyTorch / ONNX Runtime",
+  "classes": [
+    "Surface Crack",
+    "Insulation Cut",
+    "Surface Scratch",
+    "Discoloration",
+    "Missing Component",
+    "Deformation"
+  ],
+  "confidence_threshold": 0.25,
+  "nms_iou_threshold": 0.45,
+  "input_resolution": [640, 640],
+  "anchors": [
+    [10, 13, 16, 30, 33, 23],
+    [30, 61, 62, 45, 59, 119],
+    [116, 90, 156, 198, 373, 326]
+  ]
+}
