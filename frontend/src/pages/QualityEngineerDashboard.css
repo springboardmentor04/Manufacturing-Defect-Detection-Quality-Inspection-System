@@ -1,0 +1,192 @@
+import React from "react";
+import {
+  FaUpload,
+  FaRobot,
+  FaClipboardCheck,
+  FaBug,
+  FaFilePdf,
+  FaHistory,
+  FaUserCircle,
+} from "react-icons/fa";
+
+function QualityEngineerDashboard() {
+  return (
+    <div className="dashboard">
+
+      {/* Hero Section */}
+      <div className="hero">
+        <h1>VisionInspect AI</h1>
+        <p>AI Manufacturing Defect Detection & Quality Inspection System</p>
+
+        <div className="hero-btns">
+          <button>Start Inspection</button>
+          <button className="outline">Generate Report</button>
+        </div>
+      </div>
+
+      {/* Summary Cards */}
+
+      <div className="cards">
+
+        <div className="card">
+          <h2>1280</h2>
+          <p>Total Inspections</p>
+        </div>
+
+        <div className="card">
+          <h2>1180</h2>
+          <p>Passed Products</p>
+        </div>
+
+        <div className="card">
+          <h2>100</h2>
+          <p>Defective Products</p>
+        </div>
+
+        <div className="card">
+          <h2>98%</h2>
+          <p>AI Accuracy</p>
+        </div>
+
+      </div>
+
+      {/* Graphs */}
+
+      <div className="graph-section">
+
+        <div className="graph-card">
+          <h3>AI Inspection Trend</h3>
+
+          <div className="fake-chart">
+            <div style={{height:"80px"}}></div>
+            <div style={{height:"130px"}}></div>
+            <div style={{height:"170px"}}></div>
+            <div style={{height:"110px"}}></div>
+            <div style={{height:"190px"}}></div>
+            <div style={{height:"150px"}}></div>
+            <div style={{height:"210px"}}></div>
+          </div>
+        </div>
+
+        <div className="graph-card">
+          <h3>Quality Score</h3>
+
+          <div className="progress">
+            <div className="progress-fill"></div>
+          </div>
+
+          <center>98%</center>
+
+          <br />
+
+          <h3>Defect Distribution</h3>
+
+          <div
+            style={{
+              width:"180px",
+              height:"180px",
+              borderRadius:"50%",
+              background:
+                "conic-gradient(#22c55e 0% 75%, #ef4444 75% 100%)",
+              margin:"25px auto"
+            }}
+          ></div>
+
+        </div>
+
+      </div>
+
+      {/* Weekly Chart */}
+
+      <div className="section">
+
+        <h2>Weekly Inspection Chart</h2>
+
+        <div className="fake-chart">
+
+          <div style={{height:"90px"}}></div>
+          <div style={{height:"120px"}}></div>
+          <div style={{height:"170px"}}></div>
+          <div style={{height:"150px"}}></div>
+          <div style={{height:"200px"}}></div>
+          <div style={{height:"180px"}}></div>
+          <div style={{height:"220px"}}></div>
+
+        </div>
+
+      </div>
+
+      {/* Features */}
+
+      <div className="section">
+
+        <h2>Dashboard Features</h2>
+
+        <div className="feature-grid">
+
+          <div>
+            <FaUpload />
+            Upload Product Image
+          </div>
+
+          <div>
+            <FaRobot />
+            Start AI Inspection
+          </div>
+
+          <div>
+            <FaClipboardCheck />
+            Inspection Results
+          </div>
+
+          <div>
+            <FaBug />
+            Defect Details
+          </div>
+
+          <div>
+            <FaFilePdf />
+            Quality Reports
+          </div>
+
+          <div>
+            <FaHistory />
+            Inspection History
+          </div>
+
+          <div>
+            <FaUserCircle />
+            Profile
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* Responsibilities */}
+
+      <div className="section">
+
+        <h2>Responsibilities</h2>
+
+        <ul>
+
+          <li>Upload Product Images</li>
+
+          <li>Perform AI Inspection</li>
+
+          <li>Review Defect Details</li>
+
+          <li>Verify Pass/Fail Status</li>
+
+          <li>Generate Inspection Reports</li>
+
+        </ul>
+
+      </div>
+
+    </div>
+  );
+}
+
+export default QualityEngineerDashboard;
