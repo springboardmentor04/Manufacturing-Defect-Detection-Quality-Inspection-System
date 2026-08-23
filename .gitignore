@@ -216,3 +216,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+node_modules/
+.next/
+.env.local
+backend/uploads/
+*.tsbuildinfo
