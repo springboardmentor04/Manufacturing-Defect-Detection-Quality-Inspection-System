@@ -1,0 +1,90 @@
+.auth-shell{
+    position:relative;
+    min-height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background-image:
+    linear-gradient(rgba(2,6,23,.75),
+    rgba(2,6,23,.82)),
+    url("/factory-bg.jpg");
+
+    background-size:cover;
+
+    background-position:center;
+
+    background-repeat:no-repeat;
+}
+
+.auth-overlay{
+    position:absolute;
+    inset:0;
+
+    backdrop-filter:blur(4px);
+}
+
+.auth-card{
+
+    position:relative;
+
+    width:430px;
+
+    padding:45px;
+
+    border-radius:22px;
+
+    background:rgba(15,23,42,.68);
+
+    border:1px solid rgba(255,255,255,.15);
+
+    backdrop-filter:blur(18px);
+
+    box-shadow:0 25px 60px rgba(0,0,0,.45);
+
+    color:white;
+}
+
+.auth-eyebrow{
+
+    font-size:15px;
+
+    color:#38bdf8;
+
+    font-weight:bold;
+
+    letter-spacing:1px;
+
+    margin-bottom:10px;
+}
+
+.auth-subtitle{
+
+    color:#cbd5e1;
+
+    margin-bottom:30px;
+}
+
+.auth-footer{
+
+    margin-top:25px;
+
+    text-align:center;
+
+    color:#cbd5e1;
+}
+
+.auth-footer a{
+
+    color:#38bdf8;
+
+    text-decoration:none;
+
+    font-weight:600;
+}
+
+.auth-footer a:hover{
+
+    color:#f59e0b;
+}
