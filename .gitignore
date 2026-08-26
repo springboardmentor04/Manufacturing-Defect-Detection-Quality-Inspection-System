@@ -237,3 +237,9 @@ ml-training/mvtec_yolo_1200/
 ml-training/mvtec_yolo_unseen_1200/
 ml-training/results/
 ml-training/__pycache__/
+
+__pycache__/
+*.pyc
+
+__pycache__/
+*.pyc
