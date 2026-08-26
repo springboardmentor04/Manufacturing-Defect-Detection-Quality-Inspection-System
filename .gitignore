@@ -216,3 +216,24 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+dataset/
+ml-training/yolo_dataset/
+backend-fastapi/uploads/*.png
+
+ml-training/multiclass_defect_dataset/
+
+ml-training/venv/
+
+ml-training/*.pt
+
+ml-training/class_crops/
+ml-training/classifier_dataset/
+ml-training/defect_detector_dataset/
+ml-training/evaluation_results/
+ml-training/evaluation_results_200/
+ml-training/mvtec_yolo/
+ml-training/mvtec_yolo_1200/
+ml-training/mvtec_yolo_unseen_1200/
+ml-training/results/
+ml-training/__pycache__/

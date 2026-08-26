@@ -1,0 +1,6 @@
+node_modules/
+visioninspect.db
+visioninspect.db-*
+uploads/*
+!uploads/.gitkeep
+.env

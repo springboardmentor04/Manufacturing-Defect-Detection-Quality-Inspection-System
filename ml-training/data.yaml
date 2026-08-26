@@ -1,0 +1,9 @@
+path: C:/Users/veene.LAPTOP-VQNJ8SHT/OneDrive/Infosys/intern/visioninspect-ai/visioninspect-ai/ml-training/dataset/yolo
+
+train: images/train
+val: images/val
+test: images/test
+
+names:
+  0: defective
+  1: good

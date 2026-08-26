@@ -1,0 +1,2 @@
+backend/saved_models/model.ckpt filter=lfs diff=lfs merge=lfs -text
+models/patchcore_model.ckpt filter=lfs diff=lfs merge=lfs -text
