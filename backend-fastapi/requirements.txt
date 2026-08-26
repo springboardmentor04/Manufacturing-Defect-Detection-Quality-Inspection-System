@@ -10,8 +10,8 @@ email-validator==2.2.0
 psycopg2-binary==2.9.9
 
 ultralytics==8.4.129
-torch==2.13.0
-torchvision==0.28.0
+torch==2.5.1
+torchvision==0.20.0
 opencv-python==5.0.0.93
 numpy==2.5.2
 pillow==12.3.0
