@@ -246,3 +246,5 @@ __pycache__/
 
 __pycache__/
 *.pyc
+
+backend-fastapi/yolov8n.pt

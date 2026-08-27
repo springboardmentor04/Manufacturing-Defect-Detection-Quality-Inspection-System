@@ -1,6 +1,7 @@
 import { jsPDF } from 'jspdf';
 import { fmtDateTime } from './format';
-export async function downloadInspectionReport(insp, imgSrc, userFullName) {
+
+export async function downloadInspectionReport(insp, imgSrc, userFullName, mode = 'download') {
   // eslint-disable-next-line no-undef
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
@@ -132,5 +133,12 @@ export async function downloadInspectionReport(insp, imgSrc, userFullName) {
   doc.text(`Generated ${new Date().toLocaleString('en-IN')} by VisionInspect AI`, margin, y);
 
   const fileSafeCode = (insp.product.product_code || 'inspection').replace(/[^a-z0-9-_]+/gi, '_');
-  doc.save(`inspection-report-${fileSafeCode}.pdf`);
+
+  if (mode === 'view') {
+    // Open the PDF in a new browser tab, with the sidebar/navigation panel hidden
+    const blobUrl = doc.output('bloburl');
+    window.open(`${blobUrl}#toolbar=1&navpanes=0`, '_blank');
+  } else {
+    doc.save(`inspection-report-${fileSafeCode}.pdf`);
+  }
 }

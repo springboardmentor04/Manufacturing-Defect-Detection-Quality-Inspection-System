@@ -2,10 +2,14 @@ import { Fragment, useEffect, useState } from 'react';
 import { Api } from '../api';
 import { useSetPageHeader } from '../context/PageHeaderContext';
 import { Skeleton, ErrorBanner, EmptyState, StatusPill, SeverityPill } from '../components/Shared';
+import { downloadInspectionReport } from '../utils/pdfReport';
+import { useAuth } from '../context/AuthContext';
 
 function ReportDetailRow({ date }) {
+  const { user } = useAuth();
   const [inspections, setInspections] = useState(null);
   const [error, setError] = useState('');
+  const [downloadingId, setDownloadingId] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -20,6 +24,37 @@ function ReportDetailRow({ date }) {
       cancelled = true;
     };
   }, [date]);
+
+  async function handleAction(inspectionId, mode) {
+    setDownloadingId(inspectionId);
+    try {
+      const { inspection } = await Api.getInspection(inspectionId);
+
+      // Convert the stored image to a base64 data URI so it embeds in the PDF
+      let imgSrc = null;
+      if (inspection.product?.image_url) {
+        try {
+          const res = await fetch(Api.fileUrl(inspection.product.image_url));
+          const blob = await res.blob();
+          imgSrc = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        } catch (imgErr) {
+          // If the image can't be fetched, continue without it
+          imgSrc = null;
+        }
+      }
+
+      await downloadInspectionReport(inspection, imgSrc, user.full_name, mode);
+    } catch (err) {
+      alert('Could not generate the PDF report: ' + err.message);
+    } finally {
+      setDownloadingId(null);
+    }
+  }
 
   return (
     <tr>
@@ -39,6 +74,7 @@ function ReportDetailRow({ date }) {
                   <th>Status</th>
                   <th>Severity</th>
                   <th>Recommendation</th>
+                  <th>Report</th>
                 </tr>
               </thead>
               <tbody>
@@ -54,6 +90,28 @@ function ReportDetailRow({ date }) {
                       <SeverityPill level={i.severity_level} />
                     </td>
                     <td style={{ color: 'var(--text-muted)', fontSize: 12 }}>{i.recommendation}</td>
+                    <td>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <button
+                          type="button"
+                          className="btn-ghost"
+                          style={{ fontSize: 11.5, padding: '5px 10px' }}
+                          onClick={() => handleAction(i.id, 'view')}
+                          disabled={downloadingId === i.id}
+                        >
+                          {downloadingId === i.id ? <span className="spinner"></span> : '👁 View'}
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-ghost"
+                          style={{ fontSize: 11.5, padding: '5px 10px' }}
+                          onClick={() => handleAction(i.id, 'download')}
+                          disabled={downloadingId === i.id}
+                        >
+                          {downloadingId === i.id ? <span className="spinner"></span> : '↓ PDF'}
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>

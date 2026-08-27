@@ -6,7 +6,7 @@ from pathlib import Path
 # Detects the defect region AND classifies its type in one pass.
 # ============================================================
 
-MODEL_PATH = Path(r"C:\Users\veene.LAPTOP-VQNJ8SHT\runs\detect\train-12\weights\best.pt")
+MODEL_PATH = Path(r"C:\Users\veene.LAPTOP-VQNJ8SHT\runs\detect\runs\multiclass_defect_detector_v4\weights\best.pt")
 model = YOLO(str(MODEL_PATH))
 
 # ============================================================
