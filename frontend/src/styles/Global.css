@@ -1,0 +1,47 @@
+:root{
+
+    --primary:#1565C0;
+    --secondary:#42A5F5;
+    --accent:#00BCD4;
+
+    --background:#F4F7FB;
+
+    --card:#FFFFFF;
+
+    --text:#263238;
+
+    --success:#43A047;
+
+    --danger:#E53935;
+
+    --shadow:0 15px 35px rgba(0,0,0,.12);
+
+    --radius:18px;
+
+}
+
+*{
+
+    margin:0;
+
+    padding:0;
+
+    box-sizing:border-box;
+
+    font-family:"Segoe UI",sans-serif;
+
+}
+
+body{
+
+    background:var(--background);
+
+    color:var(--text);
+
+}
+
+button{
+
+    cursor:pointer;
+
+}

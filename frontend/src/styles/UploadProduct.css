@@ -1,0 +1,1937 @@
+/* ============================================================
+   VISIONINSPECT AI
+   UPLOAD PRODUCT / AI INSPECTION PAGE
+   Industrial Dark Theme  —  ENHANCED
+   Matches current UploadProduct.jsx
+   ============================================================ */
+
+/* ============================================================
+   SHARED INDUSTRIAL TEXTURES (reused across panels)
+   ============================================================ */
+
+:root {
+
+    --rivet-color: rgba(255, 255, 255, 0.06);
+    --rivet-shadow: rgba(0, 0, 0, 0.55);
+
+    --hazard-dark: #14181f;
+    --hazard-amber: #ffb020;
+
+    --grid-line: rgba(255, 255, 255, 0.025);
+
+}
+
+
+/* ============================================================
+   MAIN PANEL
+   ============================================================ */
+
+.upload-product-panel {
+
+    position: relative;
+
+    width: 100%;
+    box-sizing: border-box;
+
+    background:
+        repeating-linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.012) 0px,
+            rgba(255, 255, 255, 0.012) 1px,
+            transparent 1px,
+            transparent 5px
+        ),
+        linear-gradient(
+            180deg,
+            #191d25,
+            #171b22
+        );
+
+    border: 1px solid #303845;
+
+    border-radius: 10px;
+
+    padding: 30px;
+
+    margin-bottom: 30px;
+
+    box-shadow:
+        0 10px 28px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+
+}
+
+
+/* ---------- Corner rivets (machined panel bolts) ---------- */
+
+.upload-product-panel::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    border-radius: inherit;
+
+    background:
+        radial-gradient(circle at 16px 16px, var(--rivet-color) 0 3px, var(--rivet-shadow) 3px 4px, transparent 4px),
+        radial-gradient(circle at calc(100% - 16px) 16px, var(--rivet-color) 0 3px, var(--rivet-shadow) 3px 4px, transparent 4px),
+        radial-gradient(circle at 16px calc(100% - 16px), var(--rivet-color) 0 3px, var(--rivet-shadow) 3px 4px, transparent 4px),
+        radial-gradient(circle at calc(100% - 16px) calc(100% - 16px), var(--rivet-color) 0 3px, var(--rivet-shadow) 3px 4px, transparent 4px);
+
+}
+
+
+/* ---------- Amber calibration strip along the top edge ---------- */
+
+.upload-product-panel::after {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 18px;
+
+    right: 18px;
+
+    height: 2px;
+
+    background:
+        repeating-linear-gradient(
+            90deg,
+            var(--hazard-amber) 0 10px,
+            var(--hazard-dark) 10px 20px
+        );
+
+    opacity: 0.55;
+
+}
+
+
+/* ============================================================
+   PAGE TITLE
+   ============================================================ */
+
+.upload-product-panel > h2 {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin: 0 0 28px 0;
+
+    padding-bottom: 20px;
+
+    padding-left: 2px;
+
+    color: #ffffff;
+
+    font-size: 25px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1.4px;
+
+    border-bottom: 1px solid #303845;
+
+}
+
+
+/* status LED next to title, reads as "system armed" */
+
+.upload-product-panel > h2::after {
+
+    content: "";
+
+    width: 8px;
+
+    height: 8px;
+
+    margin-left: 4px;
+
+    border-radius: 50%;
+
+    background: #50e68a;
+
+    box-shadow:
+        0 0 0 3px rgba(80, 230, 138, 0.14),
+        0 0 6px rgba(80, 230, 138, 0.65);
+
+}
+
+
+/* ============================================================
+   PRODUCT FORM
+   ============================================================ */
+
+.product-form {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 16px;
+
+    padding: 22px;
+
+    margin-bottom: 24px;
+
+    background:
+        repeating-linear-gradient(
+            0deg,
+            var(--grid-line) 0px,
+            var(--grid-line) 1px,
+            transparent 1px,
+            transparent 24px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            var(--grid-line) 0px,
+            var(--grid-line) 1px,
+            transparent 1px,
+            transparent 24px
+        ),
+        #1d232c;
+
+    border: 1px solid #303947;
+
+    border-radius: 8px;
+
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+
+}
+
+
+/* ============================================================
+   INPUTS
+   ============================================================ */
+
+.product-form input {
+
+    width: 100%;
+
+    min-width: 0;
+
+    box-sizing: border-box;
+
+    height: 48px;
+
+    padding: 0 16px;
+
+    background: #252c36;
+
+    border: 1px solid #414b5b;
+
+    border-radius: 5px;
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    font-family: "Consolas", "SFMono-Regular", ui-monospace, monospace;
+
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35);
+
+}
+
+
+.product-form input::placeholder {
+
+    color: #9da9ba;
+
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+}
+
+
+.product-form input:hover {
+
+    border-color: #56657a;
+
+}
+
+
+.product-form input:focus {
+
+    outline: none;
+
+    border-color: #4fa7ff;
+
+    box-shadow:
+        inset 0 1px 3px rgba(0, 0, 0, 0.35),
+        0 0 0 2px rgba(79, 167, 255, 0.12);
+
+}
+
+
+.product-form input[type="date"] {
+
+    color: #ffffff;
+
+    color-scheme: dark;
+
+}
+
+
+/* ============================================================
+   UPLOAD AREA
+   ============================================================ */
+
+.upload-box {
+
+    position: relative;
+
+    min-height: 280px;
+
+    box-sizing: border-box;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 30px;
+
+    margin-bottom: 28px;
+
+    background:
+        repeating-linear-gradient(
+            0deg,
+            var(--grid-line) 0px,
+            var(--grid-line) 1px,
+            transparent 1px,
+            transparent 20px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            var(--grid-line) 0px,
+            var(--grid-line) 1px,
+            transparent 1px,
+            transparent 20px
+        ),
+        #1d232c;
+
+    border: 2px dashed #465266;
+
+    border-radius: 10px;
+
+    text-align: center;
+
+}
+
+
+/* corner targeting brackets, like a machine-vision capture frame */
+
+.upload-box::before,
+.upload-box::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 22px;
+
+    height: 22px;
+
+    border: 2px solid #465266;
+
+    opacity: 0.9;
+
+}
+
+.upload-box::before {
+
+    top: 10px;
+
+    left: 10px;
+
+    border-right: none;
+
+    border-bottom: none;
+
+}
+
+.upload-box::after {
+
+    bottom: 10px;
+
+    right: 10px;
+
+    border-left: none;
+
+    border-top: none;
+
+}
+
+
+/* ============================================================
+   UPLOAD CAMERA ICON
+   ============================================================ */
+
+.upload-box > svg {
+
+    color: #5aa9ff;
+
+    margin-bottom: 10px;
+
+    filter: drop-shadow(0 0 6px rgba(90, 169, 255, 0.35));
+
+}
+
+
+/* ============================================================
+   UPLOAD TITLE
+   ============================================================ */
+
+.upload-box h3 {
+
+    margin: 8px 0 18px;
+
+    color: #ffffff;
+
+    font-size: 17px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+
+}
+
+
+/* ============================================================
+   FILE INPUT
+   ============================================================ */
+
+.upload-box input[type="file"] {
+
+    width: 100%;
+
+    max-width: 520px;
+
+    box-sizing: border-box;
+
+    padding: 10px;
+
+    margin-bottom: 20px;
+
+    color: #d7e0ec;
+
+    background: #161b22;
+
+    border: 1px solid #394454;
+
+    border-radius: 5px;
+
+    font-size: 13px;
+
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+
+}
+
+
+/* ============================================================
+   BUTTON
+   ============================================================ */
+
+.upload-box button {
+
+    position: relative;
+
+    min-width: 210px;
+
+    height: 46px;
+
+    padding: 0 24px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    border: 1px solid #4fa7ff;
+
+    border-radius: 5px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.10),
+            rgba(255, 255, 255, 0) 40%
+        ),
+        linear-gradient(
+            135deg,
+            #2c8cff,
+            #1766d3
+        );
+
+    color: #ffffff;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.8px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 2px 0 rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+
+}
+
+
+.upload-box button:hover {
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.14),
+            rgba(255, 255, 255, 0) 40%
+        ),
+        linear-gradient(
+            135deg,
+            #3a96ff,
+            #2075e2
+        );
+
+}
+
+
+.upload-box button:disabled {
+
+    opacity: 0.55;
+
+    cursor: not-allowed;
+
+}
+
+
+/* ============================================================
+   IMAGE PREVIEW
+   ============================================================ */
+
+.preview-image {
+
+    width: 300px;
+
+    max-width: 100%;
+
+    height: 230px;
+
+    object-fit: contain;
+
+    padding: 5px;
+
+    box-sizing: border-box;
+
+    background: #0d1117;
+
+    border: 2px solid #398cf4;
+
+    border-radius: 6px;
+
+    margin-bottom: 18px;
+
+    box-shadow: 0 0 0 4px rgba(57, 140, 244, 0.10);
+
+}
+
+
+/* ============================================================
+   STATUS MESSAGE
+   ============================================================ */
+
+.inspection-result {
+
+    position: relative;
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 26px;
+
+    margin-top: 24px;
+
+    background: #151a21;
+
+    border: 1px solid #354052;
+
+    border-radius: 10px;
+
+    color: #d9e1eb;
+
+}
+
+
+/* ============================================================
+   RESULT HEADER
+   ============================================================ */
+
+.inspection-result > svg {
+
+    display: block;
+
+    margin: 0 auto 8px;
+
+}
+
+
+.inspection-result h3 {
+
+    margin: 8px 0 22px;
+
+    color: #ffffff;
+
+    font-size: 19px;
+
+    font-weight: 800;
+
+    text-align: center;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1.2px;
+
+}
+
+
+/* ============================================================
+   PASS / FAIL
+   ============================================================ */
+
+.inspection-pass {
+
+    border-color: #267b4b;
+
+    background:
+        linear-gradient(
+            180deg,
+            #18241e,
+            #141a18
+        );
+
+}
+
+
+.inspection-pass > svg {
+
+    color: #50e68a;
+
+}
+
+
+.inspection-pass .ai-result-summary strong {
+
+    color: #55ee91;
+
+}
+
+
+/* pass stamp accent, thin solid confirmation strip */
+
+.inspection-pass::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    right: 0;
+
+    height: 3px;
+
+    border-radius: 10px 10px 0 0;
+
+    background: #2f9d5f;
+
+}
+
+
+.inspection-fail {
+
+    border-color: #8b3943;
+
+    background:
+        linear-gradient(
+            180deg,
+            #281a1d,
+            #181519
+        );
+
+}
+
+
+.inspection-fail > svg {
+
+    color: #ff6868;
+
+}
+
+
+.inspection-fail .ai-result-summary strong {
+
+    color: #ff6969;
+
+}
+
+
+/* fail stamp accent, hazard tape strip */
+
+.inspection-fail::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    right: 0;
+
+    height: 3px;
+
+    border-radius: 10px 10px 0 0;
+
+    background:
+        repeating-linear-gradient(
+            135deg,
+            var(--hazard-amber) 0 8px,
+            var(--hazard-dark) 8px 16px
+        );
+
+}
+
+
+/* ============================================================
+   FINAL RESULT SUMMARY
+   ============================================================ */
+
+.ai-result-summary {
+
+    padding: 24px;
+
+    margin-bottom: 20px;
+
+    background: #10151b;
+
+    border: 1px solid #343d4b;
+
+    border-radius: 8px;
+
+    text-align: center;
+
+}
+
+
+.ai-result-summary h2 {
+
+    margin: 0 0 12px;
+
+    color: #dbe4ef;
+
+    font-size: 22px;
+
+    font-weight: 600;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+
+}
+
+
+.ai-result-summary h2 strong {
+
+    margin-left: 6px;
+
+    font-size: 30px;
+
+    font-weight: 800;
+
+    letter-spacing: 0;
+
+}
+
+
+.ai-result-summary p {
+
+    margin: 0;
+
+    color: #9da9ba;
+
+    font-size: 15px;
+
+}
+
+
+.ai-result-summary p b {
+
+    color: #ffffff;
+
+    font-size: 17px;
+
+    font-family: "Consolas", "SFMono-Regular", ui-monospace, monospace;
+
+}
+
+
+/* ============================================================
+   INSPECTION INFORMATION
+   ============================================================ */
+
+.inspection-details {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 12px;
+
+    margin-bottom: 22px;
+
+}
+
+
+.inspection-details p {
+
+    margin: 0;
+
+    padding: 15px;
+
+    background: #1c222b;
+
+    border: 1px solid #303947;
+
+    border-left: 2px solid #465266;
+
+    border-radius: 4px;
+
+    color: #8f9bad;
+
+    font-size: 11px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.6px;
+
+}
+
+
+.inspection-details b {
+
+    display: block;
+
+    margin-top: 6px;
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    font-family: "Consolas", "SFMono-Regular", ui-monospace, monospace;
+
+    text-transform: none;
+
+    letter-spacing: 0;
+
+    word-break: break-word;
+
+}
+
+
+/* ============================================================
+   MODEL RESULT CARDS
+   ============================================================ */
+
+.ai-model-result {
+
+    padding: 20px;
+
+    margin-top: 16px;
+
+    background: #1c222b;
+
+    border: 1px solid #303947;
+
+    border-radius: 8px;
+
+}
+
+
+.ai-model-result > h4 {
+
+    margin: 0 0 16px;
+
+    padding-bottom: 12px;
+
+    border-bottom: 1px solid #303947;
+
+    color: #ffffff;
+
+    font-size: 15px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+
+}
+
+
+.ai-model-result > p {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin: 8px 0;
+
+    padding: 11px 13px;
+
+    background: #171c24;
+
+    border-radius: 5px;
+
+    border-left: 2px solid #303947;
+
+    color: #aeb9c8;
+
+    font-size: 13px;
+
+}
+
+
+.ai-model-result > p b {
+
+    color: #ffffff;
+
+    font-weight: 700;
+
+    font-family: "Consolas", "SFMono-Regular", ui-monospace, monospace;
+
+}
+
+
+/* ============================================================
+   YOLO DETECTION SECTION
+   ============================================================ */
+
+.defect-detections {
+
+    margin-top: 20px;
+
+    padding-top: 18px;
+
+    border-top: 1px solid #303947;
+
+}
+
+
+.defect-detections > h4 {
+
+    margin: 0 0 14px;
+
+    color: #ffffff;
+
+    font-size: 15px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+
+}
+
+
+/* ============================================================
+   INDIVIDUAL DEFECT
+   ============================================================ */
+
+.defect-item {
+
+    display: grid;
+
+    grid-template-columns:
+        0.7fr
+        0.8fr
+        2fr;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 15px;
+
+    margin-bottom: 10px;
+
+    background: #151a21;
+
+    border: 1px solid #343d4b;
+
+    border-left: 3px solid #ff6868;
+
+    border-radius: 5px;
+
+}
+
+
+.defect-item p {
+
+    margin: 0;
+
+    color: #aeb9c8;
+
+    font-size: 13px;
+
+}
+
+
+.defect-item p:first-child {
+
+    color: #ffffff;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+
+}
+
+
+.defect-item b {
+
+    color: #ffffff;
+
+}
+
+
+/* ============================================================
+   BOUNDING BOX
+   ============================================================ */
+
+.defect-item p:last-child b {
+
+    display: inline-block;
+
+    padding: 5px 8px;
+
+    background: #202936;
+
+    border: 1px solid #40506a;
+
+    border-radius: 4px;
+
+    color: #8fc5ff;
+
+    font-family: "Consolas", "SFMono-Regular", ui-monospace, monospace;
+
+    font-size: 12px;
+
+}
+
+
+/* ============================================================
+   RESULT IMAGE SECTION
+   ============================================================ */
+
+.result-image-section {
+
+    position: relative;
+
+    margin-top: 22px;
+
+    padding: 22px;
+
+    background: #10151b;
+
+    border: 1px solid #343d4b;
+
+    border-radius: 8px;
+
+}
+
+
+.result-image-section h4 {
+
+    margin: 0 0 8px;
+
+    color: #ffffff;
+
+    font-size: 16px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+
+}
+
+
+.result-image-section p {
+
+    margin: 0 0 18px;
+
+    color: #929eae;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+}
+
+
+/* ============================================================
+   RESULT IMAGE
+   ============================================================ */
+
+.result-image-section img {
+
+    display: block;
+
+    width: 100%;
+
+    max-width: 900px;
+
+    max-height: 600px;
+
+    object-fit: contain;
+
+    margin: 0 auto;
+
+    padding: 8px;
+
+    box-sizing: border-box;
+
+    background: #080b0f;
+
+    border: 1px solid #394454;
+
+    border-radius: 5px;
+
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1100px) {
+
+    .inspection-details {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+}
+
+
+@media (max-width: 850px) {
+
+    .product-form {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .defect-item {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .upload-product-panel {
+
+        padding: 18px;
+
+    }
+
+    .product-form {
+
+        padding: 15px;
+
+    }
+
+    .upload-box {
+
+        padding: 20px 14px;
+
+    }
+
+    .inspection-result {
+
+        padding: 18px;
+
+    }
+
+    .inspection-details {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .ai-result-summary h2 {
+
+        font-size: 19px;
+
+    }
+
+    .ai-result-summary h2 strong {
+
+        font-size: 25px;
+
+    }
+
+}
+
+
+/* ============================================================
+   DISABLE ANIMATIONS
+   ============================================================ */
+
+.upload-product-panel *,
+.upload-box *,
+.inspection-result * {
+
+    animation: none !important;
+
+    transition: none !important;
+
+}
+
+/* ============================================================
+   OVERALL SEVERITY SECTION
+   ============================================================ */
+
+.severity-section {
+
+    position: relative;
+
+    width: 100%;
+    box-sizing: border-box;
+
+    margin-top: 24px;
+    padding: 24px;
+
+    background: #1c222b;
+
+    border: 1px solid #394454;
+    border-radius: 8px;
+
+    text-align: left;
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.20),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+
+/* corner rivets, same treatment as main panel */
+
+.severity-section::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    border-radius: inherit;
+
+    background:
+        radial-gradient(circle at 14px 14px, var(--rivet-color) 0 3px, var(--rivet-shadow) 3px 4px, transparent 4px),
+        radial-gradient(circle at calc(100% - 14px) 14px, var(--rivet-color) 0 3px, var(--rivet-shadow) 3px 4px, transparent 4px);
+}
+
+
+/* ---------- Overall Severity Heading ---------- */
+
+.severity-section h3,
+.severity-section h4 {
+
+    margin: 0 0 18px 0;
+
+    padding-bottom: 14px;
+
+    border-bottom: 1px solid #303947;
+
+    color: #ffffff;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1.2px;
+}
+
+
+/* ---------- Severity Score / Content ---------- */
+
+.severity-section p {
+
+    margin: 10px 0;
+
+    color: #c3ccd9;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+
+/* ---------- Strong Values ---------- */
+
+.severity-section strong,
+.severity-section b {
+
+    color: #ffffff;
+
+    font-weight: 700;
+}
+
+
+/* ---------- Severity Score ---------- */
+
+.severity-section .severity-score {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 16px 18px;
+
+    margin-bottom: 14px;
+
+    background: #151a21;
+
+    border: 1px solid #343d4b;
+
+    border-radius: 6px;
+
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+
+/* ---------- Score Label ---------- */
+
+.severity-section .severity-score span {
+
+    color: #9da8b8;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.8px;
+}
+
+
+/* ---------- Score Value ---------- */
+
+.severity-section .severity-score strong {
+
+    color: #ffffff;
+
+    font-size: 24px;
+
+    font-weight: 800;
+
+    font-family: "Consolas", "SFMono-Regular", ui-monospace, monospace;
+}
+
+
+/* ---------- Severity Badge ---------- */
+
+.severity-section .severity-level {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 7px 16px;
+
+    border-radius: 3px;
+
+    background: #29313d;
+
+    border: 1px solid #465266;
+
+    color: #ffffff;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+}
+
+
+/* ============================================================
+   SEVERITY COLORS
+   ============================================================ */
+
+/* LOW */
+
+.severity-section.severity-low {
+
+    border-color: #2f7f4e;
+}
+
+.severity-section.severity-low .severity-level {
+
+    background: #183524;
+
+    border-color: #2f7f4e;
+
+    color: #65ff9b;
+}
+
+
+/* MEDIUM */
+
+.severity-section.severity-medium {
+
+    border-color: #8a7135;
+}
+
+.severity-section.severity-medium .severity-level {
+
+    background: #332c18;
+
+    border-color: #8a7135;
+
+    color: #ffd76a;
+}
+
+
+/* HIGH — hazard tape edge, escalation cue */
+
+.severity-section.severity-high {
+
+    border-color: #9a5438;
+}
+
+.severity-section.severity-high .severity-level {
+
+    background: #38221b;
+
+    border-color: #9a5438;
+
+    color: #ffad72;
+}
+
+.severity-section.severity-high::after {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    right: 0;
+
+    height: 3px;
+
+    border-radius: 8px 8px 0 0;
+
+    background:
+        repeating-linear-gradient(
+            135deg,
+            #9a5438 0 8px,
+            var(--hazard-dark) 8px 16px
+        );
+
+    opacity: 0.8;
+}
+
+
+/* CRITICAL — full hazard tape edge */
+
+.severity-section.severity-critical {
+
+    border-color: #8b3943;
+}
+
+.severity-section.severity-critical .severity-level {
+
+    background: #391c21;
+
+    border-color: #8b3943;
+
+    color: #ff6b6b;
+}
+
+.severity-section.severity-critical::after {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    right: 0;
+
+    height: 4px;
+
+    border-radius: 8px 8px 0 0;
+
+    background:
+        repeating-linear-gradient(
+            135deg,
+            var(--hazard-amber) 0 8px,
+            var(--hazard-dark) 8px 16px
+        );
+}
+
+
+/* ============================================================
+   SEVERITY BREAKDOWN
+   ============================================================ */
+
+.severity-section .severity-breakdown {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 12px;
+
+    margin-top: 18px;
+}
+
+
+.severity-section .severity-item {
+
+    padding: 14px;
+
+    background: #202631;
+
+    border: 1px solid #343d4b;
+
+    border-top: 2px solid #465266;
+
+    border-radius: 6px;
+}
+
+
+.severity-section .severity-item span {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #929eaf;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.6px;
+}
+
+
+.severity-section .severity-item strong {
+
+    color: #ffffff;
+
+    font-size: 16px;
+
+    font-family: "Consolas", "SFMono-Regular", ui-monospace, monospace;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 900px) {
+
+    .severity-section .severity-breakdown {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .severity-section {
+
+        padding: 18px;
+
+    }
+
+    .severity-section .severity-score {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 10px;
+
+    }
+
+    .severity-section .severity-breakdown {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
+
+/* ============================================================
+   AI INSPECTION BUTTON
+   ============================================================ */
+
+.upload-box button {
+    width: 100%;
+    max-width: 320px;
+
+    min-height: 50px;
+
+    padding: 14px 24px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    background: linear-gradient(
+        135deg,
+        #2c8cff,
+        #1867d8
+    );
+
+    border: 1px solid #4a9dff;
+
+    border-radius: 10px;
+
+    color: #ffffff;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    letter-spacing: 0.2px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 14px rgba(24, 103, 216, 0.30);
+
+    transition:
+        background 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+/* ---------- Icon ---------- */
+
+.upload-box button svg {
+
+    flex-shrink: 0;
+
+    color: #ffffff;
+}
+
+
+/* ---------- Hover ---------- */
+
+.upload-box button:hover:not(:disabled) {
+
+    background: linear-gradient(
+        135deg,
+        #3b9aff,
+        #2175df
+    );
+
+    border-color: #6ab1ff;
+
+    box-shadow:
+        0 7px 18px rgba(24, 103, 216, 0.42);
+}
+
+
+/* ---------- Active / Click ---------- */
+
+.upload-box button:active:not(:disabled) {
+
+    background: #1867d8;
+
+    box-shadow:
+        0 3px 8px rgba(24, 103, 216, 0.30);
+}
+
+
+/* ---------- Disabled / Inspecting ---------- */
+
+.upload-box button:disabled {
+
+    background: #303844;
+
+    border-color: #465161;
+
+    color: #9ba6b5;
+
+    cursor: not-allowed;
+
+    box-shadow: none;
+
+    opacity: 0.85;
+}
+
+
+/* ---------- Disabled icon ---------- */
+
+.upload-box button:disabled svg {
+
+    color: #9ba6b5;
+}
+
+/* ============================================================
+   CHOOSE FILE / PRODUCT IMAGE INPUT
+   ============================================================ */
+
+.upload-box input[type="file"] {
+
+    width: 100%;
+    max-width: 420px;
+
+    box-sizing: border-box;
+
+    padding: 12px;
+
+    background: #171c24;
+
+    border: 1px solid #3b4556;
+
+    border-radius: 10px;
+
+    color: #c8d1df;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    margin-bottom: 22px;
+}
+
+
+/* ---------- Choose File Button ---------- */
+
+.upload-box input[type="file"]::file-selector-button {
+
+    margin-right: 14px;
+
+    padding: 9px 16px;
+
+    background: #29313d;
+
+    border: 1px solid #4a5668;
+
+    border-radius: 7px;
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+/* ---------- Hover ---------- */
+
+.upload-box input[type="file"]::file-selector-button:hover {
+
+    background: #354052;
+
+    border-color: #5b6a7f;
+
+}
+
+
+/* ---------- File Input Hover ---------- */
+
+.upload-box input[type="file"]:hover {
+
+    border-color: #4f7fae;
+
+}
+
+
+/* ---------- Focus ---------- */
+
+.upload-box input[type="file"]:focus {
+
+    outline: none;
+
+    border-color: #4fa7ff;
+
+    box-shadow:
+        0 0 10px rgba(79, 167, 255, 0.18);
+
+}
+
+/* ============================================================
+   SEVERITY CARD (Defect Size / Location / Type breakdown)
+   ============================================================ */
+
+.severity-section .severity-card {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    padding: 16px 14px;
+
+    background: #202631;
+
+    border: 1px solid #343d4b;
+
+    border-top: 2px solid #465266;
+
+    border-radius: 6px;
+}
+
+
+/* ---------- Label (e.g. "Defect Size") ---------- */
+
+.severity-section .severity-card span {
+
+    color: #929eaf;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.6px;
+}
+
+
+/* ---------- Value (e.g. "82%") ---------- */
+
+.severity-section .severity-card strong {
+
+    color: #ffffff;
+
+    font-size: 20px;
+
+    font-weight: 800;
+
+    font-family: "Consolas", "SFMono-Regular", ui-monospace, monospace;
+}
+
+
+/* ---------- Weight note (e.g. "Weight: 30%") ---------- */
+
+.severity-section .severity-card small {
+
+    margin-top: 2px;
+
+    padding-top: 8px;
+
+    border-top: 1px dashed #343d4b;
+
+    color: #7a8598;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    letter-spacing: 0.3px;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 600px) {
+
+    .severity-section .severity-card {
+
+        padding: 14px;
+
+    }
+
+}

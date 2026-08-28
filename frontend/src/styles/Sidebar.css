@@ -1,0 +1,195 @@
+.sidebar{
+
+    width:270px;
+
+    min-height:100vh;
+
+    padding:30px 20px;
+
+    background:rgba(15,23,42,.9);
+
+    border-right:1px solid rgba(0,217,255,.15);
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+
+
+.logo{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin-bottom:15px;
+
+}
+
+
+
+.logo svg{
+
+    color:#00d9ff;
+
+    width:32px;
+
+    height:32px;
+
+}
+
+
+
+.logo h2{
+
+    color:white;
+
+    font-size:20px;
+
+    font-weight:700;
+
+    margin:0;
+
+}
+
+
+
+.role{
+
+    color:#00d9ff;
+
+    margin-bottom:40px;
+
+    font-size:14px;
+
+    font-weight:500;
+
+}
+
+
+
+/* ---------- Menu ---------- */
+
+.menu{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+}
+
+
+
+/* NavLink */
+
+.menu a{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:15px;
+
+    color:#cbd5e1;
+
+    text-decoration:none;
+
+    border-radius:15px;
+
+    transition:.3s;
+
+    font-size:15px;
+
+    font-weight:500;
+
+}
+
+
+
+.menu a svg{
+
+    width:20px;
+
+    height:20px;
+
+}
+
+
+
+/* Hover */
+
+.menu a:hover{
+
+    background:rgba(0,217,255,.12);
+
+    color:white;
+
+}
+
+
+
+/* Active Page */
+
+.menu a.active{
+
+    background:rgba(0,217,255,.15);
+
+    color:white;
+
+    border-left:3px solid #00d9ff;
+
+}
+
+
+
+/* ---------- Logout ---------- */
+
+.logout{
+
+    margin-top:auto;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:15px;
+
+    color:#ff6b81;
+
+    border-radius:15px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+    font-weight:500;
+
+}
+
+
+
+.logout:hover{
+
+    background:rgba(255,107,129,.10);
+
+}
+
+
+
+.logout svg{
+
+    width:20px;
+
+    height:20px;
+
+}

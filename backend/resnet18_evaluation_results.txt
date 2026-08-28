@@ -1,0 +1,57 @@
+RESNET18 MODEL EVALUATION
+===========================================================================
+
+Model Path:
+D:\InfosysSpringboard\VisionInspectAI\backend\models\defect_classifier_resnet18_best.pth
+
+Dataset Path:
+D:\InfosysSpringboard\VisionInspectAI\processed_dataset
+
+Device: cpu
+
+DATASET
+---------------------------------------------------------------------------
+PASS Images: 467
+FAIL Images: 1258
+Total Images: 1725
+
+OVERALL PERFORMANCE
+---------------------------------------------------------------------------
+Accuracy: 92.00%
+Precision (Macro): 88.65%
+Recall (Macro): 93.57%
+F1-Score (Macro): 90.52%
+Precision (Weighted): 93.29%
+Recall (Weighted): 92.00%
+F1-Score (Weighted): 92.24%
+
+CLASS-SPECIFIC PERFORMANCE
+---------------------------------------------------------------------------
+PASS
+Precision: 78.51%
+Recall: 97.00%
+F1-Score: 86.78%
+
+FAIL
+Precision: 98.78%
+Recall: 90.14%
+F1-Score: 94.26%
+
+CLASSIFICATION REPORT
+---------------------------------------------------------------------------
+              precision    recall  f1-score   support
+
+        PASS       0.79      0.97      0.87       467
+        FAIL       0.99      0.90      0.94      1258
+
+    accuracy                           0.92      1725
+   macro avg       0.89      0.94      0.91      1725
+weighted avg       0.93      0.92      0.92      1725
+
+
+CONFUSION MATRIX
+---------------------------------------------------------------------------
+                 Predicted
+                 PASS    FAIL
+Actual PASS        453      14
+Actual FAIL        124    1134

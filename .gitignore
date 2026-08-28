@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+env/
+
+# Environment variables
+.env
+.env.*
+
+# Node
+node_modules/
+dist/
+build/
+
+# VS Code
+.vscode/
+
+# Dataset
+dataset/
+processed_dataset/
+
+# Large archives
+*.zip
+
+# Runtime uploads
+backend/uploads/products/*
+!backend/uploads/products/.gitkeep
+
+# Logs
+*.log

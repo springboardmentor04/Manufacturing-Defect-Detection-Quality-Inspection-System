@@ -1,0 +1,43 @@
+.analytics-grid{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:25px;
+
+    margin-top:25px;
+
+}
+
+.defect-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:15px 0;
+
+    border-bottom:1px solid rgba(255,255,255,.08);
+
+    color:white;
+
+}
+
+.defect-row:last-child{
+
+    border-bottom:none;
+
+}
+
+@media(max-width:900px){
+
+    .analytics-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}

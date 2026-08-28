@@ -1,0 +1,764 @@
+/* ============================================================
+   QUALITY REPORTS PAGE
+============================================================ */
+
+.quality-report-page {
+
+    width: 100%;
+
+    max-width: 1400px;
+
+    margin: 0 auto;
+
+}
+
+
+/* ============================================================
+   HEADER
+============================================================ */
+
+.quality-report-header {
+
+    margin-bottom: 25px;
+
+}
+
+.quality-report-header h1 {
+
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 30px;
+
+    font-weight: 700;
+
+}
+
+.quality-report-header p {
+
+    margin-top: 8px;
+
+    color: #94a3b8;
+
+    font-size: 15px;
+
+}
+
+
+/* ============================================================
+   PRODUCT SELECTOR
+============================================================ */
+
+.report-selector-panel {
+
+    background: #111827;
+
+    border: 1px solid #263449;
+
+    border-left: 4px solid #00d9ff;
+
+    border-radius: 12px;
+
+    padding: 20px 22px;
+
+    margin-bottom: 25px;
+
+}
+
+.report-selector-panel label {
+
+    display: block;
+
+    color: #dbeafe;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    margin-bottom: 10px;
+
+}
+
+.report-selector-panel select {
+
+    width: 100%;
+
+    padding: 13px 15px;
+
+    background: #1b2535;
+
+    color: #ffffff;
+
+    border: 1px solid #3b4a61;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+}
+
+.report-selector-panel select:focus {
+
+    outline: none;
+
+    border-color: #00d9ff;
+
+    box-shadow:
+        0 0 0 2px rgba(0,217,255,.12);
+
+}
+
+
+/* ============================================================
+   EMPTY / ERROR / LOADING
+============================================================ */
+
+.report-empty,
+.report-loading,
+.report-error {
+
+    background: #111827;
+
+    border: 1px solid #263449;
+
+    border-radius: 12px;
+
+    padding: 50px;
+
+    text-align: center;
+
+}
+
+.report-empty h2 {
+
+    color: #ffffff;
+
+    margin-bottom: 8px;
+
+}
+
+.report-empty p {
+
+    color: #94a3b8;
+
+}
+
+.report-error {
+
+    color: #ff6b81;
+
+    border-color: rgba(255,77,109,.35);
+
+}
+
+
+/* ============================================================
+   REPORT DOCUMENT
+============================================================ */
+
+.quality-report {
+
+    background: #0f1724;
+
+    border: 1px solid #2c394c;
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.28);
+
+}
+
+
+/* ============================================================
+   REPORT TITLE
+============================================================ */
+
+.report-title {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 28px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #16243b,
+            #101927
+        );
+
+    border-bottom: 1px solid #2c394c;
+
+}
+
+.report-title span {
+
+    color: #00d9ff;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+}
+
+.report-title h2 {
+
+    margin: 7px 0;
+
+    color: #ffffff;
+
+    font-size: 27px;
+
+}
+
+.report-title p {
+
+    margin: 0;
+
+    color: #94a3b8;
+
+    font-size: 13px;
+
+}
+
+
+/* ============================================================
+   PASS / FAIL
+============================================================ */
+
+.report-status {
+
+    min-width: 120px;
+
+    text-align: center;
+
+    padding: 12px 20px;
+
+    border-radius: 8px;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+}
+
+.report-pass {
+
+    color: #00ff9d;
+
+    background: rgba(0,255,157,.08);
+
+    border: 1px solid rgba(0,255,157,.35);
+
+}
+
+.report-fail {
+
+    color: #ff4d6d;
+
+    background: rgba(255,77,109,.08);
+
+    border: 1px solid rgba(255,77,109,.35);
+
+}
+
+
+/* ============================================================
+   REPORT SECTIONS
+============================================================ */
+
+.report-section {
+
+    padding: 25px 28px;
+
+    border-bottom: 1px solid #263449;
+
+}
+
+.report-section:last-child {
+
+    border-bottom: none;
+
+}
+
+.report-section h3 {
+
+    margin: 0 0 18px;
+
+    color: #ffffff;
+
+    font-size: 18px;
+
+    font-weight: 650;
+
+}
+
+.section-description {
+
+    color: #94a3b8;
+
+    font-size: 13px;
+
+    margin-top: -10px;
+
+    margin-bottom: 18px;
+
+}
+
+
+/* ============================================================
+   PRODUCT INFORMATION
+============================================================ */
+
+.report-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 12px;
+
+}
+
+.report-field {
+
+    background: #151f2e;
+
+    border: 1px solid #27364a;
+
+    border-radius: 8px;
+
+    padding: 15px;
+
+}
+
+.report-field span {
+
+    display: block;
+
+    color: #8291a7;
+
+    font-size: 11px;
+
+    text-transform: uppercase;
+
+    letter-spacing: .5px;
+
+    margin-bottom: 7px;
+
+}
+
+.report-field strong {
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    word-break: break-word;
+
+}
+
+
+/* ============================================================
+   AI METRICS
+============================================================ */
+
+.report-metrics {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 15px;
+
+}
+
+.report-metric {
+
+    background: #151f2e;
+
+    border: 1px solid #27364a;
+
+    border-radius: 9px;
+
+    padding: 18px;
+
+}
+
+.report-metric span {
+
+    display: block;
+
+    color: #8291a7;
+
+    font-size: 12px;
+
+    margin-bottom: 9px;
+
+}
+
+.report-metric strong {
+
+    color: #ffffff;
+
+    font-size: 22px;
+
+}
+
+
+/* ============================================================
+   SEVERITY ASSESSMENT
+============================================================ */
+
+.severity-report-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 15px;
+
+}
+
+.severity-card {
+
+    background: #151f2e;
+
+    border: 1px solid #2b3b50;
+
+    border-radius: 9px;
+
+    padding: 18px;
+
+}
+
+.severity-card span {
+
+    display: block;
+
+    color: #a4b1c2;
+
+    font-size: 13px;
+
+    margin-bottom: 10px;
+
+}
+
+.severity-card strong {
+
+    display: block;
+
+    color: #ffffff;
+
+    font-size: 25px;
+
+}
+
+.severity-card small {
+
+    display: block;
+
+    color: #718096;
+
+    margin-top: 7px;
+
+}
+
+
+/* ============================================================
+   OVERALL SEVERITY
+============================================================ */
+
+.overall-severity {
+
+    margin-top: 18px;
+
+    padding: 22px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #182438,
+            #111a29
+        );
+
+    border: 1px solid #33445b;
+
+    border-radius: 10px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+}
+
+.overall-severity span {
+
+    display: block;
+
+    color: #94a3b8;
+
+    font-size: 13px;
+
+    margin-bottom: 5px;
+
+}
+
+.overall-severity strong {
+
+    color: #ffffff;
+
+    font-size: 32px;
+
+}
+
+
+/* ============================================================
+   SEVERITY LEVEL
+============================================================ */
+
+.severity-level {
+
+    padding: 12px 22px;
+
+    border-radius: 8px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: .7px;
+
+}
+
+.severity-level.critical {
+
+    color: #ff4d6d;
+
+    background: rgba(255,77,109,.1);
+
+    border: 1px solid rgba(255,77,109,.35);
+
+}
+
+.severity-level.high {
+
+    color: #ff9f43;
+
+    background: rgba(255,159,67,.1);
+
+    border: 1px solid rgba(255,159,67,.35);
+
+}
+
+.severity-level.medium {
+
+    color: #ffd166;
+
+    background: rgba(255,209,102,.1);
+
+    border: 1px solid rgba(255,209,102,.35);
+
+}
+
+.severity-level.low {
+
+    color: #00ff9d;
+
+    background: rgba(0,255,157,.1);
+
+    border: 1px solid rgba(0,255,157,.35);
+
+}
+
+
+/* ============================================================
+   DEFECT DETAILS
+============================================================ */
+
+.defect-details-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 15px;
+
+}
+
+.defect-details-grid > div {
+
+    background: #151f2e;
+
+    border: 1px solid #27364a;
+
+    border-radius: 9px;
+
+    padding: 18px;
+
+}
+
+.defect-details-grid span {
+
+    display: block;
+
+    color: #8291a7;
+
+    font-size: 12px;
+
+    margin-bottom: 8px;
+
+}
+
+.defect-details-grid strong {
+
+    color: #ffffff;
+
+    font-size: 16px;
+
+}
+
+
+/* ============================================================
+   INSPECTION IMAGE
+============================================================ */
+
+.inspection-image-container {
+
+    background: #080d16;
+
+    border: 1px solid #2c394c;
+
+    border-radius: 10px;
+
+    padding: 15px;
+
+    text-align: center;
+
+}
+
+.inspection-image-container img {
+
+    max-width: 100%;
+
+    max-height: 600px;
+
+    object-fit: contain;
+
+    border-radius: 6px;
+
+    display: block;
+
+    margin: auto;
+
+}
+
+.image-unavailable {
+
+    padding: 40px;
+
+    text-align: center;
+
+    color: #718096;
+
+    background: #111827;
+
+    border: 1px dashed #334155;
+
+    border-radius: 9px;
+
+}
+
+
+/* ============================================================
+   RECOMMENDED ACTION
+============================================================ */
+
+.recommendation-box {
+
+    padding: 20px;
+
+    background: #151f2e;
+
+    border-left: 4px solid #00d9ff;
+
+    border-radius: 7px;
+
+    color: #e5f6ff;
+
+    font-size: 15px;
+
+    line-height: 1.6;
+
+}
+
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 1100px) {
+
+    .report-grid,
+    .report-metrics,
+    .severity-report-grid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .report-title {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+    }
+
+    .report-grid,
+    .report-metrics,
+    .severity-report-grid,
+    .defect-details-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .overall-severity {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 15px;
+
+    }
+
+}
