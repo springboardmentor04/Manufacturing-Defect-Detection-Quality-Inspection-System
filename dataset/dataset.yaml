@@ -1,0 +1,9 @@
+path: C:\Users\rchar\OneDrive\Desktop\VsInfoVisionAI\dataset
+train: images/train
+val: images/val
+names:
+  0: Surface Scratch
+  1: Cracked Solder Joint
+  2: Missing Component
+  3: Misalignment
+  4: Cracked Screen

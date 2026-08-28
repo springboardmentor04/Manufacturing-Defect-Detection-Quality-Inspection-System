@@ -216,3 +216,18 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Frontend build and dependencies
+node_modules/
+.next/
+*.tsbuildinfo
+
+# Local application data and generated ML artifacts
+*.db
+backend/uploads/
+backend/reports/generated/
+backend/runs/
+runs/
+dataset/images/
+dataset/labels/
+dataset/external/
