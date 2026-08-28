@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: vision_user
+      POSTGRES_PASSWORD: vision_password
+      POSTGRES_DB: visioninspect
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: 
+      context: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://vision_user:vision_password@db:5432/visioninspect
+      - JWT_SECRET=supersecretjwtkey_for_visioninspect_ai_project_in_production
+      - MODEL_PATH=./ml/models/best.pt
+      - UPLOAD_DIR=./storage/uploads
+    depends_on:
+      - db
+    volumes:
+      - ./storage:/app/storage
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

@@ -1,0 +1,50 @@
+from datetime import datetime, timedelta
+from typing import Any, Union
+from jose import jwt
+import logging
+from passlib.context import CryptContext
+from app.core.config import settings
+
+# Use pbkdf2_sha256 as the default hashing scheme to avoid importing the
+# bcrypt backend at startup (some bcrypt installs lack metadata and can
+# trigger passlib errors). If you need bcrypt, install a compatible
+# `bcrypt` package in the virtualenv and add it back here.
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
+
+
+def _truncate_for_bcrypt(password: str) -> str:
+    """Bcrypt only supports passwords up to 72 bytes — truncate safely.
+
+    We truncate on the UTF-8 encoded bytes and decode ignoring partial
+    characters at the end so callers can continue to work with strings.
+    """
+    if password is None:
+        return password
+    b = password.encode("utf-8")
+    if len(b) <= 72:
+        return password
+    truncated = b[:72].decode("utf-8", errors="ignore")
+    logging.warning("Password exceeded 72 bytes; truncating to bcrypt limit.")
+    return truncated
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    # Use the configured context to verify the password. We no longer
+    # attempt to load/support bcrypt here to avoid startup errors.
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+def get_password_hash(password: str) -> str:
+    if password is None:
+        raise ValueError("Password cannot be None")
+    # Always hash with the configured scheme (pbkdf2_sha256) to avoid bcrypt issues.
+    return pwd_context.hash(password)
+
+def create_access_token(subject: Union[str, Any], expires_delta: timedelta = None) -> str:
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode = {"exp": expire, "sub": str(subject)}
+    encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
+    return encoded_jwt
