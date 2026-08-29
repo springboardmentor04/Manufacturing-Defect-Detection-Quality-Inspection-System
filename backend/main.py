@@ -7,6 +7,7 @@ import torch.nn as nn
 import torchvision.transforms as transforms
 import io
 import os
+import json
 from datetime import datetime
 
 # PostgreSQL
@@ -59,7 +60,7 @@ class DefectCNN(nn.Module):
 
         self.fc2 = nn.Linear(
             128,
-            2
+            49
         )
 
     def forward(self, x):
@@ -129,7 +130,23 @@ model.load_state_dict(
 )
 
 model.eval()
+# Load label mapping
+label_map_path = os.path.join(
+    backend_folder,
+    "label_map.json"
+)
 
+with open(label_map_path, "r") as file:
+    label_map = json.load(file)
+
+# Reverse mapping: number -> class name
+class_names = {
+    value: key
+    for key, value in label_map.items()
+}
+
+print("Label mapping loaded:")
+print(class_names)
 print("===================================")
 print("VisionInspect AI Backend")
 print("===================================")
@@ -287,17 +304,70 @@ async def inspect_image(
         confidence_value = (
             confidence.item() * 100
         )
+        # ----------------------------------------------------
+        # Severity Score
+        # ----------------------------------------------------
+
+        severity_score = 0
+
+        if predicted_class == 0:
+
+            severity_score = 0
+
+        else:
+
+            if confidence_value >= 95:
+
+                severity_score = 95
+
+            elif confidence_value >= 90:
+
+                severity_score = 85
+
+            elif confidence_value >= 80:
+
+                severity_score = 70
+
+            elif confidence_value >= 70:
+
+                severity_score = 55
+
+            else:
+
+                severity_score = 35
 
 
+        if severity_score >= 80:
+
+            severity_level = "Critical"
+
+        elif severity_score >= 60:
+
+            severity_level = "High"
+
+        elif severity_score >= 40:
+
+            severity_level = "Medium"
+
+        else:
+
+            severity_level = "Low"
         # ----------------------------------------------------
         # Result
         # ----------------------------------------------------
 
-        if predicted_class == 0:
+        predicted_label = class_names.get(
+            predicted_class,
+            "unknown"
+        )
+
+        if predicted_label == "good":
 
             result = "GOOD"
 
             prediction = "Good Product"
+
+            defect_type = "No Defect"
 
             inspection_result = (
                 "No defect detected. "
@@ -310,15 +380,86 @@ async def inspect_image(
 
             prediction = "Defective Product"
 
-            inspection_result = (
-                "Potential defect detected. "
-                "The uploaded product requires inspection."
+            defect_type = predicted_label
+
+            if severity_level == "Critical":
+
+                inspection_result = (
+                    "Critical quality issue detected. "
+                    "Product should be rejected."
+                )
+
+            elif severity_level == "High":
+
+                inspection_result = (
+                    "High severity defect detected. "
+                    "Manual inspection recommended."
+                )
+
+            elif severity_level == "Medium":
+
+                inspection_result = (
+                    "Medium severity defect detected. "
+                    "Quality review required."
+                )
+
+            else:
+
+                inspection_result = (
+                    "Minor defect detected. "
+                    "Product may be accepted after review."
+                )
+        # ----------------------------------------------------
+        # Quality Assessment
+        # ----------------------------------------------------
+
+        if result == "GOOD":
+
+            quality_decision = "PASS"
+
+            quality_recommendation = (
+                "Product meets the quality requirements. "
+                "Product is approved for production use."
             )
 
+        elif severity_level == "Critical":
 
+            quality_decision = "FAIL"
+
+            quality_recommendation = (
+                "Reject the product immediately and trigger "
+                "the quality inspection workflow."
+            )
+
+        elif severity_level == "High":
+
+            quality_decision = "FAIL"
+
+            quality_recommendation = (
+                "Product has a significant quality issue. "
+                "Repair or rework is recommended."
+            )
+
+        elif severity_level == "Medium":
+
+            quality_decision = "REVIEW"
+
+            quality_recommendation = (
+                "Product has a moderate quality concern. "
+                "Inspection review is required."
+            )
+
+        else:
+
+            quality_decision = "PASS"
+
+            quality_recommendation = (
+                "Minor cosmetic defect detected. "
+                "Product is generally acceptable."
+            )
         # ----------------------------------------------------
         # Save uploaded image
-        # ----------------------------------------------------
+        # ------------------- ---------------------------------
 
         safe_filename = os.path.basename(
             file.filename
@@ -372,24 +513,37 @@ async def inspect_image(
 
 
             cursor.execute(
-                """
-                INSERT INTO defect_detection
+    """
+    INSERT INTO defect_detection
+    (
+        image_id,
+        result,
+        prediction,
+        confidence,
+        inspection_result,
+        defect_type,
+        severity_score,
+        severity_level,
+        quality_decision,
+        quality_recommendation
+    )
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """,
                 (
-                    image_id,
-                    result,
-                    prediction,
-                    confidence,
-                    inspection_result
-                )
-                VALUES (%s, %s, %s, %s, %s)
-                """,
-                (
-                    image_id,
-                    result,
-                    prediction,
-                    round(confidence_value, 2),
-                    inspection_result
-                )
+    image_id,
+    result,
+    prediction,
+    round(
+        confidence_value,
+        2
+    ),
+    inspection_result,
+    defect_type,
+    severity_score,
+    severity_level,
+    quality_decision,
+    quality_recommendation
+)
             )
 
 
@@ -424,13 +578,19 @@ async def inspect_image(
             "result": result,
 
             "prediction": prediction,
+            "defect_type": defect_type,
 
             "confidence": round(
                 confidence_value,
                 2
             ),
+            "severity_score": severity_score,
+             "severity_level": severity_level,
 
             "inspection_result": inspection_result,
+            "quality_decision": quality_decision,
+
+            "quality_recommendation": quality_recommendation,
 
             "database_status": database_status
 
@@ -472,7 +632,12 @@ def get_inspections():
                 d.result,
                 d.prediction,
                 d.confidence,
-                d.inspection_result
+                d.inspection_result,
+                d.defect_type,
+                d.severity_score,
+                d.severity_level,
+                d.quality_decision,
+                d.quality_recommendation
             FROM product_images p
             INNER JOIN defect_detection d
                 ON p.id = d.image_id
@@ -485,8 +650,11 @@ def get_inspections():
         inspections = []
 
         for row in rows:
+            print("ROW LENGTH:", len(row), "ROW:", row)
+            
 
             inspections.append({
+
 
                 "filename": row[0],
 
@@ -496,8 +664,13 @@ def get_inspections():
 
                 "confidence": row[3],
 
-                "inspection_result": row[4]
+                "inspection_result": row[4],
+                "defect_type": row[5],
+                "severity_score": row[6],
+                "severity_level": row[7],
+                "quality_decision": row[8],
 
+                 "quality_recommendation": row[9] 
             })
 
 
@@ -523,3 +696,4 @@ def get_inspections():
             status_code=500,
             detail=str(e)
         )
+      

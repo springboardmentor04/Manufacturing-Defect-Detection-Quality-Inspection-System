@@ -51,6 +51,7 @@ categories = [
 ]
 
 print("\nDataset Categories:")
+label_map = {"good": 0}
 
 for category in categories:
 
@@ -176,19 +177,18 @@ for category in categories:
 
                 folder_name = os.path.basename(root).lower()
 
+                if folder_name not in label_map:
+                    label_map[folder_name] = len(label_map)
+
+                label = label_map[folder_name]
+
                 if folder_name == "good":
-
-                    label = 0
                     good_count += 1
-
                 else:
-
-                    label = 1
                     defect_count += 1
 
                 images.append(image)
                 labels.append(label)
-
 
 print("-----------------------------------")
 print("Total Images Loaded :", len(images))
@@ -404,7 +404,7 @@ class DefectCNN(nn.Module):
 
         self.fc2 = nn.Linear(
             128,
-            2
+            len(label_map)
         )
 
 
@@ -461,14 +461,14 @@ train_label_tensor = torch.tensor(
 
 class_counts = torch.bincount(
     train_label_tensor,
-    minlength=2
+    minlength=len(label_map)
 ).float()
 
 
 class_weights = (
     len(train_labels)
     /
-    (2 * class_counts)
+    (len(label_map) * class_counts)
 )
 
 
@@ -688,6 +688,20 @@ torch.save(
     model.state_dict(),
     model_path
 )
+label_map_path = os.path.join(
+    os.path.dirname(__file__),
+    "label_map.json"
+)
+
+with open(label_map_path, "w") as file:
+    json.dump(
+        label_map,
+        file,
+        indent=4
+    )
+
+print("Label mapping saved:")
+print(label_map_path)
 
 
 print("\nModel Saved Successfully!")

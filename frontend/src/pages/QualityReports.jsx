@@ -1,6 +1,21 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 function QualityReports() {
+  const [reports, setReports] = useState([]);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/inspections")
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          setReports(data.inspections);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load quality reports:", error);
+      });
+  }, []);
+
   return (
     <div style={{ padding: "40px" }}>
       <h1>📊 Quality Reports</h1>
@@ -26,49 +41,46 @@ function QualityReports() {
             <th style={{ border: "1px solid #ddd" }}>Defect</th>
             <th style={{ border: "1px solid #ddd" }}>Status</th>
             <th style={{ border: "1px solid #ddd" }}>Confidence</th>
-            <th style={{ border: "1px solid #ddd" }}>Inspection Time</th>
+            <th style={{ border: "1px solid #ddd" }}>Inspection</th>
           </tr>
         </thead>
 
         <tbody>
-          <tr>
-            <td style={{ padding: "12px", border: "1px solid #ddd" }}>
-              R001
-            </td>
-            <td style={{ border: "1px solid #ddd" }}>Bottle</td>
-            <td style={{ border: "1px solid #ddd" }}>No Defect</td>
-            <td style={{ border: "1px solid #ddd", color: "green" }}>
-              PASS
-            </td>
-            <td style={{ border: "1px solid #ddd" }}>98%</td>
-            <td style={{ border: "1px solid #ddd" }}>2.1 sec</td>
-          </tr>
+          {reports.length === 0 ? (
+            <tr>
+              <td colSpan="6" style={{ padding: "20px" }}>
+                No inspection reports available.
+              </td>
+            </tr>
+          ) : (
+            reports.map((report, index) => (
+              <tr key={index}>
+                <td style={{ padding: "12px", border: "1px solid #ddd" }}>
+                  R{String(index + 1).padStart(3, "0")}
+                </td>
 
-          <tr>
-            <td style={{ padding: "12px", border: "1px solid #ddd" }}>
-              R002
-            </td>
-            <td style={{ border: "1px solid #ddd" }}>Cable</td>
-            <td style={{ border: "1px solid #ddd" }}>Scratch</td>
-            <td style={{ border: "1px solid #ddd", color: "red" }}>
-              FAIL
-            </td>
-            <td style={{ border: "1px solid #ddd" }}>95%</td>
-            <td style={{ border: "1px solid #ddd" }}>2.4 sec</td>
-          </tr>
+                <td style={{ border: "1px solid #ddd" }}>
+                  {report.filename}
+                </td>
 
-          <tr>
-            <td style={{ padding: "12px", border: "1px solid #ddd" }}>
-              R003
-            </td>
-            <td style={{ border: "1px solid #ddd" }}>Metal Nut</td>
-            <td style={{ border: "1px solid #ddd" }}>No Defect</td>
-            <td style={{ border: "1px solid #ddd", color: "green" }}>
-              PASS
-            </td>
-            <td style={{ border: "1px solid #ddd" }}>99%</td>
-            <td style={{ border: "1px solid #ddd" }}>1.9 sec</td>
-          </tr>
+                <td style={{ border: "1px solid #ddd" }}>
+                  {report.defect_type || "No Defect"}
+                </td>
+
+                <td style={{ border: "1px solid #ddd" }}>
+                  {report.result === "GOOD" ? "PASS" : "FAIL"}
+                </td>
+
+                <td style={{ border: "1px solid #ddd" }}>
+                  {report.confidence}%
+                </td>
+
+                <td style={{ border: "1px solid #ddd" }}>
+                  {report.inspection_result}
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>

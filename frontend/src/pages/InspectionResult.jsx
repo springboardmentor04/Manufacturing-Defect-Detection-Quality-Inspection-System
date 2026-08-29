@@ -243,6 +243,10 @@ Manufacturing Defect Detection & Quality Inspection System
           <strong>Prediction :</strong>{" "}
 
           {inspection.prediction}
+          <br />
+
+          <strong>Defect Type:</strong>{" "} 
+          {inspection.defect_type}
 
         </p>
 

@@ -166,16 +166,28 @@ function UploadImage() {
               <strong>Prediction:</strong>{" "}
               {result.prediction}
             </p>
+            <p>
+              <strong>Defect Type:</strong>{" "}
+              {result.defect_type}
+            </p>
 
             <p>
               <strong>Confidence:</strong>{" "}
               {result.confidence}%
             </p>
-
             <p>
-              <strong>Inspection:</strong>{" "}
-              {result.inspection_result}
+              <strong>Quality Decision:</strong>{" "}
+              {result.result === "GOOD"
+              ? "✅ PASS"
+              : "❌ FAIL"}
             </p>
+            <p>
+  <strong>Quality Recommendation:</strong>{" "}
+  {result.result === "GOOD"
+    ? "Product accepted. No further action required."
+    : "Product rejected. Send for quality inspection and rework."}
+</p>
+            
 
             <p>
               <strong>File:</strong>{" "}

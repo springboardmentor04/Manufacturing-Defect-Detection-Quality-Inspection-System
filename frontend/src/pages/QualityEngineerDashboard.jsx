@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 function QualityEngineerDashboard() {
   const [inspections, setInspections] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [analytics, setAnalytics] = useState(null);
 
   const loadInspections = async () => {
     try {
@@ -22,11 +23,31 @@ function QualityEngineerDashboard() {
       setLoading(false);
     }
   };
+const loadAnalytics = async () => {
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:8000/defect-analytics"
+    );
 
+    const data = await response.json();
+
+    if (data.success) {
+      setAnalytics(data);
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Failed to load analytics:",
+      error
+    );
+
+  }
+};
   useEffect(() => {
-    loadInspections();
-  }, []);
-
+  loadInspections();
+  loadAnalytics();
+}, []);
   const totalInspections = inspections.length;
 
   const passedProducts = inspections.filter(
@@ -36,6 +57,10 @@ function QualityEngineerDashboard() {
   const defectiveProducts = inspections.filter(
     (item) => item.result === "DEFECT"
   ).length;
+  const defectRate =
+  totalInspections > 0
+    ? ((defectiveProducts / totalInspections) * 100).toFixed(2)
+    : 0;
 
   return (
     <div className="dashboard">
@@ -74,9 +99,9 @@ function QualityEngineerDashboard() {
         </div>
 
         <div className="card">
-          <h2>98%</h2>
-          <p>AI Accuracy</p>
-        </div>
+  <h2>{defectRate}%</h2>
+  <p>Defect Rate</p>
+</div>
 
       </div>
 
@@ -160,11 +185,33 @@ function QualityEngineerDashboard() {
                   <strong>Prediction:</strong>{" "}
                   {inspection.prediction}
                 </p>
+                <p>
+  <strong>Defect Type:</strong>{" "}
+  {inspection.defect_type}
+</p>
 
                 <p>
                   <strong>Confidence:</strong>{" "}
                   {inspection.confidence}%
                 </p>
+                <p>
+  <strong>Severity Score:</strong>{" "}
+  {inspection.severity_score ?? "Not available"}
+</p>
+
+<p>
+  <strong>Severity Level:</strong>{" "}
+  {inspection.severity_level ?? "Not available"}
+</p>
+<p>
+  <strong>Quality Decision:</strong>{" "}
+  {inspection.quality_decision}
+</p>
+
+<p>
+  <strong>Quality Recommendation:</strong>{" "}
+  {inspection.quality_recommendation}
+</p>
 
                 <p>
                   <strong>Inspection:</strong>{" "}
