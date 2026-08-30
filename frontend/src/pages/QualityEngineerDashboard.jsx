@@ -26,7 +26,7 @@ function QualityEngineerDashboard() {
 const loadAnalytics = async () => {
   try {
     const response = await fetch(
-      "http://127.0.0.1:8000/defect-analytics"
+      "http://127.0.0.1:8000/inspection-analytics"
     );
 
     const data = await response.json();

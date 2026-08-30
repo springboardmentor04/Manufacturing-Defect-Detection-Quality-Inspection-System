@@ -696,4 +696,157 @@ def get_inspections():
             status_code=500,
             detail=str(e)
         )
+# ============================================================
+# FACTORY SUPERVISOR ANALYTICS
+# Uses REAL inspection data from PostgreSQL
+# ============================================================
+
+@app.get("/factory-analytics")
+def get_factory_analytics():
+
+    try:
+
+        # ----------------------------------------------------
+        # OVERALL FACTORY QUALITY
+        # ----------------------------------------------------
+
+        cursor.execute(
+            """
+            SELECT
+                COUNT(*) AS total_inspections,
+
+                COUNT(*) FILTER (
+                    WHERE result = 'GOOD'
+                ) AS passed_products,
+
+                COUNT(*) FILTER (
+                    WHERE result = 'DEFECT'
+                ) AS defective_products
+
+            FROM defect_detection
+            """
+        )
+
+        summary = cursor.fetchone()
+
+        total_inspections = summary[0] or 0
+        passed_products = summary[1] or 0
+        defective_products = summary[2] or 0
+
+        if total_inspections > 0:
+
+            quality_rate = round(
+                (passed_products / total_inspections) * 100,
+                2
+            )
+
+        else:
+
+            quality_rate = 0
+
+
+        # ----------------------------------------------------
+        # WEEKLY FACTORY INSPECTIONS
+        # ----------------------------------------------------
+
+        cursor.execute(
+            """
+            SELECT
+                DATE_TRUNC('week', inspected_at) AS week_start,
+                COUNT(*) AS total_inspections,
+                COUNT(*) FILTER (
+                    WHERE result = 'GOOD'
+                ) AS passed,
+                COUNT(*) FILTER (
+                    WHERE result = 'DEFECT'
+                ) AS defective
+            FROM defect_detection
+            GROUP BY DATE_TRUNC('week', inspected_at)
+            ORDER BY week_start
+            """
+        )
+
+        weekly_rows = cursor.fetchall()
+
+        weekly = []
+
+        for row in weekly_rows:
+
+            weekly.append({
+                "week_start": row[0].strftime("%Y-%m-%d"),
+                "total": row[1],
+                "passed": row[2],
+                "defective": row[3]
+            })
+
+
+        # ----------------------------------------------------
+        # MONTHLY FACTORY INSPECTIONS
+        # ----------------------------------------------------
+
+        cursor.execute(
+            """
+            SELECT
+                DATE_TRUNC('month', inspected_at) AS month_start,
+                COUNT(*) AS total_inspections,
+                COUNT(*) FILTER (
+                    WHERE result = 'GOOD'
+                ) AS passed,
+                COUNT(*) FILTER (
+                    WHERE result = 'DEFECT'
+                ) AS defective
+            FROM defect_detection
+            GROUP BY DATE_TRUNC('month', inspected_at)
+            ORDER BY month_start
+            """
+        )
+
+        monthly_rows = cursor.fetchall()
+
+        monthly = []
+
+        for row in monthly_rows:
+
+            monthly.append({
+                "month": row[0].strftime("%Y-%m"),
+                "total": row[1],
+                "passed": row[2],
+                "defective": row[3]
+            })
+
+
+        # ----------------------------------------------------
+        # RESPONSE
+        # ----------------------------------------------------
+
+        return {
+
+            "success": True,
+
+            "summary": {
+                "total_inspections": total_inspections,
+                "passed_products": passed_products,
+                "defective_products": defective_products,
+                "quality_rate": quality_rate
+            },
+
+            "weekly": weekly,
+
+            "monthly": monthly
+
+        }
+
+
+    except Exception as e:
+
+        print(
+            "Error fetching factory analytics:",
+            e
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+       
       
