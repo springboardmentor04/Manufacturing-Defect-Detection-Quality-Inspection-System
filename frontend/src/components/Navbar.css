@@ -1,0 +1,324 @@
+/* =========================================================
+   NAVBAR
+========================================================= */
+
+.navbar {
+  height: 82px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 60px;
+
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.navbar-brand a {
+  text-decoration: none;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+}
+
+.navbar-logo {
+  width: 46px;
+  height: 46px;
+
+  border-radius: 12px;
+
+  background: #2563eb;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 24px;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-text strong {
+  font-size: 21px;
+  color: #102a56;
+  font-weight: 700;
+}
+
+.brand-text small {
+  margin-top: 2px;
+
+  font-size: 12px;
+  color: #7890ae;
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-item {
+  text-decoration: none;
+
+  padding: 11px 17px;
+
+  border-radius: 9px;
+
+  color: #4b5f7a;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.nav-item.active {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+.profile-container {
+  position: relative;
+  margin-left: 10px;
+}
+
+.profile-button {
+  border: none;
+  background: transparent;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  cursor: pointer;
+
+  padding: 6px 8px;
+
+  border-radius: 10px;
+}
+
+.profile-button:hover {
+  background: #f5f7fb;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+
+  border-radius: 50%;
+
+  background: #eaf1ff;
+
+  color: #2563eb;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+
+  text-align: left;
+}
+
+.profile-info strong {
+  font-size: 14px;
+  color: #162b4d;
+}
+
+.profile-info span {
+  font-size: 11px;
+  color: #7890ae;
+
+  margin-top: 2px;
+}
+
+.profile-arrow {
+  font-size: 10px;
+  color: #64748b;
+}
+
+
+/* =========================================================
+   PROFILE DROPDOWN
+========================================================= */
+
+.profile-dropdown {
+  position: absolute;
+
+  top: 55px;
+  right: 0;
+
+  width: 240px;
+
+  background: white;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 12px;
+
+  box-shadow:
+    0 10px 30px rgba(15, 23, 42, 0.12);
+
+  padding: 10px;
+
+  z-index: 2000;
+}
+
+.dropdown-user {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 10px;
+}
+
+.dropdown-avatar {
+  width: 38px;
+  height: 38px;
+
+  border-radius: 50%;
+
+  background: #eaf1ff;
+
+  color: #2563eb;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 700;
+}
+
+.dropdown-user div:last-child {
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-user strong {
+  font-size: 14px;
+  color: #172b4d;
+}
+
+.dropdown-user span {
+  font-size: 11px;
+  color: #7890ae;
+
+  margin-top: 3px;
+}
+
+.dropdown-divider {
+  height: 1px;
+
+  background: #e5e7eb;
+
+  margin: 5px 0;
+}
+
+.dropdown-item {
+  width: 100%;
+
+  border: none;
+
+  background: transparent;
+
+  text-align: left;
+
+  padding: 11px 12px;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  color: #334155;
+
+  font-size: 14px;
+
+  font-weight: 500;
+}
+
+.dropdown-item:hover {
+  background: #f1f5f9;
+}
+
+.logout-item {
+  color: #dc2626;
+}
+
+.logout-item:hover {
+  background: #fef2f2;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1000px) {
+
+  .navbar {
+    padding: 0 25px;
+  }
+
+  .profile-info {
+    display: none;
+  }
+
+}
+
+@media (max-width: 750px) {
+
+  .navbar {
+    padding: 0 15px;
+  }
+
+  .brand-text small {
+    display: none;
+  }
+
+  .brand-text strong {
+    font-size: 17px;
+  }
+
+  .nav-item {
+    padding: 9px 10px;
+    font-size: 13px;
+  }
+
+}
