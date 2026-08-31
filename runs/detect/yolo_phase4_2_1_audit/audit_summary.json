@@ -1,0 +1,42 @@
+{
+  "weights_sha256": "b11807fe3e773693c13ad22fa6e2c63206f0ec84efa79d870a123a0374ef5448",
+  "test_image_count": 881,
+  "test_label_count": 881,
+  "phase_3_baseline_reported": {
+    "evaluation_engine": "Ultralytics Native val() Engine (Full PR-Curve Integration across all confidence thresholds)",
+    "imgsz": 320,
+    "precision": 0.927,
+    "recall": 0.0293,
+    "map50": 0.0528,
+    "map50_95": 0.0401,
+    "avg_latency_ms": 51.53
+  },
+  "phase_4_2_mode_a_reported": {
+    "evaluation_engine": "Custom Python IoU Matcher @ fixed conf=0.25 (No PR-curve integration across confidence thresholds)",
+    "imgsz": 320,
+    "precision": 0.4375,
+    "recall": 0.0174,
+    "map50": 0.0076,
+    "map50_95": 0.0061,
+    "avg_latency_ms": 45.47
+  },
+  "phase_4_2_1_reproduced_official": {
+    "evaluation_engine": "Ultralytics Native val() Engine (Reproduced)",
+    "imgsz": 320,
+    "precision": 0.927,
+    "recall": 0.0293,
+    "map50": 0.0528,
+    "map50_95": 0.0401,
+    "avg_latency_ms": 39.9
+  },
+  "root_cause_explanation": "The discrepancy occurred because Phase 3 used the official native Ultralytics val() evaluation engine, which integrates Area Under the Precision-Recall Curve across ALL confidence thresholds (0.001 to 1.0) and uses standard COCO mAP calculation. In contrast, Phase 4.2 Mode A used a custom single-threshold Python script evaluated at fixed conf=0.25 without confidence curve integration. Evaluating at a single fixed confidence threshold (conf=0.25) drops low-confidence true positives and artificially distorts the area under the PR curve.",
+  "recommended_standard_configuration": {
+    "engine": "Ultralytics Native model.val() Engine",
+    "weights": "runs/detect/yolo_baseline/weights/best.pt",
+    "test_split": "dataset_yolo/images/test",
+    "dataset_yaml": "dataset_yolo/dataset.yaml",
+    "imgsz": 320,
+    "conf": 0.001,
+    "iou": 0.6
+  }
+}

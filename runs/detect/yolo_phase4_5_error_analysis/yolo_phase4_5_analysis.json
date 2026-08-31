@@ -1,0 +1,677 @@
+{
+  "best_model_weights": "C:\\Users\\admin\\OneDrive\\Desktop\\VisionInspectAI-2\\runs\\detect\\yolo_phase4_4_architecture\\weights\\best.pt",
+  "overall_metrics": {
+    "precision": 0.444,
+    "recall": 0.4763,
+    "map50": 0.4507,
+    "map50_95": 0.2376,
+    "latency_ms": 72.75
+  },
+  "summary": {
+    "total_classes": 73,
+    "zero_map_classes": 4,
+    "low_map_classes": 17,
+    "high_recall_classes": 22,
+    "top_performing_classes": 15,
+    "small_sample_classes": 42
+  },
+  "per_class_table": [
+    {
+      "class_id": 10,
+      "class_name": "cable_poke_insulation",
+      "gt_instances": 3,
+      "precision": 0.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 23,
+      "class_name": "grid_glue",
+      "gt_instances": 3,
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 49,
+      "class_name": "screw_thread_side",
+      "gt_instances": 6,
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 57,
+      "class_name": "transistor_bent_lead",
+      "gt_instances": 2,
+      "precision": 0.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 25,
+      "class_name": "grid_thread",
+      "gt_instances": 18,
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.023,
+      "map50_95": 0.0039
+    },
+    {
+      "class_id": 7,
+      "class_name": "cable_cut_outer_insulation",
+      "gt_instances": 3,
+      "precision": 0.0,
+      "recall": 0.0,
+      "map50": 0.0258,
+      "map50_95": 0.0103
+    },
+    {
+      "class_id": 5,
+      "class_name": "cable_combined",
+      "gt_instances": 12,
+      "precision": 0.1402,
+      "recall": 0.0833,
+      "map50": 0.0366,
+      "map50_95": 0.0248
+    },
+    {
+      "class_id": 24,
+      "class_name": "grid_metal_contamination",
+      "gt_instances": 9,
+      "precision": 0.0,
+      "recall": 0.0,
+      "map50": 0.0657,
+      "map50_95": 0.0262
+    },
+    {
+      "class_id": 11,
+      "class_name": "capsule_crack",
+      "gt_instances": 4,
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0676,
+      "map50_95": 0.0173
+    },
+    {
+      "class_id": 62,
+      "class_name": "wood_combined",
+      "gt_instances": 19,
+      "precision": 0.0688,
+      "recall": 0.0526,
+      "map50": 0.0878,
+      "map50_95": 0.0409
+    },
+    {
+      "class_id": 66,
+      "class_name": "zipper_broken_teeth",
+      "gt_instances": 5,
+      "precision": 0.0484,
+      "recall": 0.4,
+      "map50": 0.0893,
+      "map50_95": 0.0347
+    },
+    {
+      "class_id": 67,
+      "class_name": "zipper_combined",
+      "gt_instances": 6,
+      "precision": 0.0,
+      "recall": 0.0,
+      "map50": 0.0904,
+      "map50_95": 0.0455
+    },
+    {
+      "class_id": 26,
+      "class_name": "hazelnut_crack",
+      "gt_instances": 7,
+      "precision": 0.182,
+      "recall": 0.195,
+      "map50": 0.1124,
+      "map50_95": 0.0891
+    },
+    {
+      "class_id": 39,
+      "class_name": "pill_color",
+      "gt_instances": 19,
+      "precision": 0.0607,
+      "recall": 0.0064,
+      "map50": 0.141,
+      "map50_95": 0.069
+    },
+    {
+      "class_id": 22,
+      "class_name": "grid_broken",
+      "gt_instances": 9,
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.1647,
+      "map50_95": 0.0644
+    },
+    {
+      "class_id": 40,
+      "class_name": "pill_combined",
+      "gt_instances": 13,
+      "precision": 0.1581,
+      "recall": 0.1538,
+      "map50": 0.1722,
+      "map50_95": 0.1165
+    },
+    {
+      "class_id": 21,
+      "class_name": "grid_bent",
+      "gt_instances": 8,
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.1923,
+      "map50_95": 0.0432
+    },
+    {
+      "class_id": 4,
+      "class_name": "cable_cable_swap",
+      "gt_instances": 3,
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.1973,
+      "map50_95": 0.1676
+    },
+    {
+      "class_id": 13,
+      "class_name": "capsule_poke",
+      "gt_instances": 5,
+      "precision": 0.2894,
+      "recall": 0.2,
+      "map50": 0.211,
+      "map50_95": 0.0272
+    },
+    {
+      "class_id": 46,
+      "class_name": "screw_manipulated_front",
+      "gt_instances": 5,
+      "precision": 0.6185,
+      "recall": 0.2,
+      "map50": 0.2217,
+      "map50_95": 0.125
+    },
+    {
+      "class_id": 56,
+      "class_name": "toothbrush_defective",
+      "gt_instances": 7,
+      "precision": 0.2311,
+      "recall": 0.2857,
+      "map50": 0.2248,
+      "map50_95": 0.0868
+    },
+    {
+      "class_id": 50,
+      "class_name": "screw_thread_top",
+      "gt_instances": 4,
+      "precision": 0.8569,
+      "recall": 0.25,
+      "map50": 0.2624,
+      "map50_95": 0.128
+    },
+    {
+      "class_id": 58,
+      "class_name": "transistor_cut_lead",
+      "gt_instances": 2,
+      "precision": 0.1579,
+      "recall": 0.1579,
+      "map50": 0.2745,
+      "map50_95": 0.036
+    },
+    {
+      "class_id": 34,
+      "class_name": "leather_poke",
+      "gt_instances": 4,
+      "precision": 0.2107,
+      "recall": 0.3425,
+      "map50": 0.2806,
+      "map50_95": 0.1269
+    },
+    {
+      "class_id": 38,
+      "class_name": "metal_nut_scratch",
+      "gt_instances": 7,
+      "precision": 0.2238,
+      "recall": 0.8571,
+      "map50": 0.2856,
+      "map50_95": 0.1861
+    },
+    {
+      "class_id": 36,
+      "class_name": "metal_nut_color",
+      "gt_instances": 4,
+      "precision": 0.3303,
+      "recall": 0.6247,
+      "map50": 0.3197,
+      "map50_95": 0.1996
+    },
+    {
+      "class_id": 3,
+      "class_name": "cable_bent_wire",
+      "gt_instances": 3,
+      "precision": 0.2098,
+      "recall": 0.3333,
+      "map50": 0.3225,
+      "map50_95": 0.1975
+    },
+    {
+      "class_id": 35,
+      "class_name": "metal_nut_bent",
+      "gt_instances": 9,
+      "precision": 0.3299,
+      "recall": 0.4444,
+      "map50": 0.3322,
+      "map50_95": 0.1793
+    },
+    {
+      "class_id": 42,
+      "class_name": "pill_crack",
+      "gt_instances": 5,
+      "precision": 0.2865,
+      "recall": 0.6,
+      "map50": 0.3324,
+      "map50_95": 0.2138
+    },
+    {
+      "class_id": 15,
+      "class_name": "capsule_squeeze",
+      "gt_instances": 3,
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.3423,
+      "map50_95": 0.1053
+    },
+    {
+      "class_id": 14,
+      "class_name": "capsule_scratch",
+      "gt_instances": 4,
+      "precision": 0.1939,
+      "recall": 0.25,
+      "map50": 0.3455,
+      "map50_95": 0.0524
+    },
+    {
+      "class_id": 71,
+      "class_name": "zipper_split_teeth",
+      "gt_instances": 4,
+      "precision": 0.1933,
+      "recall": 0.25,
+      "map50": 0.3508,
+      "map50_95": 0.2098
+    },
+    {
+      "class_id": 72,
+      "class_name": "zipper_squeezed_teeth",
+      "gt_instances": 3,
+      "precision": 0.3297,
+      "recall": 0.6667,
+      "map50": 0.356,
+      "map50_95": 0.0978
+    },
+    {
+      "class_id": 29,
+      "class_name": "hazelnut_print",
+      "gt_instances": 11,
+      "precision": 0.251,
+      "recall": 0.5455,
+      "map50": 0.401,
+      "map50_95": 0.2085
+    },
+    {
+      "class_id": 65,
+      "class_name": "wood_scratch",
+      "gt_instances": 15,
+      "precision": 0.2734,
+      "recall": 0.4,
+      "map50": 0.4088,
+      "map50_95": 0.2318
+    },
+    {
+      "class_id": 19,
+      "class_name": "carpet_metal_contamination",
+      "gt_instances": 5,
+      "precision": 0.3206,
+      "recall": 0.6,
+      "map50": 0.41,
+      "map50_95": 0.1984
+    },
+    {
+      "class_id": 69,
+      "class_name": "zipper_fabric_interior",
+      "gt_instances": 4,
+      "precision": 0.4463,
+      "recall": 0.5,
+      "map50": 0.4142,
+      "map50_95": 0.104
+    },
+    {
+      "class_id": 48,
+      "class_name": "screw_scratch_neck",
+      "gt_instances": 6,
+      "precision": 0.356,
+      "recall": 0.5,
+      "map50": 0.4489,
+      "map50_95": 0.2439
+    },
+    {
+      "class_id": 41,
+      "class_name": "pill_contamination",
+      "gt_instances": 4,
+      "precision": 0.2536,
+      "recall": 0.75,
+      "map50": 0.455,
+      "map50_95": 0.1983
+    },
+    {
+      "class_id": 47,
+      "class_name": "screw_scratch_head",
+      "gt_instances": 5,
+      "precision": 0.5027,
+      "recall": 0.4054,
+      "map50": 0.4559,
+      "map50_95": 0.1753
+    },
+    {
+      "class_id": 8,
+      "class_name": "cable_missing_cable",
+      "gt_instances": 3,
+      "precision": 0.3611,
+      "recall": 0.9481,
+      "map50": 0.4563,
+      "map50_95": 0.1931
+    },
+    {
+      "class_id": 61,
+      "class_name": "wood_color",
+      "gt_instances": 4,
+      "precision": 0.2974,
+      "recall": 0.75,
+      "map50": 0.4617,
+      "map50_95": 0.3099
+    },
+    {
+      "class_id": 16,
+      "class_name": "carpet_color",
+      "gt_instances": 4,
+      "precision": 0.4004,
+      "recall": 0.5,
+      "map50": 0.487,
+      "map50_95": 0.2203
+    },
+    {
+      "class_id": 32,
+      "class_name": "leather_fold",
+      "gt_instances": 4,
+      "precision": 0.354,
+      "recall": 0.5,
+      "map50": 0.5177,
+      "map50_95": 0.1498
+    },
+    {
+      "class_id": 53,
+      "class_name": "tile_gray_stroke",
+      "gt_instances": 3,
+      "precision": 0.279,
+      "recall": 0.6667,
+      "map50": 0.5202,
+      "map50_95": 0.3317
+    },
+    {
+      "class_id": 12,
+      "class_name": "capsule_faulty_imprint",
+      "gt_instances": 4,
+      "precision": 0.247,
+      "recall": 0.5,
+      "map50": 0.5325,
+      "map50_95": 0.1457
+    },
+    {
+      "class_id": 52,
+      "class_name": "tile_glue_strip",
+      "gt_instances": 4,
+      "precision": 0.5692,
+      "recall": 0.25,
+      "map50": 0.5593,
+      "map50_95": 0.3471
+    },
+    {
+      "class_id": 33,
+      "class_name": "leather_glue",
+      "gt_instances": 4,
+      "precision": 0.6767,
+      "recall": 0.5,
+      "map50": 0.562,
+      "map50_95": 0.4034
+    },
+    {
+      "class_id": 60,
+      "class_name": "transistor_misplaced",
+      "gt_instances": 2,
+      "precision": 0.5609,
+      "recall": 0.5,
+      "map50": 0.5664,
+      "map50_95": 0.4428
+    },
+    {
+      "class_id": 20,
+      "class_name": "carpet_thread",
+      "gt_instances": 5,
+      "precision": 0.5365,
+      "recall": 0.6,
+      "map50": 0.595,
+      "map50_95": 0.2175
+    },
+    {
+      "class_id": 43,
+      "class_name": "pill_faulty_imprint",
+      "gt_instances": 4,
+      "precision": 0.4413,
+      "recall": 0.5,
+      "map50": 0.6188,
+      "map50_95": 0.2802
+    },
+    {
+      "class_id": 28,
+      "class_name": "hazelnut_hole",
+      "gt_instances": 4,
+      "precision": 0.8055,
+      "recall": 0.5,
+      "map50": 0.6577,
+      "map50_95": 0.3612
+    },
+    {
+      "class_id": 45,
+      "class_name": "pill_scratch",
+      "gt_instances": 5,
+      "precision": 0.304,
+      "recall": 0.6,
+      "map50": 0.6617,
+      "map50_95": 0.5071
+    },
+    {
+      "class_id": 55,
+      "class_name": "tile_rough",
+      "gt_instances": 4,
+      "precision": 0.1866,
+      "recall": 0.75,
+      "map50": 0.6825,
+      "map50_95": 0.3901
+    },
+    {
+      "class_id": 59,
+      "class_name": "transistor_damaged_case",
+      "gt_instances": 2,
+      "precision": 0.2805,
+      "recall": 0.5,
+      "map50": 0.695,
+      "map50_95": 0.258
+    },
+    {
+      "class_id": 68,
+      "class_name": "zipper_fabric_border",
+      "gt_instances": 7,
+      "precision": 0.4168,
+      "recall": 0.8571,
+      "map50": 0.6998,
+      "map50_95": 0.2337
+    },
+    {
+      "class_id": 1,
+      "class_name": "bottle_broken_small",
+      "gt_instances": 4,
+      "precision": 1.0,
+      "recall": 0.307,
+      "map50": 0.745,
+      "map50_95": 0.1727
+    },
+    {
+      "class_id": 18,
+      "class_name": "carpet_hole",
+      "gt_instances": 4,
+      "precision": 0.4334,
+      "recall": 0.75,
+      "map50": 0.745,
+      "map50_95": 0.2246
+    },
+    {
+      "class_id": 70,
+      "class_name": "zipper_rough",
+      "gt_instances": 6,
+      "precision": 0.579,
+      "recall": 0.8333,
+      "map50": 0.7626,
+      "map50_95": 0.3259
+    },
+    {
+      "class_id": 64,
+      "class_name": "wood_liquid",
+      "gt_instances": 6,
+      "precision": 0.3969,
+      "recall": 0.8333,
+      "map50": 0.7746,
+      "map50_95": 0.4556
+    },
+    {
+      "class_id": 54,
+      "class_name": "tile_oil",
+      "gt_instances": 4,
+      "precision": 0.4265,
+      "recall": 1.0,
+      "map50": 0.7867,
+      "map50_95": 0.511
+    },
+    {
+      "class_id": 17,
+      "class_name": "carpet_cut",
+      "gt_instances": 4,
+      "precision": 0.5658,
+      "recall": 0.9803,
+      "map50": 0.7879,
+      "map50_95": 0.4679
+    },
+    {
+      "class_id": 27,
+      "class_name": "hazelnut_cut",
+      "gt_instances": 4,
+      "precision": 0.3838,
+      "recall": 1.0,
+      "map50": 0.7936,
+      "map50_95": 0.4904
+    },
+    {
+      "class_id": 31,
+      "class_name": "leather_cut",
+      "gt_instances": 4,
+      "precision": 0.5339,
+      "recall": 1.0,
+      "map50": 0.8283,
+      "map50_95": 0.4117
+    },
+    {
+      "class_id": 2,
+      "class_name": "bottle_contamination",
+      "gt_instances": 5,
+      "precision": 0.6795,
+      "recall": 1.0,
+      "map50": 0.8307,
+      "map50_95": 0.4498
+    },
+    {
+      "class_id": 63,
+      "class_name": "wood_hole",
+      "gt_instances": 7,
+      "precision": 1.0,
+      "recall": 0.8386,
+      "map50": 0.8655,
+      "map50_95": 0.5318
+    },
+    {
+      "class_id": 51,
+      "class_name": "tile_crack",
+      "gt_instances": 4,
+      "precision": 0.4849,
+      "recall": 0.9472,
+      "map50": 0.87,
+      "map50_95": 0.6209
+    },
+    {
+      "class_id": 6,
+      "class_name": "cable_cut_inner_insulation",
+      "gt_instances": 5,
+      "precision": 0.3803,
+      "recall": 1.0,
+      "map50": 0.9379,
+      "map50_95": 0.3814
+    },
+    {
+      "class_id": 9,
+      "class_name": "cable_missing_wire",
+      "gt_instances": 2,
+      "precision": 1.0,
+      "recall": 0.803,
+      "map50": 0.995,
+      "map50_95": 0.796
+    },
+    {
+      "class_id": 0,
+      "class_name": "bottle_broken_large",
+      "gt_instances": 3,
+      "precision": 0.3322,
+      "recall": 1.0,
+      "map50": 0.995,
+      "map50_95": 0.5418
+    },
+    {
+      "class_id": 30,
+      "class_name": "leather_color",
+      "gt_instances": 4,
+      "precision": 0.4276,
+      "recall": 1.0,
+      "map50": 0.995,
+      "map50_95": 0.4234
+    },
+    {
+      "class_id": 37,
+      "class_name": "metal_nut_flip",
+      "gt_instances": 4,
+      "precision": 0.8297,
+      "recall": 1.0,
+      "map50": 0.995,
+      "map50_95": 0.8705
+    },
+    {
+      "class_id": 44,
+      "class_name": "pill_pill_type",
+      "gt_instances": 2,
+      "precision": 0.7157,
+      "recall": 1.0,
+      "map50": 0.995,
+      "map50_95": 0.796
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "experiment": "Phase 4.2 SAHI Tiled Inference Evaluation",
+  "baseline_weights": "C:\\Users\\admin\\OneDrive\\Desktop\\VisionInspectAI-2\\runs\\detect\\yolo_baseline\\weights\\best.pt",
+  "sahi_config": {
+    "slice_height": 320,
+    "slice_width": 320,
+    "overlap_ratio": 0.25,
+    "postprocess_type": "NMS",
+    "iou_threshold": 0.5
+  },
+  "mode_a_full_yolo": {
+    "precision": 0.4375,
+    "recall": 0.0174,
+    "map50": 0.0076,
+    "map50_95": 0.0061,
+    "avg_latency_ms": 45.47
+  },
+  "mode_b_sahi_yolo": {
+    "precision": 0.0204,
+    "recall": 0.0074,
+    "map50": 0.0002,
+    "map50_95": 0.0002,
+    "avg_latency_ms": 455.04
+  },
+  "delta": {
+    "precision": -0.4171,
+    "recall": -0.01,
+    "map50": -0.0074,
+    "map50_95": -0.0059,
+    "avg_latency_ms": 409.57
+  },
+  "small_defect_comparison": [
+    {
+      "class_name": "capsule_scratch",
+      "gt_count": 4,
+      "full_yolo": {
+        "detected": 0,
+        "tp": 0,
+        "recall": 0.0,
+        "map50": 0.0
+      },
+      "sahi_yolo": {
+        "detected": 0,
+        "tp": 0,
+        "recall": 0.0,
+        "map50": 0.0
+      }
+    },
+    {
+      "class_name": "hazelnut_hole",
+      "gt_count": 4,
+      "full_yolo": {
+        "detected": 0,
+        "tp": 0,
+        "recall": 0.0,
+        "map50": 0.0
+      },
+      "sahi_yolo": {
+        "detected": 0,
+        "tp": 0,
+        "recall": 0.0,
+        "map50": 0.0
+      }
+    },
+    {
+      "class_name": "pill_crack",
+      "gt_count": 5,
+      "full_yolo": {
+        "detected": 0,
+        "tp": 0,
+        "recall": 0.0,
+        "map50": 0.0
+      },
+      "sahi_yolo": {
+        "detected": 0,
+        "tp": 0,
+        "recall": 0.0,
+        "map50": 0.0
+      }
+    },
+    {
+      "class_name": "screw_scratch_head",
+      "gt_count": 5,
+      "full_yolo": {
+        "detected": 0,
+        "tp": 0,
+        "recall": 0.0,
+        "map50": 0.0
+      },
+      "sahi_yolo": {
+        "detected": 0,
+        "tp": 0,
+        "recall": 0.0,
+        "map50": 0.0
+      }
+    },
+    {
+      "class_name": "transistor_bent_lead",
+      "gt_count": 2,
+      "full_yolo": {
+        "detected": 0,
+        "tp": 0,
+        "recall": 0.0,
+        "map50": 0.0
+      },
+      "sahi_yolo": {
+        "detected": 0,
+        "tp": 0,
+        "recall": 0.0,
+        "map50": 0.0
+      }
+    },
+    {
+      "class_name": "cable_cut_outer_insulation",
+      "gt_count": 3,
+      "full_yolo": {
+        "detected": 0,
+        "tp": 0,
+        "recall": 0.0,
+        "map50": 0.0
+      },
+      "sahi_yolo": {
+        "detected": 0,
+        "tp": 0,
+        "recall": 0.0,
+        "map50": 0.0
+      }
+    }
+  ]
+}

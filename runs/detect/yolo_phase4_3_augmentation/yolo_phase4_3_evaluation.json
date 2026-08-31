@@ -1,0 +1,691 @@
+{
+  "experiment": "Phase 4.3 Targeted Industrial Data Augmentation",
+  "model_name": "YOLOv8n Phase 4.3 (320x320, 5 Epochs, Augmentations)",
+  "weights_path": "C:\\Users\\admin\\OneDrive\\Desktop\\VisionInspectAI-2\\runs\\detect\\yolo_phase4_3_augmentation\\weights\\best.pt",
+  "epochs": 5,
+  "imgsz": 320,
+  "batch_size": 32,
+  "device": "CPU",
+  "augmentation_parameters": {
+    "fliplr": 0.5,
+    "flipud": 0.0,
+    "degrees": 10.0,
+    "scale": 0.2,
+    "translate": 0.1,
+    "hsv_h": 0.015,
+    "hsv_s": 0.2,
+    "hsv_v": 0.2,
+    "mosaic": 0.5,
+    "mixup": 0.0
+  },
+  "official_native_metrics": {
+    "precision": 0.567,
+    "recall": 0.2112,
+    "map50": 0.1714,
+    "map50_95": 0.0941,
+    "avg_latency_ms": 41.75
+  },
+  "comparison_with_official_baseline": {
+    "precision": {
+      "baseline": 0.927,
+      "phase4_3": 0.567,
+      "change": -0.36
+    },
+    "recall": {
+      "baseline": 0.0293,
+      "phase4_3": 0.2112,
+      "change": 0.1819
+    },
+    "map50": {
+      "baseline": 0.0528,
+      "phase4_3": 0.1714,
+      "change": 0.1186
+    },
+    "map50_95": {
+      "baseline": 0.0401,
+      "phase4_3": 0.0941,
+      "change": 0.054
+    },
+    "avg_latency_ms": {
+      "baseline": 39.9,
+      "phase4_3": 41.75,
+      "change": 1.85
+    }
+  },
+  "target_small_defect_results": [
+    {
+      "class_id": 7,
+      "class_name": "cable_cut_outer_insulation",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 14,
+      "class_name": "capsule_scratch",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 28,
+      "class_name": "hazelnut_hole",
+      "precision": 0.4676,
+      "recall": 0.25,
+      "map50": 0.4475,
+      "map50_95": 0.2028
+    },
+    {
+      "class_id": 42,
+      "class_name": "pill_crack",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 47,
+      "class_name": "screw_scratch_head",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0117,
+      "map50_95": 0.0029
+    },
+    {
+      "class_id": 57,
+      "class_name": "transistor_bent_lead",
+      "precision": 0.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    }
+  ],
+  "per_class_results": [
+    {
+      "class_id": 0,
+      "class_name": "bottle_broken_large",
+      "precision": 0.2724,
+      "recall": 1.0,
+      "map50": 0.9125,
+      "map50_95": 0.5602
+    },
+    {
+      "class_id": 1,
+      "class_name": "bottle_broken_small",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0439,
+      "map50_95": 0.0103
+    },
+    {
+      "class_id": 2,
+      "class_name": "bottle_contamination",
+      "precision": 0.3052,
+      "recall": 0.8,
+      "map50": 0.595,
+      "map50_95": 0.1992
+    },
+    {
+      "class_id": 3,
+      "class_name": "cable_bent_wire",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0685,
+      "map50_95": 0.0405
+    },
+    {
+      "class_id": 4,
+      "class_name": "cable_cable_swap",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0431,
+      "map50_95": 0.0135
+    },
+    {
+      "class_id": 5,
+      "class_name": "cable_combined",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0094,
+      "map50_95": 0.0057
+    },
+    {
+      "class_id": 6,
+      "class_name": "cable_cut_inner_insulation",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0244,
+      "map50_95": 0.0097
+    },
+    {
+      "class_id": 7,
+      "class_name": "cable_cut_outer_insulation",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 8,
+      "class_name": "cable_missing_cable",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.1091,
+      "map50_95": 0.0822
+    },
+    {
+      "class_id": 9,
+      "class_name": "cable_missing_wire",
+      "precision": 0.0,
+      "recall": 0.0,
+      "map50": 0.1052,
+      "map50_95": 0.0819
+    },
+    {
+      "class_id": 10,
+      "class_name": "cable_poke_insulation",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 11,
+      "class_name": "capsule_crack",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 12,
+      "class_name": "capsule_faulty_imprint",
+      "precision": 0.0,
+      "recall": 0.0,
+      "map50": 0.0229,
+      "map50_95": 0.0058
+    },
+    {
+      "class_id": 13,
+      "class_name": "capsule_poke",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 14,
+      "class_name": "capsule_scratch",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 15,
+      "class_name": "capsule_squeeze",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0409,
+      "map50_95": 0.0156
+    },
+    {
+      "class_id": 16,
+      "class_name": "carpet_color",
+      "precision": 0.1364,
+      "recall": 0.25,
+      "map50": 0.1588,
+      "map50_95": 0.0758
+    },
+    {
+      "class_id": 17,
+      "class_name": "carpet_cut",
+      "precision": 0.2125,
+      "recall": 0.75,
+      "map50": 0.7783,
+      "map50_95": 0.2393
+    },
+    {
+      "class_id": 18,
+      "class_name": "carpet_hole",
+      "precision": 0.2568,
+      "recall": 0.75,
+      "map50": 0.3533,
+      "map50_95": 0.083
+    },
+    {
+      "class_id": 19,
+      "class_name": "carpet_metal_contamination",
+      "precision": 0.1856,
+      "recall": 0.1114,
+      "map50": 0.099,
+      "map50_95": 0.0528
+    },
+    {
+      "class_id": 20,
+      "class_name": "carpet_thread",
+      "precision": 0.1221,
+      "recall": 0.2,
+      "map50": 0.0748,
+      "map50_95": 0.0472
+    },
+    {
+      "class_id": 21,
+      "class_name": "grid_bent",
+      "precision": 0.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 22,
+      "class_name": "grid_broken",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 23,
+      "class_name": "grid_glue",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 24,
+      "class_name": "grid_metal_contamination",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 25,
+      "class_name": "grid_thread",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 26,
+      "class_name": "hazelnut_crack",
+      "precision": 0.0,
+      "recall": 0.0,
+      "map50": 0.0449,
+      "map50_95": 0.0401
+    },
+    {
+      "class_id": 27,
+      "class_name": "hazelnut_cut",
+      "precision": 0.1904,
+      "recall": 0.5,
+      "map50": 0.4123,
+      "map50_95": 0.274
+    },
+    {
+      "class_id": 28,
+      "class_name": "hazelnut_hole",
+      "precision": 0.4676,
+      "recall": 0.25,
+      "map50": 0.4475,
+      "map50_95": 0.2028
+    },
+    {
+      "class_id": 29,
+      "class_name": "hazelnut_print",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0187,
+      "map50_95": 0.009
+    },
+    {
+      "class_id": 30,
+      "class_name": "leather_color",
+      "precision": 0.5556,
+      "recall": 0.75,
+      "map50": 0.7311,
+      "map50_95": 0.1707
+    },
+    {
+      "class_id": 31,
+      "class_name": "leather_cut",
+      "precision": 0.1998,
+      "recall": 0.25,
+      "map50": 0.3053,
+      "map50_95": 0.0778
+    },
+    {
+      "class_id": 32,
+      "class_name": "leather_fold",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 33,
+      "class_name": "leather_glue",
+      "precision": 0.1835,
+      "recall": 0.25,
+      "map50": 0.2914,
+      "map50_95": 0.2022
+    },
+    {
+      "class_id": 34,
+      "class_name": "leather_poke",
+      "precision": 0.0,
+      "recall": 0.0,
+      "map50": 0.0737,
+      "map50_95": 0.0291
+    },
+    {
+      "class_id": 35,
+      "class_name": "metal_nut_bent",
+      "precision": 0.1332,
+      "recall": 0.0592,
+      "map50": 0.0434,
+      "map50_95": 0.0304
+    },
+    {
+      "class_id": 36,
+      "class_name": "metal_nut_color",
+      "precision": 0.653,
+      "recall": 0.25,
+      "map50": 0.2605,
+      "map50_95": 0.208
+    },
+    {
+      "class_id": 37,
+      "class_name": "metal_nut_flip",
+      "precision": 0.8303,
+      "recall": 1.0,
+      "map50": 0.995,
+      "map50_95": 0.845
+    },
+    {
+      "class_id": 38,
+      "class_name": "metal_nut_scratch",
+      "precision": 0.2199,
+      "recall": 0.2857,
+      "map50": 0.1172,
+      "map50_95": 0.0916
+    },
+    {
+      "class_id": 39,
+      "class_name": "pill_color",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0016,
+      "map50_95": 0.0006
+    },
+    {
+      "class_id": 40,
+      "class_name": "pill_combined",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 41,
+      "class_name": "pill_contamination",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0148,
+      "map50_95": 0.0069
+    },
+    {
+      "class_id": 42,
+      "class_name": "pill_crack",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 43,
+      "class_name": "pill_faulty_imprint",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0053,
+      "map50_95": 0.0021
+    },
+    {
+      "class_id": 44,
+      "class_name": "pill_pill_type",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 45,
+      "class_name": "pill_scratch",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.1115,
+      "map50_95": 0.0505
+    },
+    {
+      "class_id": 46,
+      "class_name": "screw_manipulated_front",
+      "precision": 0.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 47,
+      "class_name": "screw_scratch_head",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0117,
+      "map50_95": 0.0029
+    },
+    {
+      "class_id": 48,
+      "class_name": "screw_scratch_neck",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.1982,
+      "map50_95": 0.0982
+    },
+    {
+      "class_id": 49,
+      "class_name": "screw_thread_side",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 50,
+      "class_name": "screw_thread_top",
+      "precision": 0.0,
+      "recall": 0.0,
+      "map50": 0.0013,
+      "map50_95": 0.0005
+    },
+    {
+      "class_id": 51,
+      "class_name": "tile_crack",
+      "precision": 0.183,
+      "recall": 1.0,
+      "map50": 0.895,
+      "map50_95": 0.661
+    },
+    {
+      "class_id": 52,
+      "class_name": "tile_glue_strip",
+      "precision": 0.2207,
+      "recall": 1.0,
+      "map50": 0.2211,
+      "map50_95": 0.1307
+    },
+    {
+      "class_id": 53,
+      "class_name": "tile_gray_stroke",
+      "precision": 0.1684,
+      "recall": 1.0,
+      "map50": 0.467,
+      "map50_95": 0.3038
+    },
+    {
+      "class_id": 54,
+      "class_name": "tile_oil",
+      "precision": 0.2064,
+      "recall": 1.0,
+      "map50": 0.9117,
+      "map50_95": 0.7538
+    },
+    {
+      "class_id": 55,
+      "class_name": "tile_rough",
+      "precision": 0.1692,
+      "recall": 0.75,
+      "map50": 0.31,
+      "map50_95": 0.146
+    },
+    {
+      "class_id": 56,
+      "class_name": "toothbrush_defective",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 57,
+      "class_name": "transistor_bent_lead",
+      "precision": 0.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 58,
+      "class_name": "transistor_cut_lead",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 59,
+      "class_name": "transistor_damaged_case",
+      "precision": 0.0,
+      "recall": 0.0,
+      "map50": 0.0103,
+      "map50_95": 0.0041
+    },
+    {
+      "class_id": 60,
+      "class_name": "transistor_misplaced",
+      "precision": 0.1911,
+      "recall": 0.4779,
+      "map50": 0.099,
+      "map50_95": 0.0792
+    },
+    {
+      "class_id": 61,
+      "class_name": "wood_color",
+      "precision": 0.0,
+      "recall": 0.0,
+      "map50": 0.0762,
+      "map50_95": 0.0415
+    },
+    {
+      "class_id": 62,
+      "class_name": "wood_combined",
+      "precision": 0.081,
+      "recall": 0.0526,
+      "map50": 0.0617,
+      "map50_95": 0.0227
+    },
+    {
+      "class_id": 63,
+      "class_name": "wood_hole",
+      "precision": 0.3236,
+      "recall": 0.2129,
+      "map50": 0.2997,
+      "map50_95": 0.1952
+    },
+    {
+      "class_id": 64,
+      "class_name": "wood_liquid",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.1148,
+      "map50_95": 0.0814
+    },
+    {
+      "class_id": 65,
+      "class_name": "wood_scratch",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.1928,
+      "map50_95": 0.0629
+    },
+    {
+      "class_id": 66,
+      "class_name": "zipper_broken_teeth",
+      "precision": 0.0908,
+      "recall": 0.4,
+      "map50": 0.0859,
+      "map50_95": 0.0267
+    },
+    {
+      "class_id": 67,
+      "class_name": "zipper_combined",
+      "precision": 0.1283,
+      "recall": 0.3333,
+      "map50": 0.0804,
+      "map50_95": 0.0311
+    },
+    {
+      "class_id": 68,
+      "class_name": "zipper_fabric_border",
+      "precision": 0.2684,
+      "recall": 0.5714,
+      "map50": 0.4208,
+      "map50_95": 0.1846
+    },
+    {
+      "class_id": 69,
+      "class_name": "zipper_fabric_interior",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.0,
+      "map50_95": 0.0
+    },
+    {
+      "class_id": 70,
+      "class_name": "zipper_rough",
+      "precision": 0.3402,
+      "recall": 0.5,
+      "map50": 0.3464,
+      "map50_95": 0.1749
+    },
+    {
+      "class_id": 71,
+      "class_name": "zipper_split_teeth",
+      "precision": 1.0,
+      "recall": 0.0,
+      "map50": 0.2887,
+      "map50_95": 0.0822
+    },
+    {
+      "class_id": 72,
+      "class_name": "zipper_squeezed_teeth",
+      "precision": 0.0936,
+      "recall": 0.6667,
+      "map50": 0.1032,
+      "map50_95": 0.0218
+    }
+  ]
+}

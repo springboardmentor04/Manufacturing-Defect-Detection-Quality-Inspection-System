@@ -1,14 +1,37 @@
-# Node dependencies
-node_modules/
-**/node_modules/
+# Environment / secrets
+.env
+.env.*
+!.env.example
+backend/.env
 
-# Python virtual environments
-venv/
-.venv/
-
-# Python cache
+# Python compilation cache
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
-# Environment variables
-.env
+# Runtime uploads
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Datasets (Large raw & converted datasets)
+dataset/
+dataset_yolo/
+
+# Frontend dependencies and production build outputs
+frontend/node_modules/
+frontend/dist/
+dist/
+
+# Local base pretrained weights (Keep production runs/detect checkpoint tracked)
+backend/yolov8n.pt
+backend/yolov8s.pt
+
+# Logs
+*.log
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+backend/*.db

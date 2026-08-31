@@ -1,0 +1,724 @@
+{
+  "dataset_path": "C:\\Users\\admin\\OneDrive\\Desktop\\VisionInspectAI-2\\dataset",
+  "total_categories": 15,
+  "categories": {
+    "bottle": {
+      "name": "bottle",
+      "train_good": 209,
+      "test_good": 20,
+      "test_defective": 63,
+      "test_total": 83,
+      "defect_types": {
+        "broken_large": {
+          "test_images": 20,
+          "gt_masks": 20,
+          "matched": 20,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "broken_small": {
+          "test_images": 22,
+          "gt_masks": 22,
+          "matched": 22,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "contamination": {
+          "test_images": 21,
+          "gt_masks": 21,
+          "matched": 21,
+          "missing_mask": [],
+          "extra_mask": []
+        }
+      },
+      "masks_total": 63,
+      "total_images": 292,
+      "corrupted_count": 0,
+      "pairing_mismatches": 0
+    },
+    "cable": {
+      "name": "cable",
+      "train_good": 224,
+      "test_good": 58,
+      "test_defective": 92,
+      "test_total": 150,
+      "defect_types": {
+        "bent_wire": {
+          "test_images": 13,
+          "gt_masks": 13,
+          "matched": 13,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "cable_swap": {
+          "test_images": 12,
+          "gt_masks": 12,
+          "matched": 12,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "combined": {
+          "test_images": 11,
+          "gt_masks": 11,
+          "matched": 11,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "cut_inner_insulation": {
+          "test_images": 14,
+          "gt_masks": 14,
+          "matched": 14,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "cut_outer_insulation": {
+          "test_images": 10,
+          "gt_masks": 10,
+          "matched": 10,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "missing_cable": {
+          "test_images": 12,
+          "gt_masks": 12,
+          "matched": 12,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "missing_wire": {
+          "test_images": 10,
+          "gt_masks": 10,
+          "matched": 10,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "poke_insulation": {
+          "test_images": 10,
+          "gt_masks": 10,
+          "matched": 10,
+          "missing_mask": [],
+          "extra_mask": []
+        }
+      },
+      "masks_total": 92,
+      "total_images": 374,
+      "corrupted_count": 0,
+      "pairing_mismatches": 0
+    },
+    "capsule": {
+      "name": "capsule",
+      "train_good": 219,
+      "test_good": 23,
+      "test_defective": 109,
+      "test_total": 132,
+      "defect_types": {
+        "crack": {
+          "test_images": 23,
+          "gt_masks": 23,
+          "matched": 23,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "faulty_imprint": {
+          "test_images": 22,
+          "gt_masks": 22,
+          "matched": 22,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "poke": {
+          "test_images": 21,
+          "gt_masks": 21,
+          "matched": 21,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "scratch": {
+          "test_images": 23,
+          "gt_masks": 23,
+          "matched": 23,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "squeeze": {
+          "test_images": 20,
+          "gt_masks": 20,
+          "matched": 20,
+          "missing_mask": [],
+          "extra_mask": []
+        }
+      },
+      "masks_total": 109,
+      "total_images": 351,
+      "corrupted_count": 0,
+      "pairing_mismatches": 0
+    },
+    "carpet": {
+      "name": "carpet",
+      "train_good": 280,
+      "test_good": 28,
+      "test_defective": 89,
+      "test_total": 117,
+      "defect_types": {
+        "color": {
+          "test_images": 19,
+          "gt_masks": 19,
+          "matched": 19,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "cut": {
+          "test_images": 17,
+          "gt_masks": 17,
+          "matched": 17,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "hole": {
+          "test_images": 17,
+          "gt_masks": 17,
+          "matched": 17,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "metal_contamination": {
+          "test_images": 17,
+          "gt_masks": 17,
+          "matched": 17,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "thread": {
+          "test_images": 19,
+          "gt_masks": 19,
+          "matched": 19,
+          "missing_mask": [],
+          "extra_mask": []
+        }
+      },
+      "masks_total": 89,
+      "total_images": 397,
+      "corrupted_count": 0,
+      "pairing_mismatches": 0
+    },
+    "grid": {
+      "name": "grid",
+      "train_good": 264,
+      "test_good": 21,
+      "test_defective": 57,
+      "test_total": 78,
+      "defect_types": {
+        "bent": {
+          "test_images": 12,
+          "gt_masks": 12,
+          "matched": 12,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "broken": {
+          "test_images": 12,
+          "gt_masks": 12,
+          "matched": 12,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "glue": {
+          "test_images": 11,
+          "gt_masks": 11,
+          "matched": 11,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "metal_contamination": {
+          "test_images": 11,
+          "gt_masks": 11,
+          "matched": 11,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "thread": {
+          "test_images": 11,
+          "gt_masks": 11,
+          "matched": 11,
+          "missing_mask": [],
+          "extra_mask": []
+        }
+      },
+      "masks_total": 57,
+      "total_images": 342,
+      "corrupted_count": 0,
+      "pairing_mismatches": 0
+    },
+    "hazelnut": {
+      "name": "hazelnut",
+      "train_good": 391,
+      "test_good": 40,
+      "test_defective": 70,
+      "test_total": 110,
+      "defect_types": {
+        "crack": {
+          "test_images": 18,
+          "gt_masks": 18,
+          "matched": 18,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "cut": {
+          "test_images": 17,
+          "gt_masks": 17,
+          "matched": 17,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "hole": {
+          "test_images": 18,
+          "gt_masks": 18,
+          "matched": 18,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "print": {
+          "test_images": 17,
+          "gt_masks": 17,
+          "matched": 17,
+          "missing_mask": [],
+          "extra_mask": []
+        }
+      },
+      "masks_total": 70,
+      "total_images": 501,
+      "corrupted_count": 0,
+      "pairing_mismatches": 0
+    },
+    "leather": {
+      "name": "leather",
+      "train_good": 245,
+      "test_good": 32,
+      "test_defective": 92,
+      "test_total": 124,
+      "defect_types": {
+        "color": {
+          "test_images": 19,
+          "gt_masks": 19,
+          "matched": 19,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "cut": {
+          "test_images": 19,
+          "gt_masks": 19,
+          "matched": 19,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "fold": {
+          "test_images": 17,
+          "gt_masks": 17,
+          "matched": 17,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "glue": {
+          "test_images": 19,
+          "gt_masks": 19,
+          "matched": 19,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "poke": {
+          "test_images": 18,
+          "gt_masks": 18,
+          "matched": 18,
+          "missing_mask": [],
+          "extra_mask": []
+        }
+      },
+      "masks_total": 92,
+      "total_images": 369,
+      "corrupted_count": 0,
+      "pairing_mismatches": 0
+    },
+    "metal_nut": {
+      "name": "metal_nut",
+      "train_good": 220,
+      "test_good": 22,
+      "test_defective": 93,
+      "test_total": 115,
+      "defect_types": {
+        "bent": {
+          "test_images": 25,
+          "gt_masks": 25,
+          "matched": 25,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "color": {
+          "test_images": 22,
+          "gt_masks": 22,
+          "matched": 22,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "flip": {
+          "test_images": 23,
+          "gt_masks": 23,
+          "matched": 23,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "scratch": {
+          "test_images": 23,
+          "gt_masks": 23,
+          "matched": 23,
+          "missing_mask": [],
+          "extra_mask": []
+        }
+      },
+      "masks_total": 93,
+      "total_images": 335,
+      "corrupted_count": 0,
+      "pairing_mismatches": 0
+    },
+    "pill": {
+      "name": "pill",
+      "train_good": 267,
+      "test_good": 26,
+      "test_defective": 141,
+      "test_total": 167,
+      "defect_types": {
+        "color": {
+          "test_images": 25,
+          "gt_masks": 25,
+          "matched": 25,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "combined": {
+          "test_images": 17,
+          "gt_masks": 17,
+          "matched": 17,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "contamination": {
+          "test_images": 21,
+          "gt_masks": 21,
+          "matched": 21,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "crack": {
+          "test_images": 26,
+          "gt_masks": 26,
+          "matched": 26,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "faulty_imprint": {
+          "test_images": 19,
+          "gt_masks": 19,
+          "matched": 19,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "pill_type": {
+          "test_images": 9,
+          "gt_masks": 9,
+          "matched": 9,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "scratch": {
+          "test_images": 24,
+          "gt_masks": 24,
+          "matched": 24,
+          "missing_mask": [],
+          "extra_mask": []
+        }
+      },
+      "masks_total": 141,
+      "total_images": 434,
+      "corrupted_count": 0,
+      "pairing_mismatches": 0
+    },
+    "screw": {
+      "name": "screw",
+      "train_good": 320,
+      "test_good": 41,
+      "test_defective": 119,
+      "test_total": 160,
+      "defect_types": {
+        "manipulated_front": {
+          "test_images": 24,
+          "gt_masks": 24,
+          "matched": 24,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "scratch_head": {
+          "test_images": 24,
+          "gt_masks": 24,
+          "matched": 24,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "scratch_neck": {
+          "test_images": 25,
+          "gt_masks": 25,
+          "matched": 25,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "thread_side": {
+          "test_images": 23,
+          "gt_masks": 23,
+          "matched": 23,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "thread_top": {
+          "test_images": 23,
+          "gt_masks": 23,
+          "matched": 23,
+          "missing_mask": [],
+          "extra_mask": []
+        }
+      },
+      "masks_total": 119,
+      "total_images": 480,
+      "corrupted_count": 0,
+      "pairing_mismatches": 0
+    },
+    "tile": {
+      "name": "tile",
+      "train_good": 230,
+      "test_good": 33,
+      "test_defective": 84,
+      "test_total": 117,
+      "defect_types": {
+        "crack": {
+          "test_images": 17,
+          "gt_masks": 17,
+          "matched": 17,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "glue_strip": {
+          "test_images": 18,
+          "gt_masks": 18,
+          "matched": 18,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "gray_stroke": {
+          "test_images": 16,
+          "gt_masks": 16,
+          "matched": 16,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "oil": {
+          "test_images": 18,
+          "gt_masks": 18,
+          "matched": 18,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "rough": {
+          "test_images": 15,
+          "gt_masks": 15,
+          "matched": 15,
+          "missing_mask": [],
+          "extra_mask": []
+        }
+      },
+      "masks_total": 84,
+      "total_images": 347,
+      "corrupted_count": 0,
+      "pairing_mismatches": 0
+    },
+    "toothbrush": {
+      "name": "toothbrush",
+      "train_good": 60,
+      "test_good": 12,
+      "test_defective": 30,
+      "test_total": 42,
+      "defect_types": {
+        "defective": {
+          "test_images": 30,
+          "gt_masks": 30,
+          "matched": 30,
+          "missing_mask": [],
+          "extra_mask": []
+        }
+      },
+      "masks_total": 30,
+      "total_images": 102,
+      "corrupted_count": 0,
+      "pairing_mismatches": 0
+    },
+    "transistor": {
+      "name": "transistor",
+      "train_good": 213,
+      "test_good": 60,
+      "test_defective": 40,
+      "test_total": 100,
+      "defect_types": {
+        "bent_lead": {
+          "test_images": 10,
+          "gt_masks": 10,
+          "matched": 10,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "cut_lead": {
+          "test_images": 10,
+          "gt_masks": 10,
+          "matched": 10,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "damaged_case": {
+          "test_images": 10,
+          "gt_masks": 10,
+          "matched": 10,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "misplaced": {
+          "test_images": 10,
+          "gt_masks": 10,
+          "matched": 10,
+          "missing_mask": [],
+          "extra_mask": []
+        }
+      },
+      "masks_total": 40,
+      "total_images": 313,
+      "corrupted_count": 0,
+      "pairing_mismatches": 0
+    },
+    "wood": {
+      "name": "wood",
+      "train_good": 247,
+      "test_good": 19,
+      "test_defective": 60,
+      "test_total": 79,
+      "defect_types": {
+        "color": {
+          "test_images": 8,
+          "gt_masks": 8,
+          "matched": 8,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "combined": {
+          "test_images": 11,
+          "gt_masks": 11,
+          "matched": 11,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "hole": {
+          "test_images": 10,
+          "gt_masks": 10,
+          "matched": 10,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "liquid": {
+          "test_images": 10,
+          "gt_masks": 10,
+          "matched": 10,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "scratch": {
+          "test_images": 21,
+          "gt_masks": 21,
+          "matched": 21,
+          "missing_mask": [],
+          "extra_mask": []
+        }
+      },
+      "masks_total": 60,
+      "total_images": 326,
+      "corrupted_count": 0,
+      "pairing_mismatches": 0
+    },
+    "zipper": {
+      "name": "zipper",
+      "train_good": 240,
+      "test_good": 32,
+      "test_defective": 119,
+      "test_total": 151,
+      "defect_types": {
+        "broken_teeth": {
+          "test_images": 19,
+          "gt_masks": 19,
+          "matched": 19,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "combined": {
+          "test_images": 16,
+          "gt_masks": 16,
+          "matched": 16,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "fabric_border": {
+          "test_images": 17,
+          "gt_masks": 17,
+          "matched": 17,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "fabric_interior": {
+          "test_images": 16,
+          "gt_masks": 16,
+          "matched": 16,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "rough": {
+          "test_images": 17,
+          "gt_masks": 17,
+          "matched": 17,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "split_teeth": {
+          "test_images": 18,
+          "gt_masks": 18,
+          "matched": 18,
+          "missing_mask": [],
+          "extra_mask": []
+        },
+        "squeezed_teeth": {
+          "test_images": 16,
+          "gt_masks": 16,
+          "matched": 16,
+          "missing_mask": [],
+          "extra_mask": []
+        }
+      },
+      "masks_total": 119,
+      "total_images": 391,
+      "corrupted_count": 0,
+      "pairing_mismatches": 0
+    }
+  },
+  "totals": {
+    "train_good": 3629,
+    "test_good": 467,
+    "test_defective": 1258,
+    "test_total": 1725,
+    "masks_total": 1258,
+    "grand_total_images": 5354,
+    "corrupted_files_count": 0,
+    "pairing_issues_count": 0
+  },
+  "corrupted_files": [],
+  "pairing_issues": []
+}
