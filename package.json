@@ -1,0 +1,8 @@
+{
+  "name": "visioninspect-workspace",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ]
+}

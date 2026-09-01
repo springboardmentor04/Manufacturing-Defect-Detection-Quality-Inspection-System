@@ -1,0 +1,126 @@
+# Dependencies
+**/node_modules
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+*.dist
+frontend/dist/
+backend/dist/
+
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.secret
+
+# Test files & test artifacts
+*.test.ts
+*.test.tsx
+*.test.js
+*.test.py
+*.spec.ts
+*.spec.js
+tests/
+__tests__/
+backend_python/tests/
+
+# Jupyter Notebooks & Checkpoints
+*.ipynb
+.ipynb_checkpoints/
+
+# Internal documentation & verification notes
+.dashboard-verification.md
+todo.md
+template.json
+
+# AI Model Weights & Heavy Checkpoints
+*.pth
+*.pt
+*.ckpt
+*.onnx
+*.safetensors
+*.bin
+backend_python/app/weights/
+
+# Uploaded images & runtime static assets
+backend_python/static/uploads/*
+!backend_python/static/uploads/.gitkeep
+frontend/public/uploads/*
+!frontend/public/uploads/.gitkeep
+
+# Manus debug logs & project logs
+.manus-logs/
+.manus-logs*
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Python caches & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+venv/
+.venv/
+env/
+ENV/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+*.bak
+
+# Coverage directory
+coverage/
+*.lcov
+.nyc_output
+
+# TypeScript cache & ESLint
+*.tsbuildinfo
+.eslintcache
+
+# Package manager caches
+.npm
+.cache
+.parcel-cache
+.next
+.nuxt
+tmp/
+temp/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Webdev artifacts & project config
+.webdev/
+client/public/__manus__/version.json
+.project-config.json
