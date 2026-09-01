@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Api } from '../api';
 import { useSetPageHeader } from '../context/PageHeaderContext';
 import { EmptyState, ErrorBanner, Skeleton } from '../components/Shared';
@@ -24,6 +24,13 @@ export default function Upload() {
   const [result, setResult] = useState(null); // { inspection, imgSrc }
   const [resultLoading, setResultLoading] = useState(false);
 
+  // ---- Camera capture state ----
+  const [showCamera, setShowCamera] = useState(false);
+  const [cameraError, setCameraError] = useState('');
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const streamRef = useRef(null);
+
   function handleFile(file) {
     setSelectedFile(file);
     const reader = new FileReader();
@@ -36,6 +43,57 @@ export default function Upload() {
     setDragOver(false);
     if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
   }
+
+  // ---- Camera helpers ----
+  async function openCamera() {
+    setCameraError('');
+    setShowCamera(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' },
+        audio: false,
+      });
+      streamRef.current = stream;
+      if (videoRef.current) videoRef.current.srcObject = stream;
+    } catch (err) {
+      console.error('Camera access error:', err);
+      setCameraError('Could not access camera. Check permissions, or use file upload instead.');
+    }
+  }
+
+  function closeCamera() {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+    }
+    setShowCamera(false);
+  }
+
+  function capturePhoto() {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas) return;
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const file = new File([blob], `capture-${Date.now()}.jpg`, { type: 'image/jpeg' });
+      handleFile(file); // reuses the exact same flow as a picked file
+      closeCamera();
+    }, 'image/jpeg', 0.92);
+  }
+
+  // Clean up camera if the component unmounts while camera is open
+  useEffect(() => {
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((t) => t.stop());
+      }
+    };
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -112,7 +170,25 @@ export default function Upload() {
             </div>
           </div>
 
-          <label className="field-label">Product Image</label>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <label className="field-label">Product Image</label>
+            <button
+              type="button"
+              onClick={openCamera}
+              style={{
+                fontSize: 11.5,
+                color: 'var(--text-dim)',
+                background: 'none',
+                border: '1px solid var(--border, #444)',
+                borderRadius: 6,
+                padding: '4px 10px',
+                cursor: 'pointer',
+              }}
+            >
+              📷 Use Camera
+            </button>
+          </div>
+
           <div
             className={`upload-drop${dragOver ? ' dragover' : ''}`}
             onClick={() => fileInputRef.current?.click()}
@@ -170,6 +246,52 @@ export default function Upload() {
           </>
         )}
       </div>
+
+      {/* Camera capture modal */}
+      {showCamera && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
+          }}
+          onClick={closeCamera}
+        >
+          <div
+            className="card"
+            style={{ width: 420, maxWidth: '90vw', padding: 16 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="font-display" style={{ margin: '0 0 12px', fontSize: 14 }}>
+              Capture Product Photo
+            </h3>
+
+            {cameraError ? (
+              <ErrorBanner message={cameraError} />
+            ) : (
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                style={{ width: '100%', borderRadius: 8, background: '#000' }}
+              />
+            )}
+            <canvas ref={canvasRef} style={{ display: 'none' }} />
+
+            <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
+              <button type="button" className="btn-primary" onClick={capturePhoto} disabled={!!cameraError} style={{ flex: 1 }}>
+                Capture
+              </button>
+              <button
+                type="button"
+                onClick={closeCamera}
+                style={{ flex: 1, background: 'none', border: '1px solid var(--border, #444)', borderRadius: 8, color: 'var(--text)', cursor: 'pointer' }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
