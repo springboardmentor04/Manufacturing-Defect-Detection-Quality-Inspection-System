@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 @import "tailwindcss";
 
 @theme inline {
@@ -8685,4 +8686,10 @@ a {
   .fs-line-cards {
     grid-template-columns: 1fr;
   }
+=======
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f5f7fb;
+>>>>>>> 7a7edc6c580fd78aa1ce9b852e36bf113c983807
 }
