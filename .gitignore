@@ -1,0 +1,46 @@
+# ==========================================
+# VisionInspect AI - Security & GitIgnore File
+# Prevents sensitive credentials, .env files,
+# build artifacts, and dependencies from being committed
+# ==========================================
+
+# Environment variables & Sensitive Credentials
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# Python & Backend Artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+*.log
+
+# Node.js & Frontend Build Dependencies
+node_modules/
+dist/
+dist-ssr/
+build/
+.cache/
+*.local
+
+# IDE & OS Metadata
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Output Reports & Local Scratch Logs
+scratch/
+*.pt
