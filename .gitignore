@@ -216,3 +216,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# VisionInspect AI
+.DS_Store
+node_modules/
+frontend/build/
+backend/uploads/
+backend/MVTec AD/
+backend/models/
