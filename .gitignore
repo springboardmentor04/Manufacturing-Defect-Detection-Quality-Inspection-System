@@ -1,8 +1,37 @@
+# Node
 node_modules/
 build/
 dist/
 coverage/
-.DS_Store
-*.log
+
+# Python
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+
+# Environment variables / secrets
 .env*
 !.env.example
+
+# Large datasets
+dataset/
+datasets/
+
+# YOLO training outputs
+runs/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Jupyter
+.ipynb_checkpoints/

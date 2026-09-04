@@ -10,6 +10,7 @@ import { QualityEngineerDashboard } from './pages/QualityEngineerDashboard';
 import { FactorySupervisorDashboard } from './pages/FactorySupervisorDashboard';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { ProfilePage } from './pages/ProfilePage';
+import { ProductsPage } from './pages/ProductsPage';
 
 function AppContent() {
   const { user } = useAuth();
@@ -41,7 +42,7 @@ function AppContent() {
     return <QualityEngineerDashboard />;
   };
 
-  const showSidebar = user && (currentPage === 'dashboard' || currentPage === 'profile');
+  const showSidebar = user && (currentPage === 'dashboard' || currentPage === 'profile' || currentPage === 'products');
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F0F4F1]">
@@ -59,6 +60,7 @@ function AppContent() {
             <div className="flex-1 min-w-0">
               {currentPage === 'dashboard' && renderDashboardByRole()}
               {currentPage === 'profile' && <ProfilePage onNavigate={handleNavigate} />}
+              {currentPage === 'products' && <ProductsPage />}
             </div>
           </div>
         ) : (
@@ -68,6 +70,7 @@ function AppContent() {
             {currentPage === 'register' && <RegisterPage onNavigate={handleNavigate} />}
             {currentPage === 'dashboard' && renderDashboardByRole()}
             {currentPage === 'profile' && <ProfilePage onNavigate={handleNavigate} />}
+            {currentPage === 'products' && <ProductsPage />}
           </>
         )}
       </main>

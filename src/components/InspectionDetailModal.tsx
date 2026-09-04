@@ -11,21 +11,7 @@ interface InspectionDetailModalProps {
 export const InspectionDetailModal: React.FC<InspectionDetailModalProps> = ({ record, onClose }) => {
   if (!record) return null;
 
-  const defect = record.defects[0] || {
-    defectType: 'Surface Scratch',
-    confidence: 85,
-    sizeScore: 50,
-    locationScore: 60,
-    boundingBox: { x: 30, y: 30, width: 20, height: 20 }
-  };
-
-  const defectTypeScore = defect.defectType === 'Surface Crack' ? 90 : defect.defectType === 'Insulation Cut' ? 75 : 40;
-
-  // Exact Formula Calculation Components
-  const sizeContribution = (defect.sizeScore * 0.30).toFixed(1);
-  const locationContribution = (defect.locationScore * 0.25).toFixed(1);
-  const typeContribution = (defectTypeScore * 0.25).toFixed(1);
-  const confidenceContribution = (defect.confidence * 0.20).toFixed(1);
+  const defect = record.defects[0];
 
   const handleDownloadReport = () => {
     const reportData = JSON.stringify(record, null, 2);
@@ -88,7 +74,7 @@ export const InspectionDetailModal: React.FC<InspectionDetailModalProps> = ({ re
                 />
                 
                 {/* Bounding Box Overlay */}
-                <div 
+                {defect ? <div
                   className="absolute border-2 border-red-500 bg-red-500/20 rounded-xl shadow-lg animate-pulse flex items-start p-1"
                   style={{
                     left: `${defect.boundingBox.x}%`,
@@ -100,7 +86,7 @@ export const InspectionDetailModal: React.FC<InspectionDetailModalProps> = ({ re
                   <span className="bg-red-600 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded-md shadow">
                     {defect.defectType} ({defect.confidence}%)
                   </span>
-                </div>
+                </div> : <div className="absolute inset-0 flex items-center justify-center bg-slate-900/35 text-center text-xs font-bold text-white p-6">No defect detected by the trained model.</div>}
               </div>
             </div>
 
@@ -124,7 +110,7 @@ export const InspectionDetailModal: React.FC<InspectionDetailModalProps> = ({ re
                 </div>
               </div>
 
-              {/* Formula Breakdown Panel */}
+              {defect && <>{/* Formula Breakdown Panel */}
               <div className="bg-teal-500/10 p-4 rounded-2xl border border-teal-500/20">
                 <div className="flex items-center gap-2 mb-2 font-bold text-teal-900">
                   <Calculator className="w-4 h-4 text-teal-700" />
@@ -137,19 +123,19 @@ export const InspectionDetailModal: React.FC<InspectionDetailModalProps> = ({ re
                 <div className="grid grid-cols-2 gap-2 font-mono text-[11px]">
                   <div className="bg-white/80 p-2 rounded-xl border border-white flex justify-between">
                     <span className="text-slate-500 font-medium">Size ({defect.sizeScore}):</span>
-                    <span className="font-bold text-teal-800">+{sizeContribution}</span>
+                    <span className="font-bold text-teal-800">+{(defect.sizeScore * 0.30).toFixed(1)}</span>
                   </div>
                   <div className="bg-white/80 p-2 rounded-xl border border-white flex justify-between">
                     <span className="text-slate-500 font-medium">Location ({defect.locationScore}):</span>
-                    <span className="font-bold text-teal-800">+{locationContribution}</span>
+                    <span className="font-bold text-teal-800">+{(defect.locationScore * 0.25).toFixed(1)}</span>
                   </div>
                   <div className="bg-white/80 p-2 rounded-xl border border-white flex justify-between">
-                    <span className="text-slate-500 font-medium">Type ({defectTypeScore}):</span>
-                    <span className="font-bold text-teal-800">+{typeContribution}</span>
+                    <span className="text-slate-500 font-medium">Type ({defect.typeScore}):</span>
+                    <span className="font-bold text-teal-800">+{(defect.typeScore * 0.25).toFixed(1)}</span>
                   </div>
                   <div className="bg-white/80 p-2 rounded-xl border border-white flex justify-between">
                     <span className="text-slate-500 font-medium">Confidence ({defect.confidence}%):</span>
-                    <span className="font-bold text-teal-800">+{confidenceContribution}</span>
+                    <span className="font-bold text-teal-800">+{(defect.confidenceScore * 0.20).toFixed(1)}</span>
                   </div>
                 </div>
 
@@ -157,7 +143,7 @@ export const InspectionDetailModal: React.FC<InspectionDetailModalProps> = ({ re
                   <span>Total Calculated Severity:</span>
                   <span className="font-mono text-teal-800">{record.severityScore.toFixed(1)} / 100</span>
                 </div>
-              </div>
+              </div></>}
             </div>
           </div>
 

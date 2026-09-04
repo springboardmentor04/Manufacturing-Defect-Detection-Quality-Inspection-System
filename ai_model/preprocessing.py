@@ -48,6 +48,12 @@ class ImagePreprocessor:
         Executes configurable image preprocessing pipeline.
         """
         processed = cv2.resize(image, self.target_size)
+
+        if config.get("roi_crop", False):
+            height, width = processed.shape[:2]
+            margin_y, margin_x = int(height * 0.05), int(width * 0.05)
+            roi = processed[margin_y:height - margin_y, margin_x:width - margin_x]
+            processed = cv2.resize(roi, self.target_size)
         
         if config.get("noise_removal", True):
             processed = self.remove_noise(processed)
@@ -55,6 +61,10 @@ class ImagePreprocessor:
             processed = self.enhance_contrast(processed)
             
         edges = self.detect_edges(processed) if config.get("edge_detection", False) else None
+        # YOLO accepts three-channel imagery. When selected, edge extraction is
+        # the actual model input rather than a discarded preview artifact.
+        if edges is not None:
+            processed = cv2.cvtColor(edges, cv2.COLOR_GRAY2BGR)
         
         return {
             "processed_image": processed,

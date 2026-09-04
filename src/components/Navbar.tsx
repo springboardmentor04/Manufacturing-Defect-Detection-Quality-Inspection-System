@@ -1,7 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { UserRole } from '../types';
-import { Scan, ShieldAlert, BarChart3, Settings, LogOut, User as UserIcon, Activity } from 'lucide-react';
+import { Scan, BarChart3, Settings, LogOut, User as UserIcon } from 'lucide-react';
 
 interface NavbarProps {
   currentPage: string;
@@ -9,13 +8,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
-  const { user, logout, switchRoleForDemo } = useAuth();
-
-  const roleBadges: Record<UserRole, { label: string; color: string }> = {
-    quality_engineer: { label: 'Quality Engineer', color: 'bg-teal-50 text-teal-700 border-teal-200' },
-    factory_supervisor: { label: 'Factory Supervisor', color: 'bg-blue-50 text-blue-700 border-blue-200' },
-    admin: { label: 'Administrator', color: 'bg-purple-50 text-purple-700 border-purple-200' }
-  };
+  const { user, logout } = useAuth();
 
   return (
     <header className="glass-nav sticky top-0 z-40">

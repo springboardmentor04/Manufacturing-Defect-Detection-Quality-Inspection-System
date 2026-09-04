@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { AnalyticsSummary, InspectionRecord } from '../types';
-import { fetchAnalyticsSummary, fetchInspections } from '../services/api';
+import { fetchAnalyticsSummary, fetchInspections, fetchAnalyticsByLine } from '../services/api';
 import { SeverityBadge } from '../components/SeverityBadge';
 import { InspectionDetailModal } from '../components/InspectionDetailModal';
 import { BarChart3, TrendingUp, AlertOctagon, CheckCircle2, Activity, Sliders, RefreshCw } from 'lucide-react';
 
+interface LineAnalytics {
+  factory_line: string;
+  total_inspections: number;
+  passed: number;
+  failed: number;
+  pass_rate_percent: number;
+}
+
 export const FactorySupervisorDashboard: React.FC = () => {
   const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(null);
+  const [lineAnalytics, setLineAnalytics] = useState<LineAnalytics[]>([]);
   const [history, setHistory] = useState<InspectionRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedRecord, setSelectedRecord] = useState<InspectionRecord | null>(null);
@@ -23,9 +32,10 @@ export const FactorySupervisorDashboard: React.FC = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [sum, ins] = await Promise.all([fetchAnalyticsSummary(), fetchInspections()]);
+      const [sum, ins, lines] = await Promise.all([fetchAnalyticsSummary(), fetchInspections(), fetchAnalyticsByLine()]);
       setAnalytics(sum);
       setHistory(ins);
+      setLineAnalytics(lines);
       if (sum.qualityThresholds) {
         setCriticalLimit(sum.qualityThresholds.criticalSeverityLimit);
         setMediumLimit(sum.qualityThresholds.mediumSeverityLimit);
@@ -318,46 +328,27 @@ export const FactorySupervisorDashboard: React.FC = () => {
             </div>
           </div>
           <span className="text-[10px] font-bold text-emerald-800 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
-            4 Lines Operational
+            {lineAnalytics.length} Lines Operational
           </span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-          <div className="p-3.5 bg-white/50 rounded-2xl border border-white/80 space-y-1">
-            <div className="flex items-center justify-between font-bold text-slate-800">
-              <span>Assembly Line A1</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          {lineAnalytics.length > 0 ? (
+            lineAnalytics.map((line) => (
+              <div key={line.factory_line} className="p-3.5 bg-white/50 rounded-2xl border border-white/80 space-y-1">
+                <div className="flex items-center justify-between font-bold text-slate-800">
+                  <span>{line.factory_line}</span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                </div>
+                <p className="text-[11px] text-slate-500">Inspections: {line.total_inspections}</p>
+                <p className="text-[11px] font-mono font-bold text-teal-700">Pass Rate: {line.pass_rate_percent}%</p>
+              </div>
+            ))
+          ) : (
+            <div className="col-span-full text-center p-8 text-slate-500 font-medium">
+              No inspections today yet. Factory lines will appear here as inspections are processed.
             </div>
-            <p className="text-[11px] text-slate-500">Camera Feed: Active 60 FPS</p>
-            <p className="text-[11px] font-mono font-bold text-teal-700">Pass Rate: 94.2%</p>
-          </div>
-
-          <div className="p-3.5 bg-white/50 rounded-2xl border border-white/80 space-y-1">
-            <div className="flex items-center justify-between font-bold text-slate-800">
-              <span>Cable Line B2</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            </div>
-            <p className="text-[11px] text-slate-500">Camera Feed: Active 60 FPS</p>
-            <p className="text-[11px] font-mono font-bold text-teal-700">Pass Rate: 88.5%</p>
-          </div>
-
-          <div className="p-3.5 bg-white/50 rounded-2xl border border-white/80 space-y-1">
-            <div className="flex items-center justify-between font-bold text-slate-800">
-              <span>Tile Finishing C1</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            </div>
-            <p className="text-[11px] text-slate-500">Camera Feed: Active 60 FPS</p>
-            <p className="text-[11px] font-mono font-bold text-teal-700">Pass Rate: 91.0%</p>
-          </div>
-
-          <div className="p-3.5 bg-white/50 rounded-2xl border border-white/80 space-y-1">
-            <div className="flex items-center justify-between font-bold text-slate-800">
-              <span>PCB Assembly D4</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            </div>
-            <p className="text-[11px] text-slate-500">Camera Feed: Active 60 FPS</p>
-            <p className="text-[11px] font-mono font-bold text-teal-700">Pass Rate: 96.8%</p>
-          </div>
+          )}
         </div>
       </div>
 

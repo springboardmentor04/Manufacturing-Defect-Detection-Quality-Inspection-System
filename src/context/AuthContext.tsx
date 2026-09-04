@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, UserRole } from '../types';
-import { loginUser as loginApi, registerUser as registerApi } from '../services/api';
+import { fetchCurrentUser, loginUser as loginApi, registerUser as registerApi } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
@@ -9,43 +9,26 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, fullName: string, role: UserRole, assignedLine?: string) => Promise<void>;
   logout: () => void;
-  switchRoleForDemo: (role: UserRole) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const DEMO_USERS: Record<UserRole, User> = {
-  quality_engineer: {
-    id: 'u-qe1',
-    email: 'engineer@factory.com',
-    fullName: 'Sarah Connor',
-    role: 'quality_engineer',
-    assignedLine: 'Assembly Line A1'
-  },
-  factory_supervisor: {
-    id: 'u-fs1',
-    email: 'supervisor@factory.com',
-    fullName: 'Marcus Vance',
-    role: 'factory_supervisor',
-    assignedLine: 'All Production Lines'
-  },
-  admin: {
-    id: 'u-adm1',
-    email: 'admin@factory.com',
-    fullName: 'Elena Rostova',
-    role: 'admin',
-    assignedLine: 'Global Operations'
-  }
-};
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
     const saved = localStorage.getItem('visioninspect_user');
-    return saved ? JSON.parse(saved) : DEMO_USERS.quality_engineer;
+    const savedToken = localStorage.getItem('visioninspect_token');
+    if (!saved || !savedToken) return null;
+
+    try {
+      return JSON.parse(saved);
+    } catch {
+      return null;
+    }
   });
 
   const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem('visioninspect_token') || 'demo_jwt_token_123';
+    const savedToken = localStorage.getItem('visioninspect_token');
+    return savedToken;
   });
 
   useEffect(() => {
@@ -64,24 +47,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [token]);
 
-  const login = async (email: string, password: string) => {
-    try {
-      const data = await loginApi(email, password);
-      setUser(data.user);
-      setToken(data.token);
-    } catch (err) {
-      // Fallback for offline demo matching user role request
-      const foundRole = Object.keys(DEMO_USERS).find(
-        r => DEMO_USERS[r as UserRole].email.toLowerCase() === email.toLowerCase()
-      ) as UserRole | undefined;
+  useEffect(() => {
+    if (!token) return;
+    void fetchCurrentUser().then(setUser).catch(() => {
+      setUser(null);
+      setToken(null);
+    });
+  }, [token]);
 
-      if (foundRole) {
-        setUser(DEMO_USERS[foundRole]);
-        setToken('demo_token');
-      } else {
-        throw err;
-      }
-    }
+  const login = async (email: string, password: string) => {
+    const data = await loginApi(email, password);
+    setUser(data.user);
+    setToken(data.token);
   };
 
   const register = async (
@@ -91,21 +68,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     role: UserRole,
     assignedLine?: string
   ) => {
-    try {
-      const data = await registerApi(email, password, fullName, role, assignedLine);
-      setUser(data.user);
-      setToken(data.token);
-    } catch (err) {
-      const newUser: User = {
-        id: `u-${Math.random().toString(36).substr(2, 6)}`,
-        email,
-        fullName,
-        role,
-        assignedLine: assignedLine || 'Assembly Line A1'
-      };
-      setUser(newUser);
-      setToken('demo_token');
-    }
+    const data = await registerApi(email, password, fullName, role, assignedLine);
+    setUser(data.user);
+    setToken(data.token);
   };
 
   const logout = () => {
@@ -113,11 +78,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setToken(null);
     localStorage.removeItem('visioninspect_user');
     localStorage.removeItem('visioninspect_token');
-  };
-
-  const switchRoleForDemo = (role: UserRole) => {
-    setUser(DEMO_USERS[role]);
-    setToken(`demo_jwt_token_${role}`);
   };
 
   return (
@@ -128,8 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAuthenticated: !!user,
         login,
         register,
-        logout,
-        switchRoleForDemo
+        logout
       }}
     >
       {children}

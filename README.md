@@ -75,32 +75,31 @@ VisionInspect AI is an industrial-grade, AI-powered quality control platform des
 # Install dependencies
 npm install
 
+# Copy .env.example to .env and set MONGODB_URL first.
+
 # Run complete application (Frontend + Express API Server)
 npm run dev
 ```
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+The Node server connects to MongoDB at startup. It creates indexes and seeds the three demo users only when they do not already exist. Successful inspections are stored in `inspections` and also create related documents in `product`, `uploaded_images`, `model_predictions`, `defect`, `reports`, and `analytics`.
+
 ### Option B: FastAPI Backend + React Frontend
 ```bash
-# 1. Setup Python Backend
-cd backend
-python -m venv venv
-source venv/bin/activate # or venv\Scripts\activate on Windows
-pip install -r requirements.txt
-uvicorn main:app --reload --port 8000
+# Terminal 1: start the MongoDB-backed FastAPI service from the repository root.
+.\.venv311\Scripts\python.exe -m uvicorn backend.main:app --reload --port 8000
 
-# 2. Setup React Frontend
-cd ../frontend
+# Terminal 2: start the React frontend from the repository root.
 npm install
 npm run dev
 ```
+
+Set `MONGODB_URL`, `DATABASE_NAME`, `JWT_SECRET`, and `VITE_API_BASE=http://localhost:8000/api` in `.env`. `JWT_SECRET` must be a secure, non-default secret; the backend refuses to start without it. The frontend uses FastAPI as its only API; it does not provide demo or in-memory API responses.
 
 ---
 
 ## 🔐 Demo Credentials
 
-| Role | Email | Password |
-| :--- | :--- | :--- |
-| **Quality Engineer** | `engineer@factory.com` | `password123` |
-| **Factory Supervisor** | `supervisor@factory.com` | `password123` |
-| **Administrator** | `admin@factory.com` | `password123` |
+Create accounts through the registration screen or `POST /api/auth/register`.
+The FastAPI backend does not seed demo credentials.
+python -m uvicorn backend.main:app --reload --port 8000

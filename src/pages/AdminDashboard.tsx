@@ -14,10 +14,6 @@ export const AdminDashboard: React.FC = () => {
   const [selectedLine, setSelectedLine] = useState('');
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  // Model Settings State
-  const [modelSensitivity, setModelSensitivity] = useState(85);
-  const [selectedModelVersion, setSelectedModelVersion] = useState('YOLOv8-AnomalySeg-v2.4');
-
   useEffect(() => {
     loadUsers();
   }, []);
@@ -210,37 +206,35 @@ export const AdminDashboard: React.FC = () => {
         <div className="glass-card p-6 rounded-3xl space-y-6">
           <div className="border-b border-slate-200/60 pb-3">
             <h3 className="text-base font-bold text-slate-800">AI Computer Vision Model Configuration</h3>
-            <p className="text-xs text-slate-500 font-medium">Calibration parameters for OpenCV contour segmentation and PyTorch YOLO models</p>
+            <p className="text-xs text-slate-500 font-medium">Model information and system parameters</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
             <div className="space-y-2">
-              <label className="font-bold text-slate-700 block">Select Active Model Architecture</label>
-              <select
-                value={selectedModelVersion}
-                onChange={(e) => setSelectedModelVersion(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-2xl glass-input font-mono text-xs font-bold text-slate-800"
-              >
-                <option value="YOLOv8-AnomalySeg-v2.4">YOLOv8-AnomalySeg-v2.4 (Default Industrial High Precision)</option>
-                <option value="OpenCV-ContourThreshold-v1.1">OpenCV-ContourThreshold-v1.1 (Fast Lightweight Edge)</option>
-                <option value="ResNet50-MVTec-Transfer">ResNet50-MVTec-Transfer (Deep Surface Crack Specialist)</option>
-              </select>
+              <label className="font-bold text-slate-700 block">Active Model Architecture</label>
+              <div className="px-3.5 py-2.5 rounded-2xl bg-white/60 border border-white/80 font-mono text-xs font-bold text-slate-800">
+                YOLO Unified 20 Epochs (runs/detect/unified_20ep/weights/best.pt)
+              </div>
+              <p className="text-[10px] text-slate-500 font-medium">
+                This is the trained model used for all inspections. Model switching is not available in this version.
+              </p>
             </div>
 
             <div className="space-y-2">
-              <label className="font-bold text-slate-700 block">Anomaly Detection Sensitivity ({modelSensitivity}%)</label>
-              <input
-                type="range"
-                min="50"
-                max="98"
-                value={modelSensitivity}
-                onChange={(e) => setModelSensitivity(Number(e.target.value))}
-                className="w-full accent-purple-600"
-              />
+              <label className="font-bold text-slate-700 block">Inference Confidence Threshold</label>
+              <div className="px-3.5 py-2.5 rounded-2xl bg-white/60 border border-white/80 font-mono text-xs font-bold text-slate-800">
+                0.25 (25%)
+              </div>
               <p className="text-[10px] text-slate-500 font-medium">
-                Higher sensitivity detects minor cosmetic scratches; lower sensitivity focuses only on structural cracks.
+                The confidence threshold is configured at system startup and applies to all inspections.
               </p>
             </div>
+          </div>
+
+          <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4">
+            <p className="text-xs font-medium text-blue-900">
+              <strong>System Info:</strong> This deployment uses a single trained model. To switch models or adjust thresholds, please contact your system administrator.
+            </p>
           </div>
         </div>
       )}

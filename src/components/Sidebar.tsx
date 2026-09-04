@@ -6,6 +6,7 @@ import {
   Scan, 
   SlidersHorizontal, 
   FileCheck2, 
+  Package,
   User as UserIcon, 
   BarChart3, 
   TrendingUp, 
@@ -38,6 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const qeMenuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'products', label: 'Products', icon: Package },
     { id: 'upload', label: 'Upload Product Image', icon: UploadCloud },
     { id: 'results', label: 'Inspection Results', icon: Scan },
     { id: 'defects', label: 'Defect Details', icon: SlidersHorizontal },
@@ -47,6 +49,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const supervisorMenuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'products', label: 'Products', icon: Package },
     { id: 'overview', label: 'Production Overview', icon: BarChart3 },
     { id: 'reports', label: 'Inspection Reports', icon: FileCheck2 },
     { id: 'trends', label: 'Defect Trends', icon: TrendingUp },
@@ -61,6 +64,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const handleClick = (item: typeof menuItems[0]) => {
     if (item.isProfile) {
       onNavigate('profile');
+    } else if (item.id === 'products') {
+      onNavigate('products');
     } else {
       onNavigate('dashboard');
       onSelectSection(item.id);

@@ -1,0 +1,19 @@
+model:
+  class_path: anomalib.models.EfficientAd
+
+data:
+  class_path: anomalib.data.MVTecAD
+  init_args:
+    root: ../dataset/archive
+    category: bottle
+    image_size: 256
+    train_batch_size: 8
+    eval_batch_size: 8
+    num_workers: 0
+
+trainer:
+  max_epochs: 20
+  accelerator: cpu
+  devices: 1
+
+default_root_dir: ./results/bottle

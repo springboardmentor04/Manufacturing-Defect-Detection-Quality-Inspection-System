@@ -19,10 +19,16 @@ export interface BoundingBox {
 }
 
 export interface DefectItem {
+  classId: number;
+  className: string;
   defectType: string;
   confidence: number;
+  confidenceScore: number;
   sizeScore: number;
   locationScore: number;
+  typeScore: number;
+  severityScore: number;
+  pixelBoundingBox: { x1: number; y1: number; x2: number; y2: number };
   boundingBox: BoundingBox;
 }
 
@@ -33,12 +39,25 @@ export interface PreprocessingOptions {
   roiCrop: boolean;
 }
 
+export interface Product {
+  id: string;
+  productName: string;
+  productCode: string;
+  category: string;
+  manufacturer: string;
+  factoryLine: string;
+  status: string;
+  createdAt?: string;
+}
+
 export interface InspectionRecord {
   id: string;
   inspectionCode: string;
+  productId: string;
   productName: string;
   productCategory: string;
   factoryLine: string;
+  inspectorId: string;
   imageUrl: string;
   processedImageUrl?: string;
   severityScore: number;
@@ -47,6 +66,11 @@ export interface InspectionRecord {
   inspectorName: string;
   timestamp: string;
   defects: DefectItem[];
+  imageWidth: number;
+  imageHeight: number;
+  preprocessingUsed: PreprocessingOptions;
+  model: { architecture: string; weights: string; confidence_threshold: number; detections: number };
+  recommendation: string;
   comments?: string;
 }
 
