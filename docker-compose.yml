@@ -14,18 +14,21 @@ services:
 
   backend:
     build: 
-      context: ./backend
+      context: .
+      dockerfile: backend/Dockerfile
     ports:
       - "8000:8000"
     environment:
       - DATABASE_URL=postgresql://vision_user:vision_password@db:5432/visioninspect
       - JWT_SECRET=supersecretjwtkey_for_visioninspect_ai_project_in_production
-      - MODEL_PATH=./ml/models/best.pt
-      - UPLOAD_DIR=./storage/uploads
+      - MODEL_PATH=/app/ml/models/best.pt
+      - UPLOAD_DIR=/app/storage/uploads
     depends_on:
-      - db
+      db:
+        condition: service_started
     volumes:
       - ./storage:/app/storage
+      - ./ml/models:/app/ml/models
 
   frontend:
     build:

@@ -42,10 +42,13 @@ def analyse_image_quality(image: np.ndarray) -> dict:
     brightness = float(np.mean(gray))
     contrast = float(np.std(gray))
     sharpness = float(cv2.Laplacian(gray, cv2.CV_64F).var())
-    if sharpness < 35 or brightness < 35 or brightness > 225:
+    if brightness < 20 or brightness > 245:
+        status = "POOR"
+        warning = "Image brightness is out of optimal inspection range."
+    elif contrast > 5 and sharpness < 15:
         status = "POOR"
         warning = "Image quality may not support reliable automated inspection. Manual review is recommended."
-    elif sharpness < 75 or brightness < 55 or brightness > 205:
+    elif sharpness < 75 or brightness < 50 or brightness > 210:
         status = "ACCEPTABLE"
         warning = "Image quality is acceptable, but results should be reviewed if the decision is consequential."
     else:

@@ -1,0 +1,440 @@
+{
+  "0": {
+    "class_id": 0,
+    "class_name": "bottle_broken_large",
+    "category": "bottle",
+    "defect_type": "broken_large"
+  },
+  "1": {
+    "class_id": 1,
+    "class_name": "bottle_broken_small",
+    "category": "bottle",
+    "defect_type": "broken_small"
+  },
+  "2": {
+    "class_id": 2,
+    "class_name": "bottle_contamination",
+    "category": "bottle",
+    "defect_type": "contamination"
+  },
+  "3": {
+    "class_id": 3,
+    "class_name": "cable_bent_wire",
+    "category": "cable",
+    "defect_type": "bent_wire"
+  },
+  "4": {
+    "class_id": 4,
+    "class_name": "cable_cable_swap",
+    "category": "cable",
+    "defect_type": "cable_swap"
+  },
+  "5": {
+    "class_id": 5,
+    "class_name": "cable_combined",
+    "category": "cable",
+    "defect_type": "combined"
+  },
+  "6": {
+    "class_id": 6,
+    "class_name": "cable_cut_inner_insulation",
+    "category": "cable",
+    "defect_type": "cut_inner_insulation"
+  },
+  "7": {
+    "class_id": 7,
+    "class_name": "cable_cut_outer_insulation",
+    "category": "cable",
+    "defect_type": "cut_outer_insulation"
+  },
+  "8": {
+    "class_id": 8,
+    "class_name": "cable_missing_cable",
+    "category": "cable",
+    "defect_type": "missing_cable"
+  },
+  "9": {
+    "class_id": 9,
+    "class_name": "cable_missing_wire",
+    "category": "cable",
+    "defect_type": "missing_wire"
+  },
+  "10": {
+    "class_id": 10,
+    "class_name": "cable_poke_insulation",
+    "category": "cable",
+    "defect_type": "poke_insulation"
+  },
+  "11": {
+    "class_id": 11,
+    "class_name": "capsule_crack",
+    "category": "capsule",
+    "defect_type": "crack"
+  },
+  "12": {
+    "class_id": 12,
+    "class_name": "capsule_faulty_imprint",
+    "category": "capsule",
+    "defect_type": "faulty_imprint"
+  },
+  "13": {
+    "class_id": 13,
+    "class_name": "capsule_poke",
+    "category": "capsule",
+    "defect_type": "poke"
+  },
+  "14": {
+    "class_id": 14,
+    "class_name": "capsule_scratch",
+    "category": "capsule",
+    "defect_type": "scratch"
+  },
+  "15": {
+    "class_id": 15,
+    "class_name": "capsule_squeeze",
+    "category": "capsule",
+    "defect_type": "squeeze"
+  },
+  "16": {
+    "class_id": 16,
+    "class_name": "carpet_color",
+    "category": "carpet",
+    "defect_type": "color"
+  },
+  "17": {
+    "class_id": 17,
+    "class_name": "carpet_cut",
+    "category": "carpet",
+    "defect_type": "cut"
+  },
+  "18": {
+    "class_id": 18,
+    "class_name": "carpet_hole",
+    "category": "carpet",
+    "defect_type": "hole"
+  },
+  "19": {
+    "class_id": 19,
+    "class_name": "carpet_metal_contamination",
+    "category": "carpet",
+    "defect_type": "metal_contamination"
+  },
+  "20": {
+    "class_id": 20,
+    "class_name": "carpet_thread",
+    "category": "carpet",
+    "defect_type": "thread"
+  },
+  "21": {
+    "class_id": 21,
+    "class_name": "grid_bent",
+    "category": "grid",
+    "defect_type": "bent"
+  },
+  "22": {
+    "class_id": 22,
+    "class_name": "grid_broken",
+    "category": "grid",
+    "defect_type": "broken"
+  },
+  "23": {
+    "class_id": 23,
+    "class_name": "grid_glue",
+    "category": "grid",
+    "defect_type": "glue"
+  },
+  "24": {
+    "class_id": 24,
+    "class_name": "grid_metal_contamination",
+    "category": "grid",
+    "defect_type": "metal_contamination"
+  },
+  "25": {
+    "class_id": 25,
+    "class_name": "grid_thread",
+    "category": "grid",
+    "defect_type": "thread"
+  },
+  "26": {
+    "class_id": 26,
+    "class_name": "hazelnut_crack",
+    "category": "hazelnut",
+    "defect_type": "crack"
+  },
+  "27": {
+    "class_id": 27,
+    "class_name": "hazelnut_cut",
+    "category": "hazelnut",
+    "defect_type": "cut"
+  },
+  "28": {
+    "class_id": 28,
+    "class_name": "hazelnut_hole",
+    "category": "hazelnut",
+    "defect_type": "hole"
+  },
+  "29": {
+    "class_id": 29,
+    "class_name": "hazelnut_print",
+    "category": "hazelnut",
+    "defect_type": "print"
+  },
+  "30": {
+    "class_id": 30,
+    "class_name": "leather_color",
+    "category": "leather",
+    "defect_type": "color"
+  },
+  "31": {
+    "class_id": 31,
+    "class_name": "leather_cut",
+    "category": "leather",
+    "defect_type": "cut"
+  },
+  "32": {
+    "class_id": 32,
+    "class_name": "leather_fold",
+    "category": "leather",
+    "defect_type": "fold"
+  },
+  "33": {
+    "class_id": 33,
+    "class_name": "leather_glue",
+    "category": "leather",
+    "defect_type": "glue"
+  },
+  "34": {
+    "class_id": 34,
+    "class_name": "leather_poke",
+    "category": "leather",
+    "defect_type": "poke"
+  },
+  "35": {
+    "class_id": 35,
+    "class_name": "metal_nut_bent",
+    "category": "metal_nut",
+    "defect_type": "bent"
+  },
+  "36": {
+    "class_id": 36,
+    "class_name": "metal_nut_color",
+    "category": "metal_nut",
+    "defect_type": "color"
+  },
+  "37": {
+    "class_id": 37,
+    "class_name": "metal_nut_flip",
+    "category": "metal_nut",
+    "defect_type": "flip"
+  },
+  "38": {
+    "class_id": 38,
+    "class_name": "metal_nut_scratch",
+    "category": "metal_nut",
+    "defect_type": "scratch"
+  },
+  "39": {
+    "class_id": 39,
+    "class_name": "pill_color",
+    "category": "pill",
+    "defect_type": "color"
+  },
+  "40": {
+    "class_id": 40,
+    "class_name": "pill_combined",
+    "category": "pill",
+    "defect_type": "combined"
+  },
+  "41": {
+    "class_id": 41,
+    "class_name": "pill_contamination",
+    "category": "pill",
+    "defect_type": "contamination"
+  },
+  "42": {
+    "class_id": 42,
+    "class_name": "pill_crack",
+    "category": "pill",
+    "defect_type": "crack"
+  },
+  "43": {
+    "class_id": 43,
+    "class_name": "pill_faulty_imprint",
+    "category": "pill",
+    "defect_type": "faulty_imprint"
+  },
+  "44": {
+    "class_id": 44,
+    "class_name": "pill_pill_type",
+    "category": "pill",
+    "defect_type": "pill_type"
+  },
+  "45": {
+    "class_id": 45,
+    "class_name": "pill_scratch",
+    "category": "pill",
+    "defect_type": "scratch"
+  },
+  "46": {
+    "class_id": 46,
+    "class_name": "screw_manipulated_front",
+    "category": "screw",
+    "defect_type": "manipulated_front"
+  },
+  "47": {
+    "class_id": 47,
+    "class_name": "screw_scratch_head",
+    "category": "screw",
+    "defect_type": "scratch_head"
+  },
+  "48": {
+    "class_id": 48,
+    "class_name": "screw_scratch_neck",
+    "category": "screw",
+    "defect_type": "scratch_neck"
+  },
+  "49": {
+    "class_id": 49,
+    "class_name": "screw_thread_side",
+    "category": "screw",
+    "defect_type": "thread_side"
+  },
+  "50": {
+    "class_id": 50,
+    "class_name": "screw_thread_top",
+    "category": "screw",
+    "defect_type": "thread_top"
+  },
+  "51": {
+    "class_id": 51,
+    "class_name": "tile_crack",
+    "category": "tile",
+    "defect_type": "crack"
+  },
+  "52": {
+    "class_id": 52,
+    "class_name": "tile_glue_strip",
+    "category": "tile",
+    "defect_type": "glue_strip"
+  },
+  "53": {
+    "class_id": 53,
+    "class_name": "tile_gray_stroke",
+    "category": "tile",
+    "defect_type": "gray_stroke"
+  },
+  "54": {
+    "class_id": 54,
+    "class_name": "tile_oil",
+    "category": "tile",
+    "defect_type": "oil"
+  },
+  "55": {
+    "class_id": 55,
+    "class_name": "tile_rough",
+    "category": "tile",
+    "defect_type": "rough"
+  },
+  "56": {
+    "class_id": 56,
+    "class_name": "toothbrush_defective",
+    "category": "toothbrush",
+    "defect_type": "defective"
+  },
+  "57": {
+    "class_id": 57,
+    "class_name": "transistor_bent_lead",
+    "category": "transistor",
+    "defect_type": "bent_lead"
+  },
+  "58": {
+    "class_id": 58,
+    "class_name": "transistor_cut_lead",
+    "category": "transistor",
+    "defect_type": "cut_lead"
+  },
+  "59": {
+    "class_id": 59,
+    "class_name": "transistor_damaged_case",
+    "category": "transistor",
+    "defect_type": "damaged_case"
+  },
+  "60": {
+    "class_id": 60,
+    "class_name": "transistor_misplaced",
+    "category": "transistor",
+    "defect_type": "misplaced"
+  },
+  "61": {
+    "class_id": 61,
+    "class_name": "wood_color",
+    "category": "wood",
+    "defect_type": "color"
+  },
+  "62": {
+    "class_id": 62,
+    "class_name": "wood_combined",
+    "category": "wood",
+    "defect_type": "combined"
+  },
+  "63": {
+    "class_id": 63,
+    "class_name": "wood_hole",
+    "category": "wood",
+    "defect_type": "hole"
+  },
+  "64": {
+    "class_id": 64,
+    "class_name": "wood_liquid",
+    "category": "wood",
+    "defect_type": "liquid"
+  },
+  "65": {
+    "class_id": 65,
+    "class_name": "wood_scratch",
+    "category": "wood",
+    "defect_type": "scratch"
+  },
+  "66": {
+    "class_id": 66,
+    "class_name": "zipper_broken_teeth",
+    "category": "zipper",
+    "defect_type": "broken_teeth"
+  },
+  "67": {
+    "class_id": 67,
+    "class_name": "zipper_combined",
+    "category": "zipper",
+    "defect_type": "combined"
+  },
+  "68": {
+    "class_id": 68,
+    "class_name": "zipper_fabric_border",
+    "category": "zipper",
+    "defect_type": "fabric_border"
+  },
+  "69": {
+    "class_id": 69,
+    "class_name": "zipper_fabric_interior",
+    "category": "zipper",
+    "defect_type": "fabric_interior"
+  },
+  "70": {
+    "class_id": 70,
+    "class_name": "zipper_rough",
+    "category": "zipper",
+    "defect_type": "rough"
+  },
+  "71": {
+    "class_id": 71,
+    "class_name": "zipper_split_teeth",
+    "category": "zipper",
+    "defect_type": "split_teeth"
+  },
+  "72": {
+    "class_id": 72,
+    "class_name": "zipper_squeezed_teeth",
+    "category": "zipper",
+    "defect_type": "squeezed_teeth"
+  }
+}

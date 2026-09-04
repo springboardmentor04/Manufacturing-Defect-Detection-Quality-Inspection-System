@@ -404,9 +404,9 @@ def override_decision(inspection_id: int, override_req: OverrideRequest, db: Ses
     if not qd:
         raise HTTPException(status_code=400, detail="No quality decision found to override")
         
-    decision = (override_req.final_decision or "").upper()
-    if decision not in {"PASS", "FAIL"}:
-        raise HTTPException(status_code=400, detail="Decision must be one of: PASS, FAIL")
+    decision = (override_req.final_decision or "").upper().strip()
+    if decision not in {"PASS", "FAIL", "REVIEW", "REWORK"}:
+        raise HTTPException(status_code=400, detail="Decision must be one of: PASS, FAIL, REVIEW, REWORK")
         
     qd.human_decision = decision
     qd.final_decision = decision

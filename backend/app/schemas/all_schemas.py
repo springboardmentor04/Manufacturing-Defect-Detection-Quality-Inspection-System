@@ -134,11 +134,15 @@ class AnalyticsOverview(BaseModel):
     defect_rate: float
     pass_rate: float
     fail_rate: float = 0.0
+    review_rate: float = 0.0
+    rework_rate: float = 0.0
     reject_rate: float = 0.0
     average_severity: float
     critical_defects: int
     passed_inspections: int = 0
     failed_inspections: int = 0
+    review_inspections: int = 0
+    rework_inspections: int = 0
     rejected_inspections: int = 0
     average_confidence: float = 0.0
 
@@ -150,8 +154,13 @@ class DashboardTrend(BaseModel):
     date: str
     passed: int
     failed: int
+    review: int = 0
+    rework: int = 0
     rejected: int = 0
     defects: int
+    defect_rate: float = 0.0
+    pass_rate: float = 0.0
+    average_severity: float = 0.0
 
 class DashboardRecentInspection(BaseModel):
     id: int
@@ -167,11 +176,15 @@ class DashboardSummary(BaseModel):
     total_inspections: int
     passed_inspections: int
     failed_inspections: int
+    review_inspections: int = 0
+    rework_inspections: int = 0
     rejected_inspections: int = 0
     total_products_inspected: int
     total_detected_defects: int
     pass_rate: float
     fail_rate: float
+    review_rate: float = 0.0
+    rework_rate: float = 0.0
     defect_rate: float
     quality_rate: float
     defect_types: List[DashboardDefectType] = []
@@ -186,6 +199,7 @@ class DashboardSummary(BaseModel):
     rejection_rate: float = 0.0
     severity_distribution: List[DashboardDefectType] = []
     trend_direction: str = "stable"
+    major_quality_issues: List[str] = []
     recommended_actions: List[str] = []
 
 # Model Schemas

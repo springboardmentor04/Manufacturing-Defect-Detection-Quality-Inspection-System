@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { inspectionsService } from '@/services/inspections';
+import { getAssetUrl } from '@/services/api';
 import { Inspection } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import { AlertTriangle, CheckCircle, ShieldAlert, Zap, Layers, RefreshCcw, ClipboardList } from 'lucide-react';
@@ -71,9 +72,9 @@ export default function InspectionResultPage() {
 
   if (!inspection) return <DashboardLayout>Not found</DashboardLayout>;
 
-  // Convert local API image path to full URL
-  const imageUrl = `http://localhost:8000/${inspection.image_path}`;
-  const processedImageUrl = inspection.processed_image_path ? `http://localhost:8000/${inspection.processed_image_path}` : null;
+  // Convert image path to full URL
+  const imageUrl = getAssetUrl(inspection.image_path);
+  const processedImageUrl = inspection.processed_image_path ? getAssetUrl(inspection.processed_image_path) : null;
 
   return (
     <DashboardLayout>
@@ -177,40 +178,62 @@ export default function InspectionResultPage() {
         {/* Sidebar details */}
         <div className="space-y-6">
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-            <h2 className="font-bold text-slate-800 text-lg mb-4 border-b pb-2">Decision Summary</h2>
+            <h2 className="font-bold text-slate-800 text-lg mb-4 border-b pb-2">Quality Decision Summary</h2>
             
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-slate-500 font-semibold">AI DECISION</p>
+                <p className="text-xs text-slate-500 font-bold uppercase tracking-wide">AI DECISION</p>
                 <div className="mt-1">
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-bold ${
-                    inspection.ai_decision === 'PASS' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${
+                    inspection.ai_decision === 'PASS' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
+                    inspection.ai_decision === 'FAIL' ? 'bg-red-100 text-red-800 border-red-200' :
+                    inspection.ai_decision === 'REVIEW' ? 'bg-amber-100 text-amber-800 border-amber-200' :
+                    inspection.ai_decision === 'REWORK' ? 'bg-blue-100 text-blue-800 border-blue-200' :
+                    'bg-slate-100 text-slate-800 border-slate-200'
                   }`}>
-                    {inspection.ai_decision === 'PASS' ? <CheckCircle size={16} className="mr-1"/> : <AlertTriangle size={16} className="mr-1"/>}
-                    {inspection.ai_decision}
+                    {inspection.ai_decision === 'PASS' ? <CheckCircle size={14} className="mr-1"/> : <AlertTriangle size={14} className="mr-1"/>}
+                    {inspection.ai_decision || 'N/A'}
                   </span>
                 </div>
               </div>
               
               <div>
-                <p className="text-sm text-slate-500 font-semibold">HUMAN DECISION</p>
-                <p className="font-bold text-slate-800">{inspection.human_decision || 'NONE'}</p>
+                <p className="text-xs text-slate-500 font-bold uppercase tracking-wide">HUMAN REVIEW DECISION</p>
+                <div className="mt-1">
+                  {inspection.human_decision ? (
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${
+                      inspection.human_decision === 'PASS' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
+                      inspection.human_decision === 'FAIL' ? 'bg-red-100 text-red-800 border-red-200' :
+                      inspection.human_decision === 'REVIEW' ? 'bg-amber-100 text-amber-800 border-amber-200' :
+                      inspection.human_decision === 'REWORK' ? 'bg-blue-100 text-blue-800 border-blue-200' :
+                      'bg-slate-100 text-slate-800 border-slate-200'
+                    }`}>
+                      {inspection.human_decision}
+                    </span>
+                  ) : (
+                    <span className="text-sm font-semibold text-slate-400">Not manually overridden</span>
+                  )}
+                </div>
               </div>
 
               <div>
-                <p className="text-sm text-slate-500 font-semibold">FINAL DECISION</p>
+                <p className="text-xs text-slate-500 font-bold uppercase tracking-wide">FINAL QUALITY DECISION</p>
                 <div className="mt-1">
-                  <span className={`inline-flex px-3 py-1 rounded-full text-sm font-bold ${
-                    inspection.final_decision === 'PASS' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
+                  <span className={`inline-flex px-3 py-1.5 rounded-full text-sm font-black border ${
+                    inspection.final_decision === 'PASS' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' :
+                    inspection.final_decision === 'FAIL' ? 'bg-red-100 text-red-800 border-red-300' :
+                    inspection.final_decision === 'REVIEW' ? 'bg-amber-100 text-amber-800 border-amber-300' :
+                    inspection.final_decision === 'REWORK' ? 'bg-blue-100 text-blue-800 border-blue-300' :
+                    'bg-slate-100 text-slate-800 border-slate-300'
                   }`}>
-                    {inspection.final_decision}
+                    {inspection.final_decision || 'N/A'}
                   </span>
                 </div>
               </div>
 
               {inspection.override_reason && (
-                <div className="p-3 bg-amber-50 border border-amber-100 rounded-lg text-sm text-amber-800 italic">
-                  " {inspection.override_reason} "
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900 italic">
+                  <strong>Override Justification:</strong> "{inspection.override_reason}"
                 </div>
               )}
             </div>
@@ -344,15 +367,35 @@ export default function InspectionResultPage() {
             
             <form onSubmit={handleSubmit(onOverrideSubmit)} className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold mb-2">Final Decision</label>
-                <div className="flex gap-4">
-                  <label className="flex-1 border rounded-lg p-3 cursor-pointer hover:bg-slate-50 flex items-center gap-2">
-                    <input type="radio" value="PASS" {...register("final_decision", { required: true })} className="w-4 h-4" />
-                    <span className="font-bold text-emerald-600">PASS</span>
+                <label className="block text-sm font-semibold mb-2">Final Quality Decision</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <label className="border border-emerald-200 bg-emerald-50/50 rounded-lg p-3 cursor-pointer hover:bg-emerald-50 flex items-center gap-2">
+                    <input type="radio" value="PASS" {...register("final_decision", { required: true })} className="w-4 h-4 text-emerald-600" />
+                    <div>
+                      <span className="font-bold text-emerald-700 block text-sm">PASS</span>
+                      <span className="text-[11px] text-emerald-600">Meets acceptance</span>
+                    </div>
                   </label>
-                  <label className="flex-1 border rounded-lg p-3 cursor-pointer hover:bg-slate-50 flex items-center gap-2">
-                    <input type="radio" value="FAIL" {...register("final_decision", { required: true })} className="w-4 h-4" />
-                    <span className="font-bold text-red-600">FAIL</span>
+                  <label className="border border-red-200 bg-red-50/50 rounded-lg p-3 cursor-pointer hover:bg-red-50 flex items-center gap-2">
+                    <input type="radio" value="FAIL" {...register("final_decision", { required: true })} className="w-4 h-4 text-red-600" />
+                    <div>
+                      <span className="font-bold text-red-700 block text-sm">FAIL</span>
+                      <span className="text-[11px] text-red-600">Reject product</span>
+                    </div>
+                  </label>
+                  <label className="border border-amber-200 bg-amber-50/50 rounded-lg p-3 cursor-pointer hover:bg-amber-50 flex items-center gap-2">
+                    <input type="radio" value="REVIEW" {...register("final_decision", { required: true })} className="w-4 h-4 text-amber-600" />
+                    <div>
+                      <span className="font-bold text-amber-700 block text-sm">REVIEW</span>
+                      <span className="text-[11px] text-amber-600">Secondary check</span>
+                    </div>
+                  </label>
+                  <label className="border border-blue-200 bg-blue-50/50 rounded-lg p-3 cursor-pointer hover:bg-blue-50 flex items-center gap-2">
+                    <input type="radio" value="REWORK" {...register("final_decision", { required: true })} className="w-4 h-4 text-blue-600" />
+                    <div>
+                      <span className="font-bold text-blue-700 block text-sm">REWORK</span>
+                      <span className="text-[11px] text-blue-600">Repair & re-inspect</span>
+                    </div>
                   </label>
                 </div>
               </div>

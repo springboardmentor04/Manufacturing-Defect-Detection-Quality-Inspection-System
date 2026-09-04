@@ -21,11 +21,17 @@ def period_start(period: str) -> tuple[str, datetime]:
 
 def _decision(inspection: Inspection) -> str:
     if inspection.quality_decision and inspection.quality_decision.final_decision:
-        d = inspection.quality_decision.final_decision.upper()
-        if d == "PASS":
-            return "PASS"
-        if d in {"FAIL", "REJECT", "REWORK", "REVIEW"}:
+        d = inspection.quality_decision.final_decision.upper().strip()
+        if d in {"PASS", "FAIL", "REVIEW", "REWORK"}:
+            return d
+        if d in {"REJECT"}:
             return "FAIL"
+        if d in {"MANUAL REVIEW", "LOW CONFIDENCE CLASSIFICATION"}:
+            return "REVIEW"
+    if inspection.quality_assessment and inspection.quality_assessment.overall_result:
+        d = inspection.quality_assessment.overall_result.upper().strip()
+        if d in {"PASS", "FAIL", "REVIEW", "REWORK"}:
+            return d
     if not inspection.detections:
         return "PASS"
     return "FAIL"
@@ -34,7 +40,7 @@ def _decision(inspection: Inspection) -> str:
 def _severity_level(detection: Detection) -> str:
     if detection.assessment:
         return detection.assessment.severity_level.upper()
-    if detection.inspection.severity_score and detection.inspection.severity_score.level:
+    if detection.inspection and detection.inspection.severity_score and detection.inspection.severity_score.level:
         return detection.inspection.severity_score.level.upper()
     return "LOW"
 
@@ -55,11 +61,14 @@ def calculate_quality_analytics(db, period: str = "LAST_7_DAYS") -> dict:
         .all()
     )
 
-    decisions = Counter()
+    decisions = Counter({key: 0 for key in ("PASS", "FAIL", "REVIEW", "REWORK")})
     defect_types = Counter()
     severity_counts = Counter({level: 0 for level in ("CRITICAL", "HIGH", "MEDIUM", "LOW")})
     confidences, severity_scores = [], []
-    daily = defaultdict(lambda: {"inspection_volume": 0, "passed": 0, "failed": 0, "defects": 0, "severity_scores": []})
+    daily = defaultdict(lambda: {
+        "inspection_volume": 0, "passed": 0, "failed": 0,
+        "review": 0, "rework": 0, "defects": 0, "severity_scores": []
+    })
     high_severity_types = Counter()
 
     for inspection in inspections:
@@ -70,8 +79,12 @@ def calculate_quality_analytics(db, period: str = "LAST_7_DAYS") -> dict:
         entry["inspection_volume"] += 1
         if decision == "PASS":
             entry["passed"] += 1
-        else:
+        elif decision == "FAIL":
             entry["failed"] += 1
+        elif decision == "REVIEW":
+            entry["review"] += 1
+        elif decision == "REWORK":
+            entry["rework"] += 1
 
         for detection in inspection.detections:
             defect_type = detection.defect_display_name or category_label(detection.defect_type, detection.product_category) or (detection.defect_type.capitalize() if detection.defect_type else "Defect")
@@ -93,6 +106,8 @@ def calculate_quality_analytics(db, period: str = "LAST_7_DAYS") -> dict:
     total_inspections = len(inspections)
     passed = decisions["PASS"]
     failed = decisions["FAIL"]
+    review = decisions["REVIEW"]
+    rework = decisions["REWORK"]
     total_defects = sum(defect_types.values())
     divisor = total_inspections or 1
 
@@ -109,6 +124,8 @@ def calculate_quality_analytics(db, period: str = "LAST_7_DAYS") -> dict:
             "inspection_volume": volume,
             "passed": entry["passed"],
             "failed": entry["failed"],
+            "review": entry["review"],
+            "rework": entry["rework"],
             "defects": entry["defects"],
             "defect_rate": round(entry["defects"] / volume * 100, 2) if volume else 0.0,
             "pass_rate": round(entry["passed"] / volume * 100, 2) if volume else 0.0,
@@ -118,7 +135,7 @@ def calculate_quality_analytics(db, period: str = "LAST_7_DAYS") -> dict:
     midpoint = max(len(trends) // 2, 1)
     earlier = trends[:midpoint]
     later = trends[midpoint:]
-    earlier_rate = sum(item["defect_rate"] for item in earlier) / len(earlier)
+    earlier_rate = sum(item["defect_rate"] for item in earlier) / len(earlier) if earlier else 0.0
     later_rate = sum(item["defect_rate"] for item in later) / len(later) if later else earlier_rate
     trend_direction = "increasing" if later_rate > earlier_rate + 1 else "decreasing" if later_rate < earlier_rate - 1 else "stable"
     major_issues = []
@@ -130,6 +147,10 @@ def calculate_quality_analytics(db, period: str = "LAST_7_DAYS") -> dict:
     recommendations = []
     if severity_counts["CRITICAL"]:
         recommendations.append("Contain affected production and investigate critical defects immediately.")
+    if review > 0:
+        recommendations.append(f"{review} inspection(s) pending manual review before product release.")
+    if rework > 0:
+        recommendations.append(f"{rework} product(s) marked for rework/reprocessing.")
     if trend_direction == "increasing":
         recommendations.append("Increase sampling and review the production process because defect rate is increasing.")
     if not recommendations:
@@ -141,6 +162,8 @@ def calculate_quality_analytics(db, period: str = "LAST_7_DAYS") -> dict:
         "total_inspections": total_inspections,
         "passed_inspections": passed,
         "failed_inspections": failed,
+        "review_inspections": review,
+        "rework_inspections": rework,
         "total_defects": total_defects,
         "defects_by_category": [{"name": name, "value": value} for name, value in defect_types.most_common()],
         "defects_by_severity": [{"name": level.title(), "value": severity_counts[level]} for level in ("CRITICAL", "HIGH", "MEDIUM", "LOW")],
@@ -152,6 +175,8 @@ def calculate_quality_analytics(db, period: str = "LAST_7_DAYS") -> dict:
         "average_confidence": round(sum(confidences) / len(confidences), 2) if confidences else 0.0,
         "pass_rate": round(passed / divisor * 100, 2) if total_inspections else 0.0,
         "fail_rate": round(failed / divisor * 100, 2) if total_inspections else 0.0,
+        "review_rate": round(review / divisor * 100, 2) if total_inspections else 0.0,
+        "rework_rate": round(rework / divisor * 100, 2) if total_inspections else 0.0,
         "defect_rate": round(total_defects / divisor * 100, 2) if total_inspections else 0.0,
         "trends": trends,
         "trend_direction": trend_direction,

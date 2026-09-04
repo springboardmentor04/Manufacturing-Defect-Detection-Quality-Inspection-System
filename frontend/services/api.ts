@@ -1,6 +1,16 @@
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+export const API_URL = 
+  process.env.NEXT_PUBLIC_API_URL || 
+  (typeof window !== 'undefined' && window.location.origin ? `${window.location.origin}/api` : 'http://localhost:8000/api');
+
+export const getAssetUrl = (path: string | null | undefined): string => {
+  if (!path) return '';
+  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+  const baseUrl = API_URL.replace(/\/api\/?$/, '');
+  const cleanPath = path.replace(/^\//, '');
+  return `${baseUrl}/${cleanPath}`;
+};
 
 export const api = axios.create({
   baseURL: API_URL,

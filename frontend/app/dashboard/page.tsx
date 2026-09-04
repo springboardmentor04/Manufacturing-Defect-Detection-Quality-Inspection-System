@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { api } from '@/services/api';
+import { api, getAssetUrl } from '@/services/api';
 import { productsService } from '@/services/products';
 import { reportsService } from '@/services/reports';
 import { inspectionsService } from '@/services/inspections';
@@ -97,10 +97,12 @@ export default function DashboardPage() {
   };
 
   const statusPill = (value: string) => {
-    const normalized = (value || '').toUpperCase();
-    if (normalized === 'PASS') return 'bg-emerald-100 text-emerald-700';
-    if (normalized === 'FAIL') return 'bg-red-100 text-red-700';
-    return 'bg-slate-100 text-slate-700';
+    const normalized = (value || '').toUpperCase().trim();
+    if (normalized === 'PASS') return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+    if (normalized === 'FAIL') return 'bg-red-100 text-red-800 border border-red-200';
+    if (normalized === 'REVIEW') return 'bg-amber-100 text-amber-800 border border-amber-200';
+    if (normalized === 'REWORK') return 'bg-blue-100 text-blue-800 border border-blue-200';
+    return 'bg-slate-100 text-slate-800 border border-slate-200';
   };
 
   const renderQualityEngineerDashboard = () => (
@@ -108,7 +110,7 @@ export default function DashboardPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-extrabold text-slate-900">Quality Engineer Dashboard</h1>
-          <p className="text-slate-500">Defect monitoring, inspections, and AI validation.</p>
+          <p className="text-slate-500">Defect monitoring, automated inspections, and quality decision workflow.</p>
         </div>
       </div>
 
@@ -116,13 +118,13 @@ export default function DashboardPage() {
         <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
         <KpiCard label="Total Inspections" value={summary?.total_inspections ?? 0} tone="blue" />
-        <KpiCard label="Passed" value={summary?.passed_inspections ?? 0} tone="green" />
-        <KpiCard label="Failed" value={summary?.failed_inspections ?? 0} tone="red" />
-        <KpiCard label="Quality Rate" value={`${Number(summary?.quality_rate ?? 0).toFixed(1)}%`} tone="amber" />
-        <KpiCard label="Critical Defects" value={summary?.critical_defects ?? 0} tone="red" />
-        <KpiCard label="Average Severity" value={Number(summary?.average_severity ?? 0).toFixed(1)} tone="indigo" />
+        <KpiCard label="PASS" value={summary?.passed_inspections ?? 0} tone="green" />
+        <KpiCard label="FAIL" value={summary?.failed_inspections ?? 0} tone="red" />
+        <KpiCard label="REVIEW" value={summary?.review_inspections ?? 0} tone="amber" />
+        <KpiCard label="REWORK" value={summary?.rework_inspections ?? 0} tone="blue" />
+        <KpiCard label="Quality Pass Rate" value={`${Number(summary?.pass_rate ?? 0).toFixed(1)}%`} tone="green" />
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.2fr_0.8fr]">
@@ -230,7 +232,7 @@ export default function DashboardPage() {
                   <p className="font-semibold text-slate-800">{report.report_type?.replace('_', ' ') || 'Report'}</p>
                   <p className="text-xs text-slate-500">{new Date(report.created_at).toLocaleString()}</p>
                 </div>
-                <a href={report.file_path ? `http://localhost:8000/${report.file_path.replace(/^\//, '')}` : '#'} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-xs font-semibold text-blue-600 shadow-sm hover:bg-slate-100">
+                <a href={getAssetUrl(report.file_path) || '#'} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-xs font-semibold text-blue-600 shadow-sm hover:bg-slate-100">
                   <Download size={14} /> View
                 </a>
               </div>
@@ -305,41 +307,41 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
         <KpiCard label="Products Inspected" value={summary?.total_products_inspected ?? 0} tone="blue" />
         <KpiCard label="Total Inspections" value={summary?.total_inspections ?? 0} tone="indigo" />
-        <KpiCard label="Pass Rate" value={`${Number(summary?.pass_rate ?? 0).toFixed(1)}%`} tone="green" />
-        <KpiCard label="Defects Detected" value={summary?.total_detected_defects ?? 0} tone="red" />
-        <KpiCard label="Failed" value={summary?.failed_inspections ?? 0} tone="red" />
-        <KpiCard label="Avg Confidence" value={`${Number(summary?.average_confidence ?? 0).toFixed(1)}%`} tone="indigo" />
+        <KpiCard label="PASS Rate" value={`${Number(summary?.pass_rate ?? 0).toFixed(1)}%`} tone="green" />
+        <KpiCard label="FAIL Rate" value={`${Number(summary?.fail_rate ?? 0).toFixed(1)}%`} tone="red" />
+        <KpiCard label="REVIEW Rate" value={`${Number(summary?.review_rate ?? 0).toFixed(1)}%`} tone="amber" />
+        <KpiCard label="REWORK Rate" value={`${Number(summary?.rework_rate ?? 0).toFixed(1)}%`} tone="blue" />
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="mb-4 text-xl font-bold text-slate-800">Production Overview</h2>
           <div className="grid grid-cols-2 gap-3 text-sm">
-            <MetricBox label="Passed" value={summary?.passed_inspections ?? 0} />
-            <MetricBox label="Failed" value={summary?.failed_inspections ?? 0} />
-            <MetricBox label="Quality rate" value={`${Number(summary?.quality_rate ?? 0).toFixed(1)}%`} />
-            <MetricBox label="Defect rate" value={`${Number(summary?.defect_rate ?? 0).toFixed(1)}%`} />
+            <MetricBox label="PASS" value={summary?.passed_inspections ?? 0} />
+            <MetricBox label="FAIL" value={summary?.failed_inspections ?? 0} />
+            <MetricBox label="REVIEW" value={summary?.review_inspections ?? 0} />
+            <MetricBox label="REWORK" value={summary?.rework_inspections ?? 0} />
           </div>
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="mb-4 text-xl font-bold text-slate-800">Quality Analysis</h2>
           <div className="space-y-3 text-sm text-slate-600">
-            <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3"><span>Overall pass rate</span><strong className="text-slate-900">{Number(summary?.pass_rate ?? 0).toFixed(1)}%</strong></div>
-            <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3"><span>Fail rate</span><strong className="text-slate-900">{Number(summary?.fail_rate ?? 0).toFixed(1)}%</strong></div>
+            <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3"><span>PASS rate</span><strong className="text-emerald-700">{Number(summary?.pass_rate ?? 0).toFixed(1)}%</strong></div>
+            <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3"><span>FAIL rate</span><strong className="text-red-700">{Number(summary?.fail_rate ?? 0).toFixed(1)}%</strong></div>
+            <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3"><span>REVIEW rate</span><strong className="text-amber-700">{Number(summary?.review_rate ?? 0).toFixed(1)}%</strong></div>
+            <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3"><span>REWORK rate</span><strong className="text-blue-700">{Number(summary?.rework_rate ?? 0).toFixed(1)}%</strong></div>
             <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3"><span>Most frequent defect</span><strong className="text-slate-900">{formatDefectType(summary?.defect_types?.[0]?.name) || 'N/A'}</strong></div>
-            <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3"><span>Inspection volume</span><strong className="text-slate-900">{summary?.total_inspections ?? 0}</strong></div>
-            <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3"><span>Trend direction</span><strong className="text-slate-900 capitalize">{summary?.trend_direction || 'stable'}</strong></div>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-xl font-bold text-slate-800">Defect Trends</h2>
+          <h2 className="mb-4 text-xl font-bold text-slate-800">Quality & Defect Trends</h2>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={summary?.trends || []}>
@@ -348,8 +350,10 @@ export default function DashboardPage() {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="passed" fill="#10b981" name="Passed" />
-                <Bar dataKey="failed" fill="#ef4444" name="Failed" />
+                <Bar dataKey="passed" fill="#10b981" name="PASS" />
+                <Bar dataKey="failed" fill="#ef4444" name="FAIL" />
+                <Bar dataKey="review" fill="#f59e0b" name="REVIEW" />
+                <Bar dataKey="rework" fill="#3b82f6" name="REWORK" />
               </BarChart>
             </ResponsiveContainer>
           </div>

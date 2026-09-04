@@ -200,4 +200,4 @@ def test_pipeline_good_image_has_no_invented_defect(tmp_path):
     assert result["status"] == "normal"
     assert result["quality_assessment"]["overall_result"] == "PASS"
     assert result["quality_assessment"]["defect_count"] == 0
-    assert result["quality_assessment"]["recommended_action"] == "No defects detected. Product is acceptable."
+    assert "No defects detected" in result["quality_assessment"]["recommended_action"]

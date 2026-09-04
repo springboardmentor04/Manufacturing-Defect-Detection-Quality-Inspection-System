@@ -109,24 +109,64 @@ def quality_risk_for(score: float) -> str:
     }.get(level, "Low risk")
 
 
-def recommended_action(level: str, manual_review_required: bool) -> str:
-    actions = {
-        "CRITICAL": "Reject product and trigger quality inspection workflow.",
-        "HIGH": "Hold product for repair or rework before release.",
-        "MEDIUM": "Inspection review required.",
-        "LOW": "Product is generally acceptable; record cosmetic defect.",
-    }
-    action = actions.get(level, "Product is generally acceptable.")
-    if manual_review_required:
-        action += " Manual review is required."
-    return action
+# Defect keywords categorised by manufacturability / repairability
+UNCORRECTABLE_DEFECT_KEYWORDS = (
+    "missing", "broken", "split", "damaged", "cut", "hole", "crack",
+    "crushed", "fracture", "structural", "defective"
+)
+
+REWORKABLE_DEFECT_KEYWORDS = (
+    "scratch", "contamination", "bent", "manipulated", "misplaced", "swap",
+    "flip", "combined", "fold", "poke", "color", "texture", "spot", "stain",
+    "glue", "thread", "rough", "imprint", "faulty_imprint", "fabric_border",
+    "squeezed_teeth", "cable_swap", "bent_wire"
+)
 
 
-def decision_for(level: str, manual_review_required: bool = False) -> str:
-    # Any detected defect results in a FAIL decision.
-    if level and str(level).strip().upper() not in {"NONE", "PASS"}:
-        return "FAIL"
-    return "PASS"
+def is_reworkable_defect(defect_type: str, level: str) -> bool:
+    """Determine if a defect is correctable / reworkable vs non-recoverable fail."""
+    normalized = normalize_defect_type(defect_type)
+    if level == "CRITICAL":
+        return False
+    if any(kw in normalized for kw in UNCORRECTABLE_DEFECT_KEYWORDS):
+        return False
+    if any(kw in normalized for kw in REWORKABLE_DEFECT_KEYWORDS):
+        return True
+    # If not explicitly uncorrectable and not critical severity, it is reworkable
+    return level in {"MEDIUM", "LOW", "HIGH"}
+
+
+def recommended_action(level: str, decision: str, manual_review_required: bool) -> str:
+    if decision == "PASS":
+        return "No defect detected. Product meets acceptance criteria."
+    if decision == "REVIEW":
+        return "Automatic decision confidence is insufficient. Route for manual quality review."
+    if decision == "REWORK":
+        return "Correctable defect detected. Route product for rework/reprocessing and re-inspection."
+    # FAIL
+    return "Non-correctable defect detected. Reject and quarantine product."
+
+
+def decision_for(
+    defect_type: str,
+    level: str,
+    manual_review_required: bool = False,
+    confidence: float = 100.0,
+) -> str:
+    """
+    Produce strictly one of the 4 Quality Decisions: PASS, FAIL, REVIEW, REWORK.
+    """
+    cleaned = (defect_type or "").strip().lower()
+    if not cleaned or cleaned in {"none", "pass", "no_defect", "good", "normal", "acceptable"} or str(level).strip().upper() in {"NONE", "PASS"}:
+        return "PASS"
+
+    if manual_review_required or confidence < 70.0:
+        return "REVIEW"
+
+    if is_reworkable_defect(defect_type, level):
+        return "REWORK"
+
+    return "FAIL"
 
 
 def assess_defect(defect: Dict, image_dimensions: Tuple[int, int]) -> Dict:
@@ -141,6 +181,14 @@ def assess_defect(defect: Dict, image_dimensions: Tuple[int, int]) -> Dict:
         manual_review_required = confidence < 70.0 or classification_conf < 60.0
     else:
         manual_review_required = confidence < 70.0
+
+    quality_decision = decision_for(
+        defect_type=defect.get("type", ""),
+        level=level,
+        manual_review_required=manual_review_required,
+        confidence=confidence,
+    )
+
     return {
         "category": category_label(defect.get("type", ""), defect.get("product_category")),
         "size_score": size,
@@ -150,8 +198,8 @@ def assess_defect(defect: Dict, image_dimensions: Tuple[int, int]) -> Dict:
         "severity_score": score,
         "severity_level": level,
         "quality_risk": quality_risk_for(score),
-        "quality_decision": decision_for(level, manual_review_required),
-        "recommended_action": recommended_action(level, manual_review_required),
+        "quality_decision": quality_decision,
+        "recommended_action": recommended_action(level, quality_decision, manual_review_required),
         "manual_review_required": manual_review_required,
     }
 
@@ -163,12 +211,17 @@ def build_defect_summary(defects: Iterable[Dict]) -> list[dict]:
         metadata["category"] = category_label(metadata.get("type", ""), metadata.get("product_category"))
         metadata["severity_level"] = defect.get("severity_level", severity_level(defect.get("severity_score", 0.0)))
         metadata["quality_risk"] = defect.get("quality_risk", quality_risk_for(defect.get("severity_score", 0.0)))
-        metadata["quality_decision"] = defect.get("quality_decision", decision_for(metadata["severity_level"], defect.get("manual_review_required", False)))
+        metadata["quality_decision"] = defect.get("quality_decision", decision_for(
+            defect.get("type", ""),
+            metadata["severity_level"],
+            defect.get("manual_review_required", False),
+            defect.get("confidence", 100.0),
+        ))
         summaries.append(metadata)
     return summaries
 
 
-def assess_inspection(defects: Iterable[Dict]) -> Dict:
+def assess_inspection(defects: Iterable[Dict], image_quality_status: str = "GOOD") -> Dict:
     defects = list(defects)
     if not defects:
         return {
@@ -176,17 +229,29 @@ def assess_inspection(defects: Iterable[Dict]) -> Dict:
             "highest_severity": "LOW",
             "quality_risk": "Low risk",
             "defect_count": 0,
-            "recommended_action": "No defects detected. Product is acceptable.",
+            "recommended_action": "No defects detected. Product meets acceptance criteria.",
             "manual_review_required": False,
         }
+
     highest = max(defects, key=lambda defect: (SEVERITY_RANK.get(defect.get("severity_level", "LOW"), 0), defect.get("severity_score", 0.0)))
-    manual_review_required = any(defect.get("manual_review_required", False) for defect in defects)
-    result = "FAIL" if len(defects) > 0 else "PASS"
+    manual_review_required = any(defect.get("manual_review_required", False) for defect in defects) or (image_quality_status == "POOR")
+
+    decisions = [d.get("quality_decision", "FAIL") for d in defects]
+
+    if manual_review_required or "REVIEW" in decisions:
+        overall_result = "REVIEW"
+    elif "FAIL" in decisions or highest.get("severity_level") == "CRITICAL":
+        overall_result = "FAIL"
+    elif all(dec == "REWORK" for dec in decisions):
+        overall_result = "REWORK"
+    else:
+        overall_result = "FAIL"
+
     return {
-        "overall_result": result,
+        "overall_result": overall_result,
         "highest_severity": highest.get("severity_level", "LOW"),
         "quality_risk": highest.get("quality_risk", "Low risk"),
         "defect_count": len(defects),
-        "recommended_action": highest.get("recommended_action", "Review inspection results."),
+        "recommended_action": highest.get("recommended_action", recommended_action(highest.get("severity_level", "LOW"), overall_result, manual_review_required)),
         "manual_review_required": manual_review_required,
     }

@@ -56,6 +56,37 @@ def resolve_classifier_path(explicit_path: str | None = None) -> str | None:
     return None
 
 
+def calculate_box_iou(box1, box2) -> float:
+    x1 = max(box1[0], box2[0])
+    y1 = max(box1[1], box2[1])
+    x2 = min(box1[2], box2[2])
+    y2 = min(box1[3], box2[3])
+    inter = max(0.0, x2 - x1) * max(0.0, y2 - y1)
+    area1 = max(0.0, (box1[2] - box1[0]) * (box1[3] - box1[1]))
+    area2 = max(0.0, (box2[2] - box2[0]) * (box2[3] - box2[1]))
+    union = area1 + area2 - inter
+    return inter / union if union > 0 else 0.0
+
+
+def filter_duplicate_detections(defects: list[dict], iou_threshold: float = 0.65) -> list[dict]:
+    """Suppress duplicate overlapping detections keeping highest confidence."""
+    if len(defects) <= 1:
+        return defects
+    # Sort descending by confidence
+    sorted_defects = sorted(defects, key=lambda d: d.get("confidence", 0), reverse=True)
+    kept = []
+    for defect in sorted_defects:
+        bbox = defect["bbox"]
+        overlap = False
+        for k in kept:
+            if calculate_box_iou(bbox, k["bbox"]) > iou_threshold:
+                overlap = True
+                break
+        if not overlap:
+            kept.append(defect)
+    return kept
+
+
 class InferencePipeline:
     def __init__(self, model_path=None, classifier_path=None):
         resolved_path = resolve_model_path(model_path)
@@ -106,7 +137,7 @@ class InferencePipeline:
             preprocess_image(image, processed_image_path)
         
         # 3. Defect Detection & Classification
-        defects = []
+        raw_defects = []
         if self.model is not None:
             results = self.model(image_path, conf=self.confidence_threshold, verbose=False)[0]
             boxes = results.boxes if results.boxes is not None else []
@@ -190,7 +221,7 @@ class InferencePipeline:
                         classification_source = "classifier"
                         classifier_conf = top1_conf
 
-                defects.append({
+                raw_defects.append({
                     "type": defect_type,
                     "confidence": conf * 100,
                     "bbox": [x1, y1, x2, y2],
@@ -203,40 +234,43 @@ class InferencePipeline:
                     "classification_confidence": (classifier_conf * 100) if classifier_conf > 0 else None,
                     "detection_confidence": conf * 100,
                 })
-            
+        
+        # Deduplicate overlapping detections (NMS filtering)
+        filtered_defects = filter_duplicate_detections(raw_defects)
+
         # 4. Deterministic categorization, severity, risk, and quality decision.
         final_defects = []
-        highest_severity = 0
+        highest_severity = 0.0
         overall_level = "LOW"
-        overall_decision = "PASS"
         
-        for d in defects:
+        for d in filtered_defects:
             assessment = assess_defect(d, image_dims)
             d.update(assessment)
             
             if d["severity_score"] > highest_severity:
                 highest_severity = d["severity_score"]
                 overall_level = d["severity_level"]
-                overall_decision = d["quality_decision"]
                 
             final_defects.append(d)
             
-        processing_time_ms = (time.time() - start_time) * 1000
+        processing_time_ms = round((time.time() - start_time) * 1000, 2)
         
-        overall_assessment = assess_inspection(final_defects)
+        overall_assessment = assess_inspection(final_defects, image_quality_status=quality["quality_status"])
         if self.model is None:
             overall_assessment.update({
-                "overall_result": "FAIL", "quality_risk": "Model Unavailable",
-                "recommended_action": "Automated model prediction is unavailable. Manual inspection required.",
+                "overall_result": "REVIEW",
+                "quality_risk": "Model Unavailable",
+                "recommended_action": "Automated model prediction is unavailable. Manual inspection review required.",
                 "manual_review_required": True,
             })
-        elif quality["quality_status"] == "POOR" and final_defects:
+        elif quality["quality_status"] == "POOR":
             overall_assessment.update({
-                "overall_result": "FAIL" if overall_assessment["overall_result"] == "PASS" else overall_assessment["overall_result"],
+                "overall_result": "REVIEW",
                 "quality_risk": "Image Quality Risk",
-                "recommended_action": "Capture a clearer image before releasing the product.",
+                "recommended_action": "Poor image quality detected. Capture a clearer image before releasing the product.",
                 "manual_review_required": True,
             })
+
         message = self.model_error
         if self.model is not None and final_defects:
             unmapped = [d for d in final_defects if not d.get("class_mapped")]

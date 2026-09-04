@@ -14,7 +14,13 @@ def _summary_payload(db: Session, period: str):
     metrics = calculate_quality_analytics(db, period)
     inspections = (
         db.query(Inspection)
-        .options(joinedload(Inspection.detections), joinedload(Inspection.quality_decision), joinedload(Inspection.severity_score), joinedload(Inspection.batch).joinedload(ProductionBatch.product))
+        .options(
+            joinedload(Inspection.detections),
+            joinedload(Inspection.quality_decision),
+            joinedload(Inspection.quality_assessment),
+            joinedload(Inspection.severity_score),
+            joinedload(Inspection.batch).joinedload(ProductionBatch.product),
+        )
         .order_by(Inspection.created_at.desc())
         .limit(10)
         .all()
@@ -22,11 +28,17 @@ def _summary_payload(db: Session, period: str):
     recent = []
     for inspection in inspections:
         if inspection.quality_decision and inspection.quality_decision.final_decision:
-            decision = "PASS" if inspection.quality_decision.final_decision.upper() == "PASS" else "FAIL"
+            decision = inspection.quality_decision.final_decision.upper().strip()
+        elif inspection.quality_assessment and inspection.quality_assessment.overall_result:
+            decision = inspection.quality_assessment.overall_result.upper().strip()
         elif not inspection.detections:
             decision = "PASS"
         else:
             decision = "FAIL"
+
+        if decision not in {"PASS", "FAIL", "REVIEW", "REWORK"}:
+            decision = "REVIEW"
+
         recent.append({
             "id": inspection.id,
             "product_name": inspection.batch.product.name if inspection.batch and inspection.batch.product else "Unassigned product",
@@ -42,7 +54,6 @@ def _summary_payload(db: Session, period: str):
         **metrics,
         "total_products_inspected": len(product_ids),
         "total_detected_defects": metrics["total_defects"],
-        "fail_rate": round(metrics["failed_inspections"] / metrics["total_inspections"] * 100, 2) if metrics["total_inspections"] else 0.0,
         "quality_rate": metrics["pass_rate"],
         "defect_types": metrics["defects_by_category"],
         "severity_distribution": metrics["defects_by_severity"],
@@ -54,11 +65,21 @@ def _summary_payload(db: Session, period: str):
 def get_analytics_overview(period: str = Query("LAST_7_DAYS"), db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)):
     metrics = calculate_quality_analytics(db, period)
     return {
-        "total_inspections": metrics["total_inspections"], "total_defects": metrics["total_defects"],
-        "defect_rate": metrics["defect_rate"], "pass_rate": metrics["pass_rate"],
-        "fail_rate": metrics["fail_rate"], "reject_rate": 0.0, "average_severity": metrics["average_severity"],
-        "critical_defects": metrics["critical_defects"], "passed_inspections": metrics["passed_inspections"],
-        "failed_inspections": metrics["failed_inspections"], "rejected_inspections": 0,
+        "total_inspections": metrics["total_inspections"],
+        "total_defects": metrics["total_defects"],
+        "defect_rate": metrics["defect_rate"],
+        "pass_rate": metrics["pass_rate"],
+        "fail_rate": metrics["fail_rate"],
+        "review_rate": metrics["review_rate"],
+        "rework_rate": metrics["rework_rate"],
+        "reject_rate": 0.0,
+        "average_severity": metrics["average_severity"],
+        "critical_defects": metrics["critical_defects"],
+        "passed_inspections": metrics["passed_inspections"],
+        "failed_inspections": metrics["failed_inspections"],
+        "review_inspections": metrics["review_inspections"],
+        "rework_inspections": metrics["rework_inspections"],
+        "rejected_inspections": 0,
         "average_confidence": metrics["average_confidence"],
     }
 

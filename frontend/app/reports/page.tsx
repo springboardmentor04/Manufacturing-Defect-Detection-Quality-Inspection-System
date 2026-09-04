@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { reportsService } from '@/services/reports';
+import { getAssetUrl } from '@/services/api';
 import { FileText, Download, Plus } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 
@@ -77,7 +78,7 @@ export default function ReportsPage() {
                 <p className="text-xs text-slate-400">Generated: {new Date(report.created_at).toLocaleString()}</p>
                 <div className="mt-4 pt-4 border-t border-slate-100 flex justify-between">
                   <span className="text-xs font-semibold bg-slate-100 px-2 py-1 rounded">By: User {report.generated_by}</span>
-                  <a href={`http://localhost:8000/${report.file_path}`} target="_blank" rel="noreferrer" className="text-sm font-bold text-blue-600 hover:underline">
+                  <a href={getAssetUrl(report.file_path) || '#'} target="_blank" rel="noreferrer" className="text-sm font-bold text-blue-600 hover:underline">
                     View report
                   </a>
                 </div>

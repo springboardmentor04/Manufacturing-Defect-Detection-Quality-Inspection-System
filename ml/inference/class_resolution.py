@@ -33,10 +33,15 @@ CLASS_MAPPING_PATH = os.path.join(PROJECT_ROOT, "datasets", "yolo_dataset", "cla
 @lru_cache(maxsize=4)
 def load_class_mapping(path: str = CLASS_MAPPING_PATH) -> Dict[str, Dict[str, Any]]:
     """Load and cache the dataset class mapping keyed by class id (as str)."""
-    if not path or not os.path.isfile(path):
-        return {}
+    resolved_path = path
+    if not resolved_path or not os.path.isfile(resolved_path):
+        fallback = os.path.join(ML_DIR, "models", "class_mapping.json")
+        if os.path.isfile(fallback):
+            resolved_path = fallback
+        else:
+            return {}
     try:
-        with open(path, "r", encoding="utf-8") as handle:
+        with open(resolved_path, "r", encoding="utf-8") as handle:
             raw = json.load(handle)
     except (OSError, ValueError):
         return {}

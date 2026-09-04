@@ -31,6 +31,8 @@ export interface Batch {
   product?: Product;
 }
 
+export type QualityDecisionType = 'PASS' | 'FAIL' | 'REVIEW' | 'REWORK';
+
 export interface Inspection {
   id: number;
   product_id: number;
@@ -42,9 +44,9 @@ export interface Inspection {
   confidence?: number;
   severity_score?: number;
   severity_level?: string;
-  ai_decision?: string;
-  human_decision?: string;
-  final_decision?: string;
+  ai_decision?: QualityDecisionType | string;
+  human_decision?: QualityDecisionType | string | null;
+  final_decision?: QualityDecisionType | string;
   override_reason?: string;
   model_version?: string;
   model_status?: string;

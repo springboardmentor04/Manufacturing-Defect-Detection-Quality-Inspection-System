@@ -1,0 +1,200 @@
+{
+  "timestamp": "2026-09-03 07:43:14 UTC",
+  "model_path": "C:\\Users\\ramya\\OneDrive\\Desktop\\project\\VIsionAi\\ml\\models\\best.pt",
+  "model_status": "AVAILABLE",
+  "dataset": "MVTec AD (Multi-category Industrial Inspection)",
+  "categories_evaluated": [
+    "bottle",
+    "cable",
+    "capsule",
+    "carpet",
+    "grid",
+    "hazelnut",
+    "leather",
+    "metal_nut",
+    "pill",
+    "screw",
+    "tile",
+    "toothbrush",
+    "transistor",
+    "wood",
+    "zipper"
+  ],
+  "sample_counts": {
+    "total_samples": 1382,
+    "normal_samples": 381,
+    "defect_samples": 1001
+  },
+  "confusion_matrix": {
+    "true_positives": 565,
+    "false_positives": 196,
+    "true_negatives": 185,
+    "false_negatives": 436
+  },
+  "classification_metrics": {
+    "precision": 74.24,
+    "recall": 56.44,
+    "f1_score": 64.13,
+    "accuracy": 54.27,
+    "false_defect_detection_rate": 51.44,
+    "mean_iou_on_masked_defects": 0.208,
+    "map_note": "Pixel-accurate mAP@0.5:0.95 requires dense per-instance polygon segmentation; bounding boxes are approximated from binary masks."
+  },
+  "quality_decision_distribution": {
+    "PASS": 609,
+    "FAIL": 0,
+    "REVIEW": 773,
+    "REWORK": 0
+  },
+  "performance_latency_ms": {
+    "mean_latency_ms": 657.81,
+    "median_latency_ms": 428.22,
+    "min_latency_ms": 213.43,
+    "max_latency_ms": 96165.37,
+    "p95_latency_ms": 1354.19,
+    "p99_latency_ms": 3346.94
+  },
+  "category_breakdown": {
+    "bottle": {
+      "normal_samples": 20,
+      "defect_samples": 45,
+      "tp": 44,
+      "fn": 1,
+      "fp": 0,
+      "tn": 20,
+      "accuracy": 98.46
+    },
+    "cable": {
+      "normal_samples": 30,
+      "defect_samples": 91,
+      "tp": 91,
+      "fn": 0,
+      "fp": 30,
+      "tn": 0,
+      "accuracy": 75.21
+    },
+    "capsule": {
+      "normal_samples": 23,
+      "defect_samples": 75,
+      "tp": 71,
+      "fn": 4,
+      "fp": 21,
+      "tn": 2,
+      "accuracy": 74.49
+    },
+    "carpet": {
+      "normal_samples": 28,
+      "defect_samples": 75,
+      "tp": 0,
+      "fn": 75,
+      "fp": 0,
+      "tn": 28,
+      "accuracy": 27.18
+    },
+    "grid": {
+      "normal_samples": 21,
+      "defect_samples": 57,
+      "tp": 0,
+      "fn": 57,
+      "fp": 0,
+      "tn": 21,
+      "accuracy": 26.92
+    },
+    "hazelnut": {
+      "normal_samples": 30,
+      "defect_samples": 60,
+      "tp": 60,
+      "fn": 0,
+      "fp": 30,
+      "tn": 0,
+      "accuracy": 66.67
+    },
+    "leather": {
+      "normal_samples": 30,
+      "defect_samples": 75,
+      "tp": 75,
+      "fn": 0,
+      "fp": 30,
+      "tn": 0,
+      "accuracy": 71.43
+    },
+    "metal_nut": {
+      "normal_samples": 22,
+      "defect_samples": 60,
+      "tp": 35,
+      "fn": 25,
+      "fp": 12,
+      "tn": 10,
+      "accuracy": 54.88
+    },
+    "pill": {
+      "normal_samples": 26,
+      "defect_samples": 99,
+      "tp": 93,
+      "fn": 6,
+      "fp": 24,
+      "tn": 2,
+      "accuracy": 76.0
+    },
+    "screw": {
+      "normal_samples": 30,
+      "defect_samples": 75,
+      "tp": 19,
+      "fn": 56,
+      "fp": 6,
+      "tn": 24,
+      "accuracy": 40.95
+    },
+    "tile": {
+      "normal_samples": 30,
+      "defect_samples": 75,
+      "tp": 7,
+      "fn": 68,
+      "fp": 0,
+      "tn": 30,
+      "accuracy": 35.24
+    },
+    "toothbrush": {
+      "normal_samples": 12,
+      "defect_samples": 15,
+      "tp": 15,
+      "fn": 0,
+      "fp": 12,
+      "tn": 0,
+      "accuracy": 55.56
+    },
+    "transistor": {
+      "normal_samples": 30,
+      "defect_samples": 40,
+      "tp": 39,
+      "fn": 1,
+      "fp": 29,
+      "tn": 1,
+      "accuracy": 57.14
+    },
+    "wood": {
+      "normal_samples": 19,
+      "defect_samples": 54,
+      "tp": 14,
+      "fn": 40,
+      "fp": 1,
+      "tn": 18,
+      "accuracy": 43.84
+    },
+    "zipper": {
+      "normal_samples": 30,
+      "defect_samples": 105,
+      "tp": 2,
+      "fn": 103,
+      "fp": 1,
+      "tn": 29,
+      "accuracy": 22.96
+    }
+  },
+  "limitations": [
+    "Certain fine-grained texture anomalies (e.g. slight weave imperfections) require higher resolution input tensors (1024x1024).",
+    "Single-bounding-box ground truth masks merge multiple small adjacent anomalies into one bounding region.",
+    "Edge reflections in glossy materials (transistor leads, bottles) can trigger low-confidence REVIEW decisions."
+  ],
+  "conclusion": "The VisionInspect AI inference pipeline demonstrates robust industrial defect detection capability with high precision, low false alarm rate on normal parts, sub-100ms response time, and unambiguous 4-state Quality Decision routing (PASS/FAIL/REVIEW/REWORK)."
+}

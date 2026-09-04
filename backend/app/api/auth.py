@@ -58,9 +58,7 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
     except HTTPException as he:
         raise he
     except Exception as exc:
-        # Return JSON with CORS header to ensure browser receives Access-Control-Allow-Origin
-        origin = "http://localhost:3000"
-        return JSONResponse(status_code=500, content={"detail": str(exc)}, headers={"Access-Control-Allow-Origin": origin})
+        raise HTTPException(status_code=500, detail=str(exc))
 
 @router.get("/me", response_model=UserResponse)
 def read_users_me(current_user: User = Depends(get_current_active_user)):
