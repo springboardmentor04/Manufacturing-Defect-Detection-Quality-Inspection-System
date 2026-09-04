@@ -28,7 +28,7 @@ def create_token(user_row) -> str:
         "email": user_row["email"],
         "full_name": user_row["full_name"],
         "role": user_row["role"],
-        "plant": user_row["plant"],
+
         "exp": datetime.now(timezone.utc) + timedelta(minutes=JWT_EXPIRES_MINUTES),
     }
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)

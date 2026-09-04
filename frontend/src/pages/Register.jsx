@@ -9,7 +9,7 @@ export default function Register() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [plant, setPlant] = useState('');
+
   const [role, setRole] = useState('quality_engineer');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,7 +25,7 @@ export default function Register() {
         full_name: fullName.trim(),
         email: email.trim(),
         password,
-        plant: plant.trim() || 'Main Plant',
+
         role,
       };
       const { token, user } = await Api.register(payload);
@@ -97,16 +97,6 @@ export default function Register() {
               autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <div style={{ marginBottom: 16 }}>
-            <label className="field-label">Plant / Facility</label>
-            <input
-              className="field-input"
-              type="text"
-              placeholder="Main Plant"
-              value={plant}
-              onChange={(e) => setPlant(e.target.value)}
             />
           </div>
           <div style={{ marginBottom: 22 }}>

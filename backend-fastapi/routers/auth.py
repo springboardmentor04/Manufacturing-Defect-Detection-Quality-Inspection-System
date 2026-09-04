@@ -13,7 +13,6 @@ class RegisterPayload(BaseModel):
     email: EmailStr
     password: str = Field(min_length=6)
     role: Literal["quality_engineer", "supervisor"]
-    plant: Optional[str] = "Main Plant"
 
 
 class LoginPayload(BaseModel):
@@ -27,7 +26,6 @@ def public_user(row) -> dict:
         "full_name": row["full_name"],
         "email": row["email"],
         "role": row["role"],
-        "plant": row["plant"],
         "created_at": row["created_at"],
     }
 
@@ -47,9 +45,9 @@ def register(payload: RegisterPayload):
 
     password_hash = hash_password(payload.password)
     cur.execute(
-        """INSERT INTO users (full_name, email, password_hash, role, plant)
-           VALUES (%s, %s, %s, %s, %s) RETURNING id""",
-        (payload.full_name.strip(), email, password_hash, payload.role, payload.plant or "Main Plant"),
+        """INSERT INTO users (full_name, email, password_hash, role)
+           VALUES (%s, %s, %s, %s) RETURNING id""",
+        (payload.full_name.strip(), email, password_hash, payload.role),
     )
     new_id = cur.fetchone()["id"]
     conn.commit()

@@ -31,7 +31,6 @@ def init_db():
           email         TEXT NOT NULL UNIQUE,
           password_hash TEXT NOT NULL,
           role          TEXT NOT NULL CHECK (role IN ('quality_engineer', 'supervisor')),
-          plant         TEXT DEFAULT 'Main Plant',
           created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
         );
 
