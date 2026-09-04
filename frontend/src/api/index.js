@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const api = axios.create({ baseURL: 'http://localhost:8000' });
+const api = axios.create({ baseURL: process.env.REACT_APP_API_URL });
 
 // Store token in memory only (not localStorage) to prevent XSS
 let authToken = sessionStorage.getItem('token') || null;

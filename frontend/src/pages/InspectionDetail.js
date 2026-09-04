@@ -143,12 +143,12 @@ export default function InspectionDetail() {
   const getImageUrl = () => {
     if (!inspection) return '';
     if (imageMode === 'preprocessed' && inspection.preprocessed_filename) {
-      return `http://localhost:8000/uploads/${inspection.preprocessed_filename}?t=${new Date().getTime()}`;
+      return `${process.env.REACT_APP_API_URL}/uploads/${inspection.preprocessed_filename}?t=${new Date().getTime()}`;
     }
     if (imageMode === 'annotated' && inspection.annotated_filename) {
-      return `http://localhost:8000/uploads/${inspection.annotated_filename}?t=${new Date().getTime()}`;
+      return `${process.env.REACT_APP_API_URL}/uploads/${inspection.annotated_filename}?t=${new Date().getTime()}`;
     }
-    return `http://localhost:8000/uploads/${inspection.filename}`;
+    return `${process.env.REACT_APP_API_URL}/uploads/${inspection.filename}`;
   };
 
   const handlePrint = () => {
