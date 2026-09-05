@@ -4,12 +4,12 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import auth, images, inspections
+from app.routers import auth, images, inspections, reports, analytics
 
 app = FastAPI(
     title="VisionInspect AI Backend API",
-    description="Manufacturing Defect Detection & Quality Inspection Platform - Milestone 1",
-    version="1.0.0"
+    description="Manufacturing Defect Detection & Quality Inspection Platform - Milestone 3",
+    version="3.0.0"
 )
 
 # CORS setup
@@ -34,11 +34,13 @@ app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 app.include_router(auth.router)
 app.include_router(images.router)
 app.include_router(inspections.router)
+app.include_router(reports.router)
+app.include_router(analytics.router)
 
 @app.get("/")
 def root():
     return {
         "status": "online",
         "service": "VisionInspect AI API",
-        "milestone": 1
+        "milestone": 3
     }

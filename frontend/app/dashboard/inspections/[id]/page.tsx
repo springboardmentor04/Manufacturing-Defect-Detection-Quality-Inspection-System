@@ -8,32 +8,33 @@ import Sidebar from '@/components/Sidebar';
 import Navbar from '@/components/Navbar';
 import StatusBadge from '@/components/StatusBadge';
 import ConfidenceBadge from '@/components/ConfidenceBadge';
+import SeverityBadge from '@/components/SeverityBadge';
 import {
   getInspectionDefects,
   analyzeInspection,
+  reinspectInspection,
+  getCurrentUserFromStorage,
   getErrorMessage,
   InspectionDetailData,
+  UserProfile,
   API_BASE_URL,
 } from '@/lib/api';
-import { cleanProductTitle, formatTimeAgo, formatDefectType } from '@/components/InspectionCard';
+import { cleanProductTitle, formatDefectType } from '@/components/InspectionCard';
 import {
   ArrowLeft,
   Scan,
   CheckCircle2,
   AlertTriangle,
-  Clock,
   Gauge,
   Sparkles,
-  ShieldAlert,
   Play,
+  RotateCcw,
   Loader2,
   Info,
-  Layers,
   AlertOctagon,
-  HelpCircle,
   XCircle,
-  Eye,
   Sliders,
+  ShieldCheck,
 } from 'lucide-react';
 
 export default function InspectionDetailPage() {
@@ -42,11 +43,17 @@ export default function InspectionDetailPage() {
   const inspectionId = Number(params?.id);
 
   const [data, setData] = useState<InspectionDetailData | null>(null);
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isReinspecting, setIsReinspecting] = useState(false);
   const [imgNaturalDim, setImgNaturalDim] = useState<{ w: number; h: number } | null>(null);
   const [selectedDefectId, setSelectedDefectId] = useState<number | null>(null);
   const [showBoxes, setShowBoxes] = useState(true);
+
+  useEffect(() => {
+    setCurrentUser(getCurrentUserFromStorage());
+  }, []);
 
   const fetchDetails = async () => {
     if (!inspectionId) return;
@@ -78,38 +85,63 @@ export default function InspectionDetailPage() {
     }
   };
 
-  // Box border and label color coding by confidence %
-  const getBoxColors = (confidence: number) => {
-    const score = confidence <= 1 ? confidence * 100 : confidence;
-    if (score >= 80) {
+  const handleReinspect = async () => {
+    if (!inspectionId) return;
+    if (!confirm('Are you sure you want to trigger manual QC re-inspection? This will clear previous findings and re-run analysis.')) {
+      return;
+    }
+
+    setIsReinspecting(true);
+    try {
+      const res = await reinspectInspection(inspectionId);
+      setData(res);
+    } catch (err: any) {
+      alert(`Re-inspection failed: ${getErrorMessage(err, 'Could not perform re-inspection')}`);
+    } finally {
+      setIsReinspecting(false);
+    }
+  };
+
+  // Box border and label color coding by severity level & confidence
+  const getBoxColors = (level?: string | null, confidence?: number) => {
+    const l = (level || 'low').toLowerCase();
+    if (l === 'critical') {
       return {
-        stroke: '#10b981', // emerald-500
-        fill: 'rgba(16, 185, 129, 0.18)',
-        tagBg: '#059669', // emerald-600
+        stroke: '#f43f5e', // rose-500
+        fill: 'rgba(244, 63, 94, 0.22)',
+        tagBg: '#e11d48', // rose-600
         text: '#ffffff',
       };
     }
-    if (score >= 50) {
+    if (l === 'high') {
+      return {
+        stroke: '#f97316', // orange-500
+        fill: 'rgba(249, 115, 22, 0.20)',
+        tagBg: '#ea580c', // orange-600
+        text: '#ffffff',
+      };
+    }
+    if (l === 'medium') {
       return {
         stroke: '#f59e0b', // amber-500
-        fill: 'rgba(245, 158, 11, 0.20)',
+        fill: 'rgba(245, 158, 11, 0.18)',
         tagBg: '#d97706', // amber-600
         text: '#ffffff',
       };
     }
     return {
-      stroke: '#ef4444', // rose-500
-      fill: 'rgba(239, 68, 68, 0.25)',
-      tagBg: '#dc2626', // rose-600
+      stroke: '#10b981', // emerald-500
+      fill: 'rgba(16, 185, 129, 0.18)',
+      tagBg: '#059669', // emerald-600
       text: '#ffffff',
     };
   };
 
+  const isQualityEngineer = currentUser?.role_name === 'quality_engineer';
   const isPending = data?.status === 'queued' || data?.status === 'pending';
-  const isFailed = (data?.defect_count || 0) > 0;
-  const isRejected =
-    data?.status === 'rejected' ||
-    (data?.quality_report && data.quality_report.is_acceptable === false);
+  const isPass = data?.decision === 'pass' || (data?.status === 'completed' && data?.defect_count === 0);
+  const isFail = data?.decision === 'fail' || (data?.defect_count || 0) > 0;
+  const isRejected = data?.status === 'rejected' || (data?.quality_report && data.quality_report.is_acceptable === false);
 
   return (
     <ProtectedRoute>
@@ -127,7 +159,7 @@ export default function InspectionDetailPage() {
                   <button
                     onClick={() => router.back()}
                     className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors"
-                    title="Back to Dashboard"
+                    title="Back"
                   >
                     <ArrowLeft className="w-4 h-4" />
                   </button>
@@ -140,8 +172,8 @@ export default function InspectionDetailPage() {
                 </h1>
               </div>
 
-              {/* Top Action & Status Badge */}
-              <div className="flex items-center gap-3">
+              {/* Action Buttons & Status */}
+              <div className="flex flex-wrap items-center gap-3">
                 {data && (
                   <StatusBadge
                     status={data.status}
@@ -150,15 +182,37 @@ export default function InspectionDetailPage() {
                   />
                 )}
 
+                {/* Quality Engineer ONLY Re-Inspect Button */}
+                {isQualityEngineer && data && data.status !== 'queued' && (
+                  <button
+                    onClick={handleReinspect}
+                    disabled={isReinspecting || isAnalyzing || isLoading}
+                    className="px-4 py-2.5 bg-slate-800 hover:bg-slate-750 text-sky-400 hover:text-sky-300 border border-sky-500/30 hover:border-sky-500/60 font-bold text-xs rounded-xl transition-all flex items-center gap-2 shadow-sm disabled:opacity-50"
+                    title="Manual Quality Override: Clear findings and re-inspect"
+                  >
+                    {isReinspecting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin text-sky-400" />
+                        <span>Re-inspecting...</span>
+                      </>
+                    ) : (
+                      <>
+                        <RotateCcw className="w-4 h-4" />
+                        <span>Re-inspect</span>
+                      </>
+                    )}
+                  </button>
+                )}
+
                 <button
                   onClick={handleRunDetection}
-                  disabled={isAnalyzing || isLoading}
+                  disabled={isAnalyzing || isReinspecting || isLoading}
                   className="px-5 py-2.5 bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-sky-500/25 transition-all flex items-center gap-2 disabled:opacity-50"
                 >
                   {isAnalyzing ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Running Inference...</span>
+                      <span>Analyzing...</span>
                     </>
                   ) : (
                     <>
@@ -170,25 +224,73 @@ export default function InspectionDetailPage() {
               </div>
             </div>
 
-            {/* Recommended Action Alert for Failed / Critical Parts */}
-            {data && isFailed && (
-              <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs sm:text-sm flex items-start gap-3 shadow-lg shadow-rose-950/20">
-                <AlertOctagon className="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5" />
-                <div className="space-y-1">
-                  <p className="font-bold text-rose-300">
-                    Defects Detected ({data.defect_count} Anomalies Found)
-                  </p>
-                  <p className="text-xs text-rose-400/90 leading-relaxed">
-                    <span className="font-semibold text-slate-200">Recommended Action:</span> Quarantine part from production stream. Route to QA station for manual surface rework or scrap disposition.
-                  </p>
-                </div>
+            {/* Prominent Milestone 3 PASS / FAIL Decision Banner */}
+            {data && data.status === 'completed' && (
+              <div>
+                {isPass ? (
+                  <div className="p-5 rounded-2xl bg-gradient-to-r from-emerald-950/80 via-emerald-900/40 to-slate-900 border border-emerald-500/40 shadow-xl shadow-emerald-950/30 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-emerald-500/20 text-emerald-400 rounded-2xl border border-emerald-500/40">
+                        <CheckCircle2 className="w-8 h-8" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-extrabold text-[10px] uppercase tracking-wider border border-emerald-500/30">
+                            QC Disposition
+                          </span>
+                          <span className="text-xs text-slate-400">
+                            {data.decided_at ? `Evaluated ${new Date(data.decided_at).toLocaleString()}` : 'Zero defects detected'}
+                          </span>
+                        </div>
+                        <h2 className="text-xl font-extrabold text-emerald-300 tracking-tight mt-0.5">
+                          QUALITY INSPECTION PASSED — APPROVED
+                        </h2>
+                        <p className="text-xs text-emerald-400/90 mt-0.5">
+                          Component satisfies all dimensional and surface quality tolerances (0 defects localized). Ready for release.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="hidden sm:flex flex-col items-end">
+                      <span className="text-2xl font-black text-emerald-400 font-mono">100%</span>
+                      <span className="text-[10px] text-slate-400 uppercase font-semibold">Integrity Index</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-5 rounded-2xl bg-gradient-to-r from-rose-950/80 via-rose-900/40 to-slate-900 border border-rose-500/40 shadow-xl shadow-rose-950/30 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-rose-500/20 text-rose-400 rounded-2xl border border-rose-500/40">
+                        <XCircle className="w-8 h-8" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-extrabold text-[10px] uppercase tracking-wider border border-rose-500/30">
+                            QC Disposition
+                          </span>
+                          <span className="text-xs text-slate-400">
+                            {data.decided_at ? `Evaluated ${new Date(data.decided_at).toLocaleString()}` : `${data.defect_count} anomalies detected`}
+                          </span>
+                        </div>
+                        <h2 className="text-xl font-extrabold text-rose-300 tracking-tight mt-0.5">
+                          QUALITY INSPECTION REJECTED / FAIL
+                        </h2>
+                        <p className="text-xs text-rose-400/90 mt-0.5">
+                          Zero-defect threshold violated ({data.defect_count} defect{data.defect_count === 1 ? '' : 's'} flagged). Mandatory quarantine required.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="hidden sm:flex flex-col items-end">
+                      <span className="text-2xl font-black text-rose-400 font-mono">REJECT</span>
+                      <span className="text-[10px] text-slate-400 uppercase font-semibold">Disposition</span>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
             {/* Quality Rejected Alert if Image Quality Failed */}
             {data && isRejected && (
               <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs sm:text-sm flex items-start gap-3">
-                <XCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+                <AlertOctagon className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <p className="font-bold text-amber-300">Image Quality Alert: Low Reliability</p>
                   <p className="text-xs text-amber-400/90 leading-relaxed">
@@ -202,7 +304,7 @@ export default function InspectionDetailPage() {
             {isLoading ? (
               <div className="bg-slate-900 border border-slate-800 rounded-3xl p-16 flex flex-col items-center justify-center gap-3 text-slate-400">
                 <div className="w-10 h-10 border-2 border-sky-500 border-t-transparent rounded-full animate-spin" />
-                <span className="text-xs">Fetching defect telemetry and bounding coordinates...</span>
+                <span className="text-xs">Fetching defect telemetry, coordinates & severity classifications...</span>
               </div>
             ) : !data ? (
               <div className="bg-slate-900 border border-slate-800 rounded-3xl p-12 text-center text-slate-400 space-y-3">
@@ -220,7 +322,7 @@ export default function InspectionDetailPage() {
               </div>
             ) : (
               <div className="space-y-8">
-                {/* Visual Viewport Grid: Large Image Overlay (Left 2 cols) + Quality Assessment & Metadata (Right 1 col) */}
+                {/* Visual Viewport Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {/* Visual Bounding Box Viewport */}
                   <div className="lg:col-span-2 bg-slate-900/90 border border-slate-800 rounded-3xl p-5 shadow-xl flex flex-col justify-between space-y-4">
@@ -275,15 +377,13 @@ export default function InspectionDetailPage() {
                         >
                           {data.defects.map((def) => {
                             const isSelected = selectedDefectId === def.id;
-                            const colors = getBoxColors(def.confidence_score);
+                            const colors = getBoxColors(def.severity_level, def.confidence_score);
                             const x = def.bbox_x || 0;
                             const y = def.bbox_y || 0;
                             const w = def.bbox_width || 50;
                             const h = def.bbox_height || 50;
 
-                            const labelText = `${formatDefectType(def.defect_type)} (${Math.round(
-                              def.confidence_score <= 1 ? def.confidence_score * 100 : def.confidence_score
-                            )}%)`;
+                            const labelText = `${formatDefectType(def.defect_type)} [${def.severity_level || 'Defect'}]`;
 
                             return (
                               <g key={def.id}>
@@ -303,7 +403,7 @@ export default function InspectionDetailPage() {
                                 <rect
                                   x={x}
                                   y={Math.max(0, y - 26)}
-                                  width={Math.max(160, Math.min(w + 40, 240))}
+                                  width={Math.max(160, Math.min(w + 40, 260))}
                                   height="24"
                                   fill={isSelected ? '#0284c7' : colors.tagBg}
                                   rx="4"
@@ -314,7 +414,7 @@ export default function InspectionDetailPage() {
                                   x={x + 8}
                                   y={Math.max(16, y - 9)}
                                   fill="#ffffff"
-                                  fontSize="13"
+                                  fontSize="12"
                                   fontWeight="bold"
                                 >
                                   {labelText}
@@ -330,16 +430,20 @@ export default function InspectionDetailPage() {
                     <div className="flex flex-wrap items-center justify-between gap-3 text-[11px] text-slate-400 pt-2">
                       <div className="flex items-center gap-4">
                         <span className="flex items-center gap-1.5">
-                          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                          <span>≥80% High Confidence</span>
+                          <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
+                          <span>Critical (80-100)</span>
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                          <span className="w-2.5 h-2.5 rounded-full bg-orange-500" />
+                          <span>High (60-79)</span>
                         </span>
                         <span className="flex items-center gap-1.5">
                           <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                          <span>50-80% Moderate</span>
+                          <span>Medium (40-59)</span>
                         </span>
                         <span className="flex items-center gap-1.5">
-                          <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
-                          <span>&lt;50% Low Confidence</span>
+                          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                          <span>Low (0-39)</span>
                         </span>
                       </div>
                       <span className="text-slate-500">Click any row below to highlight bounding box</span>
@@ -353,7 +457,7 @@ export default function InspectionDetailPage() {
                       <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                         <h3 className="font-bold text-slate-100 text-sm flex items-center gap-2">
                           <Gauge className="w-4 h-4 text-sky-400" />
-                          Quality Assessment
+                          Image Quality Telemetry
                         </h3>
                         {data.quality_report && (
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
@@ -373,7 +477,7 @@ export default function InspectionDetailPage() {
                             <span className="font-mono font-bold text-slate-200">
                               {data.quality_report.resolution
                                 ? `${data.quality_report.resolution.width} × ${data.quality_report.resolution.height} px`
-                                : '1024 × 768 px'}
+                                : '640 × 640 px'}
                             </span>
                           </div>
 
@@ -444,15 +548,20 @@ export default function InspectionDetailPage() {
                   </div>
                 </div>
 
-                {/* Detected Defects List & Milestone 3 Severity Section */}
+                {/* Detected Defects List & Severity Scoring Section */}
                 <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
                   <div className="flex items-center justify-between border-b border-slate-800 pb-4">
                     <div className="flex items-center gap-2.5">
                       <AlertTriangle className="w-5 h-5 text-amber-400" />
                       <h3 className="font-bold text-slate-100 text-base">
-                        Detected Defects Telemetry ({data.defects.length})
+                        Defect Telemetry & Severity Classifications ({data.defects.length})
                       </h3>
                     </div>
+                    {data.defects.length > 0 && (
+                      <span className="text-xs text-slate-400 font-mono">
+                        Formula: 30% Size + 25% Location + 25% Type + 20% Confidence
+                      </span>
+                    )}
                   </div>
 
                   {data.defects.length === 0 ? (
@@ -462,7 +571,7 @@ export default function InspectionDetailPage() {
                       </div>
                       <h4 className="font-bold text-slate-100 text-sm">Clean Part — 0 Defects Detected</h4>
                       <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                        The computer vision model verified this manufacturing component as free of surface defects and geometric scratches.
+                        Computer vision model verified this manufacturing component as free of surface defects and geometric scratches.
                       </p>
                     </div>
                   ) : (
@@ -471,10 +580,11 @@ export default function InspectionDetailPage() {
                         <thead>
                           <tr className="bg-slate-950/80 border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
                             <th className="py-3 px-4">#</th>
-                            <th className="py-3 px-4">Product Category & Defect Type</th>
-                            <th className="py-3 px-4">Confidence Score</th>
-                            <th className="py-3 px-4">Bounding Box (X, Y, W, H)</th>
-                            <th className="py-3 px-4">Severity Level (Milestone 3)</th>
+                            <th className="py-3 px-4">Defect Classification</th>
+                            <th className="py-3 px-4">Severity Level</th>
+                            <th className="py-3 px-4">Severity Breakdown (Size / Loc / Type / Conf)</th>
+                            <th className="py-3 px-4">Detection Confidence</th>
+                            <th className="py-3 px-4">Coordinates [X, Y, W, H]</th>
                             <th className="py-3 px-4 text-right">Highlight</th>
                           </tr>
                         </thead>
@@ -496,16 +606,25 @@ export default function InspectionDetailPage() {
                                   {formatDefectType(def.defect_type)}
                                 </td>
                                 <td className="py-3.5 px-4">
+                                  <SeverityBadge
+                                    level={def.severity_level}
+                                    score={def.severity_score}
+                                    size="sm"
+                                  />
+                                </td>
+                                <td className="py-3.5 px-4 font-mono text-[11px] text-slate-400">
+                                  <span title="Size Score">{Math.round(def.size_score || 0)}</span> /{' '}
+                                  <span title="Location Score">{Math.round(def.location_score || 0)}</span> /{' '}
+                                  <span title="Type Score">{Math.round(def.type_score || 0)}</span> /{' '}
+                                  <span title="Confidence Score">
+                                    {Math.round(def.confidence_score <= 1 ? def.confidence_score * 100 : def.confidence_score)}
+                                  </span>
+                                </td>
+                                <td className="py-3.5 px-4">
                                   <ConfidenceBadge score={def.confidence_score} />
                                 </td>
                                 <td className="py-3.5 px-4 font-mono text-slate-300">
                                   [{def.bbox_x || 0}, {def.bbox_y || 0}, {def.bbox_width || 0}, {def.bbox_height || 0}]
-                                </td>
-                                <td className="py-3.5 px-4">
-                                  {/* Severity Score Placeholder for Milestone 3 */}
-                                  <span className="px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-slate-800 text-slate-400 border border-slate-700">
-                                    Pending M3 Formula
-                                  </span>
                                 </td>
                                 <td className="py-3.5 px-4 text-right">
                                   <button

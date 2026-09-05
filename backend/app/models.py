@@ -44,6 +44,8 @@ class Inspection(Base):
     image_id = Column(Integer, ForeignKey("images.id"))
     status = Column(String(50), default="queued")
     defect_count = Column(Integer, default=0)
+    decision = Column(String(20), default="pending")
+    decided_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
 
     image = relationship("Image", back_populates="inspections")
@@ -60,6 +62,11 @@ class Defect(Base):
     bbox_y = Column(Integer)
     bbox_width = Column(Integer)
     bbox_height = Column(Integer)
+    size_score = Column(Float, nullable=True)
+    location_score = Column(Float, nullable=True)
+    type_score = Column(Float, nullable=True)
+    severity_score = Column(Float, nullable=True)
+    severity_level = Column(String(20), nullable=True)
     detected_at = Column(DateTime, server_default=func.now())
 
     inspection = relationship("Inspection", back_populates="defects")

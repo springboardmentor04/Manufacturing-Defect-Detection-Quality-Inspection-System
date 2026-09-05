@@ -8,12 +8,12 @@ import {
   LayoutDashboard,
   Scan,
   Layers,
-  UploadCloud,
+  FileBarChart2,
+  BarChart3,
   LogOut,
   ShieldCheck,
   UserCheck,
   Eye,
-  Activity,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -36,11 +36,22 @@ export default function Sidebar({ onOpenUpload }: SidebarProps) {
 
   const isSupervisor = user?.role_name === 'factory_supervisor';
 
+  // Base navigation items available to all authorized users
   const navItems = [
     { label: 'Overview Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { label: 'All Inspections', href: '/dashboard/inspections', icon: Scan },
-    { label: 'Batch Inference Engine', href: '/dashboard/batch-analyze', icon: Layers },
+    { label: 'Batch Inference', href: '/dashboard/batch-analyze', icon: Layers },
+    { label: 'Quality Reports', href: '/dashboard/reports', icon: FileBarChart2 },
   ];
+
+  // Supervisor only navigation item
+  if (isSupervisor) {
+    navItems.push({
+      label: 'Manufacturing Analytics',
+      href: '/dashboard/analytics',
+      icon: BarChart3,
+    });
+  }
 
   return (
     <aside className="w-64 bg-slate-900/95 backdrop-blur-md border-r border-slate-800 flex flex-col justify-between h-screen sticky top-0 hidden md:flex flex-shrink-0">
