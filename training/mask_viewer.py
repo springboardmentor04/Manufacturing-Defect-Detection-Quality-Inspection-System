@@ -1,23 +1,3 @@
-from pathlib import Path
-import matplotlib.pyplot as plt
-from PIL import Image
-
-DATASET = Path("../dataset/archive/bottle")
-
-image = Image.open(DATASET / "test" / "broken_large" / "000.png")
-mask = Image.open(DATASET / "ground_truth" / "broken_large" / "000_mask.png")
-
-plt.figure(figsize=(8,4))
-
-plt.subplot(1,2,1)
-plt.imshow(image)
-plt.title("Original Image")
-plt.axis("off")
-
-plt.subplot(1,2,2)
-plt.imshow(mask, cmap="gray")
-plt.title("Ground Truth Mask")
-plt.axis("off")
-
-plt.tight_layout()
-plt.show()
+version https://git-lfs.github.com/spec/v1
+oid sha256:2d93b23687f0081427a7b70ebb12dd4c889d022aa2dc0990d5fa9af0566b05f6
+size 505

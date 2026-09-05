@@ -1,13 +1,3 @@
-from pathlib import Path
-
-# Root of the MVTec dataset
-DATASET_ROOT = Path("../dataset/archive")
-
-# We will start with only one category
-CATEGORY = "bottle"
-
-# Complete path
-DATASET_PATH = DATASET_ROOT / CATEGORY
-
-print("Dataset Path:", DATASET_PATH.resolve())
-print("Exists:", DATASET_PATH.exists())
+version https://git-lfs.github.com/spec/v1
+oid sha256:07c8d0a802fd4d58bab713f6b244e506b8361200319dd770af98a70c1b68ee9d
+size 299
