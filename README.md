@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # VisionInspect AI: Manufacturing Defect Detection & Quality Inspection System
 
 VisionInspect AI is an industrial-grade, AI-powered quality control platform designed to automate product defect detection, anomaly localization, defect classification, severity scoring, and manufacturing analytics.
@@ -103,3 +104,6 @@ Set `MONGODB_URL`, `DATABASE_NAME`, `JWT_SECRET`, and `VITE_API_BASE=http://loca
 Create accounts through the registration screen or `POST /api/auth/register`.
 The FastAPI backend does not seed demo credentials.
 python -m uvicorn backend.main:app --reload --port 8000
+=======
+# Manufacturing-Defect-Detection-Quality-Inspection-System
+>>>>>>> mentor/Sudeshna_Dey
