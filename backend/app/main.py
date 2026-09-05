@@ -61,9 +61,32 @@ def health_check():
 
 @app.on_event("startup")
 def create_tables_on_startup():
-    """Ensure database tables exist when the app starts."""
+    """Ensure database tables and default roles exist when the app starts."""
     try:
         Base.metadata.create_all(bind=engine)
-    except Exception:
-        # Avoid crashing on startup; log if needed in future
-        pass
+        from app.database.session import SessionLocal
+        from app.models.all_models import Role, User
+        from app.core.security import get_password_hash
+        
+        db = SessionLocal()
+        try:
+            roles = ["ADMIN", "QUALITY_ENGINEER", "SUPERVISOR", "OPERATOR"]
+            for role_name in roles:
+                if not db.query(Role).filter(Role.name == role_name).first():
+                    db.add(Role(name=role_name))
+            db.commit()
+
+            admin_role = db.query(Role).filter(Role.name == "ADMIN").first()
+            if admin_role and not db.query(User).filter(User.username == "admin").first():
+                admin = User(
+                    username="admin",
+                    email="admin@visioninspect.local",
+                    hashed_password=get_password_hash("admin123"),
+                    role_id=admin_role.id
+                )
+                db.add(admin)
+                db.commit()
+        finally:
+            db.close()
+    except Exception as e:
+        print(f"Startup initialization notice: {e}")

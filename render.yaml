@@ -1,0 +1,69 @@
+# Render Blueprint for VisionInspect AI
+# Multi-service cloud architecture (FastAPI Backend + Next.js Frontend + PostgreSQL Database)
+
+services:
+  # =======================================================
+  # FastAPI Production Backend Service
+  # =======================================================
+  - type: web
+    name: visioninspect-backend
+    runtime: python
+    region: oregon
+    plan: free
+    branch: Ramya-Koyyada
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHONPATH
+        value: .
+      - key: MODEL_PATH
+        value: ml/models/best.pt
+      - key: UPLOAD_DIR
+        value: storage/uploads
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: MOCK_LOGIN_ENABLED
+        value: "true"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "1440"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: visioninspect-db
+          property: connectionString
+
+  # =======================================================
+  # Next.js 16 Production Frontend Service
+  # =======================================================
+  - type: web
+    name: visioninspect-frontend
+    runtime: node
+    rootDir: frontend
+    region: oregon
+    plan: free
+    branch: Ramya-Koyyada
+    buildCommand: npm install && npm run build
+    startCommand: npm start -- -p $PORT
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: visioninspect-backend
+          property: host
+          path: /api
+
+# =======================================================
+# Managed PostgreSQL Database
+# =======================================================
+databases:
+  - name: visioninspect-db
+    plan: free
+    region: oregon
+    databaseName: visioninspect
+    user: visioninspect_user
