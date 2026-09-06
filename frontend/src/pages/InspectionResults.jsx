@@ -336,6 +336,19 @@ function InspectionResults() {
 
                                                 </div>
 
+                                                {/* DEFECT TYPE */}
+
+                                                <div className="result-confidence">
+
+                                                       <span className="result-label">
+                                                            DEFECT TYPE
+                                                       </span>
+
+                                                    <div className="confidence-value">
+                                                        {item.defect_type || "No defect detected"}
+                                                    </div>
+
+                                                </div>
 
                                                 {/* CONFIDENCE */}
 

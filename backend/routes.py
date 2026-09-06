@@ -1839,12 +1839,21 @@ def inspection_results():
 
                 i.confidence_score,
 
-                -- Use the actual processing time value
+                -- Use the actual inspection time
                 i.inspection_time AS processing_time,
 
                 pi.image_path,
 
-                i.inspection_date
+                i.inspection_date,
+
+                -- Get defect type from defects table
+                COALESCE(
+                    STRING_AGG(
+                        DISTINCT d.defect_type,
+                        ', '
+                    ),
+                    'No defect detected'
+                ) AS defect_type
 
             FROM inspections i
 
@@ -1853,6 +1862,19 @@ def inspection_results():
 
             JOIN product_images pi
                 ON pi.id = i.image_id
+
+            LEFT JOIN defects d
+                ON d.inspection_id = i.id
+
+            GROUP BY
+                i.id,
+                p.product_code,
+                p.product_name,
+                i.pass_fail,
+                i.confidence_score,
+                i.inspection_time,
+                pi.image_path,
+                i.inspection_date
 
             ORDER BY
                 i.inspection_date DESC
