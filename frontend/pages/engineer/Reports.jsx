@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 
 import { useFetch } from "../../hooks/useFetch";
 import { dashboardService } from "../../services/dashboardService";
+import { api } from "../../services/api";
 
 import Card from "../../components/common/Card";
 import Loader from "../../components/common/Loader";
@@ -30,7 +31,7 @@ import { formatDate } from "../../utils/formatters";
    CONFIG
 ========================================================= */
 
-const API_BASE_URL = "http://127.0.0.1:8000";
+
 
 /* =========================================================
    STATUS BADGE
@@ -345,17 +346,9 @@ export default function Reports() {
       setProductionLoading(true);
       setProductionError("");
 
-      const response = await fetch(
-        `${API_BASE_URL}/qe/reports/production`
+      const data = await api.get(
+        "/qe/reports/production"
       );
-
-      if (!response.ok) {
-        throw new Error(
-          `Production report request failed: ${response.status}`
-        );
-      }
-
-      const data = await response.json();
 
       console.log(
         "Production Quality Report:",

@@ -238,3 +238,7 @@ ai/yolo_dataset/
 node_modules/
 **/node_modules/
 **/.vite/
+
+# VisionInspect AI generated files
+backend/runs/
+backend/uploads/

@@ -14,7 +14,16 @@ from app.ai.severity import calculate_severity
 # VisionInspect AI - YOLO Predictor
 # ==========================================
 
-MODEL_PATH = Path("models/best.pt")
+# backend/
+# ├── app/
+# │   └── ai/
+# │       └── predictor.py
+# └── models/
+#     └── best.pt
+
+BASE_DIR = Path(__file__).resolve().parents[2]
+
+MODEL_PATH = BASE_DIR / "models" / "best.pt"
 
 
 if not MODEL_PATH.exists():
@@ -33,9 +42,20 @@ print(f"Loading YOLO model: {MODEL_PATH}")
 model = YOLO(str(MODEL_PATH))
 
 
+# ==========================================
+# Prediction Function
+# ==========================================
+
 def predict(image_path: str):
     """
     Run YOLO prediction.
+
+    All detections are processed.
+
+    The highest-confidence detection is used
+    as the primary inspection result so that
+    the existing frontend/database structure
+    remains compatible.
 
     Returns:
 
@@ -50,6 +70,8 @@ def predict(image_path: str):
         risk_level,
         risk_description,
         recommendation,
+        detection_count,
+        detections,
         result_image
     }
     """
@@ -60,13 +82,17 @@ def predict(image_path: str):
 
     results = model.predict(
         source=image_path,
-        conf=0.25,
+        conf=0.40,
         save=True,
         verbose=False,
     )
 
-    result = results[0]
+    if not results:
+        raise RuntimeError(
+            "YOLO did not return a prediction result."
+        )
 
+    result = results[0]
 
     # ==========================================
     # Locate Saved Result Image
@@ -94,27 +120,29 @@ def predict(image_path: str):
         f"YOLO Result Image : {result_image}"
     )
 
-
     # ==========================================
-    # PASS - No Defect
+    # NO DEFECT DETECTED
     # ==========================================
 
-    if len(result.boxes) == 0:
+    if result.boxes is None or len(result.boxes) == 0:
 
         severity_info = calculate_severity(
             "pass",
-            1.0
+            0.0
         )
 
-        return {
+        print("No defect detected.")
 
+        return {
             "status": "pass",
 
             "product_category": "Unknown",
 
             "defect_type": "No Defect",
 
-            "confidence": 1.0,
+            # 0.0 means there was no detection.
+            # It does NOT mean the model is 100% certain.
+            "confidence": 0.0,
 
             "class_id": None,
 
@@ -133,115 +161,196 @@ def predict(image_path: str):
             "recommendation":
                 severity_info["recommendation"],
 
+            "detection_count": 0,
+
+            "detections": [],
+
             "result_image":
                 str(result_image),
         }
 
-
     # ==========================================
-    # FAIL - Defect Found
-    # ==========================================
-
-    box = result.boxes[0]
-
-
-    # ==========================================
-    # Class ID
+    # PROCESS ALL DETECTIONS
     # ==========================================
 
-    class_id = int(
-        box.cls.item()
+    detections = []
+
+    for box in result.boxes:
+
+        # ------------------------------------------
+        # Class ID
+        # ------------------------------------------
+
+        class_id = int(
+            box.cls.item()
+        )
+
+        # ------------------------------------------
+        # Confidence
+        # ------------------------------------------
+
+        confidence = float(
+            box.conf.item()
+        )
+
+        # ------------------------------------------
+        # Class Name
+        # ------------------------------------------
+
+        if class_id in CLASS_MAPPING:
+
+            category_info = categorize_defect(
+                class_id
+            )
+
+            product_category = (
+                category_info["product_category"]
+            )
+
+            defect_type = (
+                category_info["defect_type"]
+            )
+
+            defect_name = CLASS_MAPPING[
+                class_id
+            ]
+
+        else:
+
+            class_name = (
+                result.names[class_id]
+                if class_id in result.names
+                else "Unknown"
+            )
+
+            product_category = "Unknown"
+            defect_type = class_name
+            defect_name = class_name
+
+        # ------------------------------------------
+        # Store Detection
+        # ------------------------------------------
+
+        detections.append(
+            {
+                "class_id": class_id,
+
+                "class_name": defect_name,
+
+                "product_category":
+                    product_category,
+
+                "defect_type":
+                    defect_type,
+
+                "confidence":
+                    confidence,
+            }
+        )
+
+    # ==========================================
+    # Sort By Confidence
+    # ==========================================
+
+    detections.sort(
+        key=lambda detection:
+            detection["confidence"],
+        reverse=True,
     )
 
-
     # ==========================================
-    # Confidence
+    # Primary Detection
     # ==========================================
+    #
+    # The highest-confidence detection is used
+    # for the existing inspection result.
+    #
 
-    confidence = float(
-        box.conf.item()
-    )
+    primary_detection = detections[0]
 
-
-    # ==========================================
-    # Defect Categorization
-    # ==========================================
-
-    category_info = categorize_defect(
-        class_id
-    )
-
+    class_id = primary_detection[
+        "class_id"
+    ]
 
     product_category = (
-        category_info["product_category"]
+        primary_detection[
+            "product_category"
+        ]
     )
 
     defect_type = (
-        category_info["defect_type"]
+        primary_detection[
+            "defect_type"
+        ]
     )
 
-
-    # ==========================================
-    # Safety Fallback
-    # ==========================================
-
-    if class_id not in CLASS_MAPPING:
-
-        defect_type = (
-            result.names[class_id]
-            if class_id in result.names
-            else "Unknown"
-        )
-
-        product_category = "Unknown"
-
-
-    # ==========================================
-    # Full Defect Label
-    # ==========================================
-
-    defect_name = CLASS_MAPPING.get(
-        class_id,
-        result.names[class_id]
-        if class_id in result.names
-        else "Unknown"
+    confidence = (
+        primary_detection[
+            "confidence"
+        ]
     )
 
+    defect_name = (
+        primary_detection[
+            "class_name"
+        ]
+    )
 
     # ==========================================
     # Console Information
     # ==========================================
 
     print(
-        f"Detected Class : {class_id}"
+        f"Detected Defects : {len(detections)}"
     )
 
     print(
-        f"Defect Label   : {defect_name}"
+        f"Primary Class    : {class_id}"
     )
 
     print(
-        f"Product        : {product_category}"
+        f"Primary Defect   : {defect_name}"
     )
 
     print(
-        f"Defect Type    : {defect_type}"
+        f"Product          : {product_category}"
     )
 
     print(
-        f"Confidence     : {confidence:.4f}"
+        f"Defect Type      : {defect_type}"
     )
 
+    print(
+        f"Confidence       : {confidence:.4f}"
+    )
+
+    print("\nAll Detections:")
+
+    for index, detection in enumerate(
+        detections,
+        start=1
+    ):
+
+        print(
+            f"{index}. "
+            f"{detection['class_name']} | "
+            f"{detection['defect_type']} | "
+            f"{detection['confidence']:.4f}"
+        )
 
     # ==========================================
     # Severity & Risk Analysis
     # ==========================================
+    #
+    # Severity is based on the highest-confidence
+    # detected defect, preserving the existing
+    # severity/risk logic.
+    #
 
     severity_info = calculate_severity(
         "fail",
         confidence
     )
-
 
     # ==========================================
     # Return Prediction
@@ -249,17 +358,16 @@ def predict(image_path: str):
 
     return {
 
-        # ------------------------------
+        # --------------------------------------
         # Inspection Status
-        # ------------------------------
+        # --------------------------------------
 
         "status":
             "fail",
 
-
-        # ------------------------------
-        # Defect Categorization
-        # ------------------------------
+        # --------------------------------------
+        # Primary Defect Categorization
+        # --------------------------------------
 
         "product_category":
             product_category,
@@ -270,18 +378,16 @@ def predict(image_path: str):
         "class_id":
             class_id,
 
-
-        # ------------------------------
-        # AI Confidence
-        # ------------------------------
+        # --------------------------------------
+        # Primary AI Confidence
+        # --------------------------------------
 
         "confidence":
             confidence,
 
-
-        # ------------------------------
+        # --------------------------------------
         # Severity
-        # ------------------------------
+        # --------------------------------------
 
         "severity":
             severity_info["severity"],
@@ -289,10 +395,9 @@ def predict(image_path: str):
         "severity_score":
             severity_info["severity_score"],
 
-
-        # ------------------------------
+        # --------------------------------------
         # Quality Risk
-        # ------------------------------
+        # --------------------------------------
 
         "risk_level":
             severity_info["risk_level"],
@@ -300,18 +405,26 @@ def predict(image_path: str):
         "risk_description":
             severity_info["risk_description"],
 
-
-        # ------------------------------
+        # --------------------------------------
         # Recommendation
-        # ------------------------------
+        # --------------------------------------
 
         "recommendation":
             severity_info["recommendation"],
 
+        # --------------------------------------
+        # Multiple Detection Information
+        # --------------------------------------
 
-        # ------------------------------
+        "detection_count":
+            len(detections),
+
+        "detections":
+            detections,
+
+        # --------------------------------------
         # Result Image
-        # ------------------------------
+        # --------------------------------------
 
         "result_image":
             str(result_image),

@@ -5,7 +5,6 @@ from datetime import datetime
 class UserBase(BaseModel):
     full_name: str
     email: EmailStr
-    role: str
 
 
 class UserCreate(UserBase):
@@ -14,6 +13,7 @@ class UserCreate(UserBase):
 
 class UserResponse(UserBase):
     id: int
+    role: str
     created_at: datetime
 
     class Config:

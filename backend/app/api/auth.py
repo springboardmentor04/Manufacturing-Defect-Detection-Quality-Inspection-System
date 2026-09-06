@@ -60,8 +60,9 @@ def register(
 ):
 
     new_user = register_user(
-        db,
-        user
+    db,
+    user,
+    role="quality_engineer"
     )
 
     if not new_user:

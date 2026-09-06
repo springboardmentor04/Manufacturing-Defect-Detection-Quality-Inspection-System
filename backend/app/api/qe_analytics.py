@@ -3,7 +3,9 @@ from collections import Counter, defaultdict
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.core.dependencies import require_role
 from app.database.database import get_db
+from app.models.user import User
 from app.models.inspection import Inspection
 from app.ai.class_mapping import CLASS_MAPPING
 
@@ -118,6 +120,9 @@ def normalize_defect_name(defect_name):
 
 @router.get("/defects")
 def get_defect_analytics(
+    current_user: User = Depends(
+        require_role("quality_engineer")
+    ),
     db: Session = Depends(get_db),
 ):
 

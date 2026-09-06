@@ -3,7 +3,9 @@ from collections import Counter
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.core.dependencies import require_role
 from app.database.database import get_db
+from app.models.user import User
 from app.models.inspection import Inspection
 
 
@@ -19,6 +21,9 @@ router = APIRouter(
 
 @router.get("/")
 def get_qe_reports(
+    current_user: User = Depends(
+        require_role("quality_engineer")
+    ),
     db: Session = Depends(get_db),
 ):
 
@@ -106,6 +111,9 @@ def get_qe_reports(
 
 @router.get("/production")
 def get_production_quality_report(
+    current_user: User = Depends(
+        require_role("quality_engineer")
+    ),
     db: Session = Depends(get_db),
 ):
 

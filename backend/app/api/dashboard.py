@@ -1,11 +1,14 @@
+from collections import OrderedDict, defaultdict
+
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
 from sqlalchemy import func
+from sqlalchemy.orm import Session
 
 from app.core.dependencies import require_role
 from app.database.database import get_db
 from app.models.user import User
 from app.models.inspection import Inspection
+
 
 router = APIRouter(
     prefix="/dashboard",
@@ -20,7 +23,7 @@ router = APIRouter(
 @router.get("/")
 def dashboard(
     current_user: User = Depends(
-        require_role("Factory Supervisor")
+        require_role("supervisor")
     )
 ):
     return {
@@ -35,6 +38,9 @@ def dashboard(
 
 @router.get("/analytics")
 def dashboard_analytics(
+    current_user: User = Depends(
+        require_role("supervisor")
+    ),
     db: Session = Depends(get_db),
 ):
     total = db.query(Inspection).count()
@@ -79,12 +85,17 @@ def dashboard_analytics(
         "fail_rate": fail_rate,
         "average_confidence": avg_confidence,
     }
-    
-from collections import OrderedDict
-from sqlalchemy import func
+
+
+# =====================================================
+# Dashboard Activity
+# =====================================================
 
 @router.get("/activity")
 def get_activity(
+    current_user: User = Depends(
+        require_role("supervisor")
+    ),
     db: Session = Depends(get_db),
 ):
     days = OrderedDict([
@@ -101,6 +112,7 @@ def get_activity(
 
     for inspection in inspections:
         day = inspection.created_at.strftime("%a")
+
         if day in days:
             days[day] += 1
 
@@ -111,13 +123,19 @@ def get_activity(
         }
         for day, count in days.items()
     ]
-from sqlalchemy import func
+
+
+# =====================================================
+# Defect Distribution
+# =====================================================
 
 @router.get("/defect-distribution")
 def defect_distribution(
+    current_user: User = Depends(
+        require_role("supervisor")
+    ),
     db: Session = Depends(get_db),
 ):
-
     results = (
         db.query(
             Inspection.defect_type,
@@ -130,21 +148,25 @@ def defect_distribution(
     data = []
 
     for defect, count in results:
-
         data.append({
             "name": defect if defect else "Unknown",
             "value": count
         })
 
     return data
-from collections import defaultdict
-from sqlalchemy import func
+
+
+# =====================================================
+# Severity Distribution
+# =====================================================
 
 @router.get("/severity-distribution")
 def severity_distribution(
+    current_user: User = Depends(
+        require_role("supervisor")
+    ),
     db: Session = Depends(get_db),
 ):
-
     result = (
         db.query(
             Inspection.severity,
@@ -158,7 +180,11 @@ def severity_distribution(
 
     for severity, count in result:
 
-        key = severity if severity not in [None, "", "None"] else "None"
+        key = (
+            severity
+            if severity not in [None, "", "None"]
+            else "None"
+        )
 
         severity_counts[key] += count
 

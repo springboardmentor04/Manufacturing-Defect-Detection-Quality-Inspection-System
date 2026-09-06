@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 
 from app.database.database import get_db
 from app.models.inspection import Inspection
+from app.models.user import User
+from app.core.dependencies import require_role
 
 
 router = APIRouter(
@@ -29,10 +31,20 @@ def get_production_quality_report(
         description="End date in YYYY-MM-DD format",
     ),
     db: Session = Depends(get_db),
+
+    # ------------------------------------------------------
+    # Supervisor-only authorization
+    # ------------------------------------------------------
+    current_user: User = Depends(
+        require_role("supervisor")
+    ),
 ):
     """
     Generate a production quality report from
     real inspection database records.
+
+    Access:
+        Supervisor only.
 
     Includes:
         - Total inspections
@@ -46,6 +58,7 @@ def get_production_quality_report(
         - Defect distribution
         - Severity distribution
         - Daily production trend
+        - Top defects
     """
 
     # ======================================================
@@ -61,6 +74,7 @@ def get_production_quality_report(
                 start_date,
                 "%Y-%m-%d",
             )
+
         except ValueError:
             return {
                 "error": (
@@ -78,6 +92,7 @@ def get_production_quality_report(
                 )
                 + timedelta(days=1)
             )
+
         except ValueError:
             return {
                 "error": (
@@ -137,8 +152,9 @@ def get_production_quality_report(
 
             "severity_distribution": {},
 
-            "daily_trend": [],
+            "top_defects": [],
 
+            "daily_trend": [],
         }
 
     # ======================================================
@@ -253,7 +269,11 @@ def get_production_quality_report(
 
         if inspection.created_at:
 
-            day = inspection.created_at.date().isoformat()
+            day = (
+                inspection.created_at
+                .date()
+                .isoformat()
+            )
 
             if day not in daily_data:
 
@@ -305,17 +325,25 @@ def get_production_quality_report(
     # Averages
     # ======================================================
 
-    average_confidence = round(
-        sum(confidence_values)
-        / len(confidence_values),
-        2,
-    ) if confidence_values else 0
+    average_confidence = (
+        round(
+            sum(confidence_values)
+            / len(confidence_values),
+            2,
+        )
+        if confidence_values
+        else 0
+    )
 
-    average_processing_time = round(
-        sum(processing_values)
-        / len(processing_values),
-        3,
-    ) if processing_values else 0
+    average_processing_time = (
+        round(
+            sum(processing_values)
+            / len(processing_values),
+            3,
+        )
+        if processing_values
+        else 0
+    )
 
     # ======================================================
     # Defect Distribution

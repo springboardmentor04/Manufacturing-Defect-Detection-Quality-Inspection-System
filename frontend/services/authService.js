@@ -1,5 +1,8 @@
 import { api } from "./api";
 
+const BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:8000";
+
 
 export const authService = {
 
@@ -25,7 +28,7 @@ export const authService = {
 
     const response =
       await fetch(
-        "http://localhost:8000/auth/login",
+        `${BASE_URL}/auth/login`,
         {
           method: "POST",
 

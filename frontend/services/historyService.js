@@ -1,6 +1,5 @@
-import axios from "axios";
+import { api } from "./api";
 
-const API = "http://localhost:8000";
 
 export const historyService = {
 
@@ -8,33 +7,30 @@ export const historyService = {
 
     try {
 
-      const response = await axios.get(
-        `${API}/inspection/history`
+      return await api.get(
+        "/inspection/history"
       );
-
-      return response.data;
 
     } catch (error) {
 
-      throw error.response?.data || error;
+      throw error;
 
     }
 
   },
 
+
   async getInspection(id) {
 
     try {
 
-      const response = await axios.get(
-        `${API}/inspection/${id}`
+      return await api.get(
+        `/inspection/${id}`
       );
-
-      return response.data;
 
     } catch (error) {
 
-      throw error.response?.data || error;
+      throw error;
 
     }
 
