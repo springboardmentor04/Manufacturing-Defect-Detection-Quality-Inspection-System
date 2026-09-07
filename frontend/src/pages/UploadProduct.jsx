@@ -397,77 +397,168 @@ function UploadProduct() {
 
                     <div className="product-form">
 
-                        <input
-                            type="text"
-                            placeholder="Product Code"
-                            value={productCode}
-                            onChange={(e) =>
-                                setProductCode(
-                                    e.target.value
-                                )
-                            }
-                        />
+                    <input
+                    type="text"
+                    placeholder="Product Code"
+                    value={productCode}
+                    onChange={(e) =>
+                    setProductCode(e.target.value)
+                    }
+                />
 
+    <input
+        type="text"
+        placeholder="Product Name"
+        value={productName}
+        onChange={(e) =>
+            setProductName(e.target.value)
+        }
+    />
 
-                        <input
-                            type="text"
-                            placeholder="Product Name"
-                            value={productName}
-                            onChange={(e) =>
-                                setProductName(
-                                    e.target.value
-                                )
-                            }
-                        />
+    {/* CATEGORY */}
+    <select
+    className="product-form"
+    value={category}
+    onChange={(e) => setCategory(e.target.value)}
+    required
+>
+    <option value="">Select Category</option>
 
+    <option value="Pharmaceuticals">Pharmaceuticals</option>
+    <option value="Medical Devices">Medical Devices</option>
+    <option value="Food & Beverages">Food & Beverages</option>
+    <option value="Cosmetics & Personal Care">
+        Cosmetics & Personal Care
+    </option>
+    <option value="Chemicals">Chemicals</option>
 
-                        <input
-                            type="text"
-                            placeholder="Category"
-                            value={category}
-                            onChange={(e) =>
-                                setCategory(
-                                    e.target.value
-                                )
-                            }
-                        />
+    <option value="Automotive Components">
+        Automotive Components
+    </option>
+    <option value="Aerospace Components">
+        Aerospace Components
+    </option>
 
+    <option value="Electrical Components">
+        Electrical Components
+    </option>
+    <option value="Electronic Components">
+        Electronic Components
+    </option>
+    <option value="Cables & Wires">Cables & Wires</option>
+    <option value="Connectors & Terminals">
+        Connectors & Terminals
+    </option>
+    <option value="Semiconductors">Semiconductors</option>
+    <option value="Batteries & Power Components">
+        Batteries & Power Components
+    </option>
 
-                        <input
-                            type="text"
-                            placeholder="Batch Number"
-                            value={batchNumber}
-                            onChange={(e) =>
-                                setBatchNumber(
-                                    e.target.value
-                                )
-                            }
-                        />
+    <option value="Mechanical Components">
+        Mechanical Components
+    </option>
+    <option value="Fasteners">Fasteners</option>
+    <option value="Nuts, Bolts & Washers">
+        Nuts, Bolts & Washers
+    </option>
+    <option value="Industrial Tools">Industrial Tools</option>
+    <option value="Machinery Components">
+        Machinery Components
+    </option>
+    <option value="Metal Parts">Metal Parts</option>
 
+    <option value="Plastic Parts">Plastic Parts</option>
+    <option value="Rubber Products">Rubber Products</option>
+    <option value="Glass Products">Glass Products</option>
+    <option value="Ceramic Products">Ceramic Products</option>
 
-                        <input
-                            type="text"
-                            placeholder="Production Line"
-                            value={productionLine}
-                            onChange={(e) =>
-                                setProductionLine(
-                                    e.target.value
-                                )
-                            }
-                        />
+    <option value="Building & Construction Materials">
+        Building & Construction Materials
+    </option>
 
+    <option value="Packaging Materials">
+        Packaging Materials
+    </option>
+    <option value="Bottles & Containers">
+        Bottles & Containers
+    </option>
 
-                        <input
-                            type="date"
-                            value={manufacturingDate}
-                            onChange={(e) =>
-                                setManufacturingDate(
-                                    e.target.value
-                                )
-                            }
-                        />
+    <option value="Textiles & Fabrics">
+        Textiles & Fabrics
+    </option>
+    <option value="Leather Products">Leather Products</option>
+    <option value="Wood Products">Wood Products</option>
+    <option value="Paper & Cardboard Products">
+        Paper & Cardboard Products
+    </option>
 
-                    </div>
+    <option value="Consumer Products">
+        Consumer Products
+    </option>
+    <option value="Household Products">
+        Household Products
+    </option>
+    <option value="Hardware Products">
+        Hardware Products
+    </option>
+    <option value="Lighting Components">
+        Lighting Components
+    </option>
+    <option value="Optical Components">
+        Optical Components
+    </option>
+
+    <option value="Agricultural Products">
+        Agricultural Products
+    </option>
+    <option value="Food Ingredients">
+        Food Ingredients
+    </option>
+
+    <option value="Other Industrial Products">
+        Other Industrial Products
+    </option>
+    </select>
+
+    {/* BATCH NUMBER */}
+    <input
+    type="text"
+    placeholder="BATCH-PRODUCTCODE-YYYY-NNN"
+    value={batchNumber}
+    onChange={(e) => setBatchNumber(e.target.value.toUpperCase())}
+    pattern="BATCH-[A-Z0-9]+-[0-9]{4}-[0-9]{3}"
+    title="Format: BATCH-PRODUCTCODE-YYYY-NNN (Example: BATCH-CAP-2026-004)"
+    required
+/>
+
+    {/* PRODUCTION LINE */}
+    <select
+    value={productionLine}
+    onChange={(e) => setProductionLine(e.target.value)}
+    required
+>
+    <option value="">Select Production Line</option>
+    <option value="LINE 1">LINE 1</option>
+    <option value="LINE 2">LINE 2</option>
+    <option value="LINE 3">LINE 3</option>
+    <option value="LINE 4">LINE 4</option>
+    <option value="LINE 5">LINE 5</option>
+    <option value="LINE A">LINE A</option>
+    <option value="LINE B">LINE B</option>
+    <option value="LINE C">LINE C</option>
+    <option value="LINE D">LINE D</option>
+    <option value="LINE E">LINE E</option>
+    </select>
+
+    <input
+        type="date"
+        value={manufacturingDate}
+        onChange={(e) =>
+            setManufacturingDate(e.target.value)
+        }
+    />
+
+</div>
 
 
                     {/* =================================================

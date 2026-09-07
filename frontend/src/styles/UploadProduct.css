@@ -1935,3 +1935,70 @@
     }
 
 }
+
+/* =========================================
+   DROPDOWN FIELDS
+   Match the existing input field design
+   ========================================= */
+
+.product-form select {
+    width: 100%;
+    height: 48px;
+    padding: 0 42px 0 14px;
+
+    background-color: #252d38;
+    color: #dbe7f5;
+
+    border: 1px solid #303b4a;
+    border-radius: 6px;
+
+    font-size: 14px;
+    font-family: inherit;
+
+    outline: none;
+    cursor: pointer;
+
+    appearance: auto;
+    box-sizing: border-box;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+
+/* Placeholder / first option */
+.product-form select:invalid {
+    color: #9aa8ba;
+}
+
+
+/* When dropdown is focused */
+.product-form select:focus {
+    border-color: #2196f3;
+    background-color: #252d38;
+
+    box-shadow: 0 0 0 1px rgba(33, 150, 243, 0.25);
+}
+
+
+/* Hover */
+.product-form select:hover {
+    border-color: #46566a;
+}
+
+
+/* Dropdown options */
+.product-form select option {
+    background-color: #252d38;
+    color: #dbe7f5;
+    padding: 10px;
+}
+
+
+/* Selected option */
+.product-form select option:checked {
+    background-color: #1f5f95;
+    color: #ffffff;
+}
