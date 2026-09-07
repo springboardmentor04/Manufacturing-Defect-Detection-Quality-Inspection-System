@@ -3067,3 +3067,56 @@ def get_defect_advanced_analytics():
 
         cursor.close()
         conn.close()
+
+import os
+import base64
+import mimetypes
+
+from fastapi import HTTPException
+
+
+@router.get("/inspection-image-data/{filename}")
+def get_inspection_image_data(filename: str):
+
+    filename = os.path.basename(filename)
+
+    file_path = os.path.join(
+        UPLOAD_FOLDER,
+        filename
+    )
+
+    if not os.path.exists(file_path):
+        raise HTTPException(
+            status_code=404,
+            detail="Inspection image not found"
+        )
+
+    try:
+
+        mime_type, _ = mimetypes.guess_type(
+            file_path
+        )
+
+        if not mime_type:
+            mime_type = "image/png"
+
+        with open(
+            file_path,
+            "rb"
+        ) as image_file:
+
+            encoded_image = base64.b64encode(
+                image_file.read()
+            ).decode("utf-8")
+
+        return {
+            "image":
+                f"data:{mime_type};base64,{encoded_image}"
+        }
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
 import KPICard from "../components/KPICard";
-import DefectAnalytics from "../components/DefectAnalytics";
+
 
 import api from "../services/api";
 
@@ -253,17 +253,7 @@ function Dashboard() {
                 </div>
 
 
-                {/* =================================================
-                    ANALYTICS SECTION
-                ================================================= */}
 
-                <div className="dashboard-grid">
-
-
-                    <DefectAnalytics />
-
-
-                </div>
 
 
                 {/* =================================================
