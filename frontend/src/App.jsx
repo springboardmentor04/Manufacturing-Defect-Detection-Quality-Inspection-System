@@ -11,6 +11,7 @@ import ProductionOverview from "./pages/ProductionOverview";
 import InspectionReports from "./pages/InspectionReports";
 import DefectTrends from "./pages/DefectTrends";
 import QualityReports from "./pages/QualityReports";
+import Settings from "./pages/Settings";
 function App() {
 
     return (
@@ -41,6 +42,7 @@ function App() {
                 <Route path="/upload-product" element={<UploadProduct />} />
 
                 <Route path="/defect-analytics" element={<DefectAnalytics />} />
+                <Route path="/settings" element={<Settings />} />
                 <Route
     path="/supervisor/dashboard"
     element={<SupervisorDashboard/>}

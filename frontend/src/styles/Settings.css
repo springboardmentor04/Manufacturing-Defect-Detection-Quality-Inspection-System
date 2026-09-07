@@ -1,0 +1,635 @@
+/* =========================================================
+   SETTINGS PAGE LAYOUT
+   Sidebar.css is NOT changed
+========================================================= */
+
+.dashboard-layout {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: stretch;
+    background: #0f172a;
+    width: 100%;
+    min-height: 100vh;
+}
+
+
+/* Main content must sit BESIDE the Sidebar */
+
+.dashboard-layout > .dashboard-main {
+    flex: 1 1 auto !important;
+
+    min-width: 0;
+    min-height: 100vh;
+
+    width: auto !important;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   SETTINGS PAGE
+========================================================= */
+
+.settings-page {
+    width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
+
+    padding: 25px 40px 45px;
+}
+
+
+/* HEADER */
+
+.settings-header {
+    width: 100%;
+    margin-bottom: 25px;
+}
+
+.settings-header h1 {
+    margin: 0 0 6px;
+
+    color: #e2e8f0;
+
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.settings-header p {
+    margin: 0;
+
+    color: #94a3b8;
+
+    font-size: 15px;
+}
+
+
+/* MESSAGE */
+
+.settings-message {
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    margin-bottom: 20px;
+    padding: 11px 15px;
+
+    background: rgba(34, 197, 94, 0.1);
+
+    border: 1px solid rgba(34, 197, 94, 0.2);
+
+    border-radius: 8px;
+
+    color: #4ade80;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   SETTINGS INTERNAL LAYOUT
+========================================================= */
+
+.settings-container {
+    width: 100%;
+    min-width: 0;
+
+    display: grid;
+
+    grid-template-columns: 220px minmax(0, 1fr);
+
+    gap: 24px;
+
+    align-items: start;
+
+    box-sizing: border-box;
+}
+
+
+/* SETTINGS NAVIGATION */
+
+.settings-navigation {
+    width: 220px;
+
+    box-sizing: border-box;
+
+    padding: 8px;
+
+    background: rgba(30, 41, 59, 0.9);
+
+    border: 1px solid rgba(148, 163, 184, 0.15);
+
+    border-radius: 12px;
+}
+
+
+/* NAV BUTTON */
+
+.settings-nav-item {
+    width: 100%;
+
+    min-height: 46px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 12px 14px;
+
+    margin: 0;
+
+    box-sizing: border-box;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: #cbd5e1;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.settings-nav-item svg {
+    flex-shrink: 0;
+}
+
+.settings-nav-item:hover {
+    background: rgba(0, 217, 255, 0.08);
+
+    color: white;
+}
+
+.settings-nav-item.active {
+    background: rgba(0, 217, 255, 0.15);
+
+    color: white;
+
+    border-left: 3px solid #00d9ff;
+}
+
+
+/* =========================================================
+   SETTINGS CONTENT
+========================================================= */
+
+.settings-content {
+    width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
+}
+
+
+/* CARD */
+
+.settings-card {
+    width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
+
+    padding: 28px 30px;
+
+    background: rgba(30, 41, 59, 0.9);
+
+    border: 1px solid rgba(148, 163, 184, 0.15);
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+
+/* CARD HEADER */
+
+.settings-card-header {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 12px;
+
+    margin-bottom: 26px;
+}
+
+.settings-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 40px;
+    height: 40px;
+
+    flex-shrink: 0;
+
+    border-radius: 8px;
+
+    background: rgba(0, 217, 255, 0.1);
+
+    color: #00d9ff;
+}
+
+.settings-card-header h2 {
+    margin: 0;
+
+    color: #f1f5f9;
+
+    font-size: 22px;
+
+    font-weight: 700;
+}
+
+.settings-card-header p {
+    margin: 5px 0 0;
+
+    color: #94a3b8;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.settings-form {
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 20px;
+}
+
+.settings-form-row {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
+
+    gap: 20px;
+
+    box-sizing: border-box;
+}
+
+.settings-field {
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+.settings-field label {
+    color: #cbd5e1;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+.settings-field input {
+    width: 100%;
+
+    height: 42px;
+
+    padding: 0 12px;
+
+    box-sizing: border-box;
+
+    border: 1px solid rgba(148, 163, 184, 0.25);
+
+    border-radius: 7px;
+
+    background: #0f172a;
+
+    color: #e2e8f0;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    outline: none;
+}
+
+.settings-field input:focus {
+    border-color: #00d9ff;
+
+    box-shadow:
+        0 0 0 2px rgba(0, 217, 255, 0.1);
+}
+
+
+/* EMAIL ICON INPUT */
+
+.settings-input-icon {
+    position: relative;
+
+    width: 100%;
+}
+
+.settings-input-icon svg {
+    position: absolute;
+
+    left: 12px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: #64748b;
+
+    pointer-events: none;
+}
+
+.settings-input-icon input {
+    padding-left: 38px;
+}
+
+
+/* =========================================================
+   OPTIONS
+========================================================= */
+
+.settings-options {
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+.settings-option {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 17px 18px;
+
+    box-sizing: border-box;
+
+    background: rgba(15, 23, 42, 0.5);
+
+    border: 1px solid rgba(148, 163, 184, 0.13);
+
+    border-radius: 9px;
+}
+
+.settings-option strong,
+.settings-threshold strong {
+    color: #e2e8f0;
+
+    font-size: 14px;
+}
+
+.settings-option p,
+.settings-threshold p {
+    margin: 5px 0 0;
+
+    color: #94a3b8;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   SWITCH
+========================================================= */
+
+.settings-switch {
+    position: relative;
+
+    width: 44px;
+    height: 23px;
+
+    flex-shrink: 0;
+
+    cursor: pointer;
+}
+
+.settings-switch input {
+    opacity: 0;
+
+    width: 0;
+    height: 0;
+}
+
+.settings-switch span {
+    position: absolute;
+
+    inset: 0;
+
+    border-radius: 20px;
+
+    background: #475569;
+
+    transition: 0.2s ease;
+}
+
+.settings-switch span::before {
+    content: "";
+
+    position: absolute;
+
+    width: 17px;
+    height: 17px;
+
+    left: 3px;
+    top: 3px;
+
+    border-radius: 50%;
+
+    background: white;
+
+    transition: 0.2s ease;
+}
+
+.settings-switch input:checked + span {
+    background: #0891b2;
+}
+
+.settings-switch input:checked + span::before {
+    transform: translateX(21px);
+}
+
+
+/* =========================================================
+   THRESHOLD
+========================================================= */
+
+.settings-threshold {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 25px;
+
+    padding: 18px;
+
+    box-sizing: border-box;
+
+    background: rgba(15, 23, 42, 0.5);
+
+    border: 1px solid rgba(148, 163, 184, 0.13);
+
+    border-radius: 9px;
+}
+
+.threshold-control {
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    flex-shrink: 0;
+}
+
+.threshold-control input[type="range"] {
+    width: 180px;
+
+    accent-color: #00d9ff;
+}
+
+.threshold-control span {
+    min-width: 45px;
+
+    color: #00d9ff;
+
+    font-weight: 700;
+
+    text-align: right;
+}
+
+
+/* =========================================================
+   CARD FOOTER
+========================================================= */
+
+.settings-card-footer {
+    display: flex;
+
+    justify-content: flex-end;
+
+    margin-top: 28px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.settings-save-btn {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 10px 18px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background: #0891b2;
+
+    color: white;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.settings-save-btn:hover {
+    background: #0e7490;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 950px) {
+
+    .settings-page {
+        padding: 20px 25px 40px;
+    }
+
+    .settings-form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 700px) {
+
+    .settings-container {
+        grid-template-columns: 1fr;
+    }
+
+    .settings-navigation {
+        width: 100%;
+    }
+
+    .settings-threshold {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .threshold-control {
+        width: 100%;
+    }
+
+    .threshold-control input[type="range"] {
+        flex: 1;
+        width: auto;
+    }
+}
