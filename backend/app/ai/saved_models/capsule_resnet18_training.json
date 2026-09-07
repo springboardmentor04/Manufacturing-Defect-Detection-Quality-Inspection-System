@@ -1,0 +1,48 @@
+{
+  "category": "capsule",
+  "architecture": "resnet18",
+  "pretrained": true,
+  "imagenet": true,
+  "fine_tuned": true,
+  "training_from_scratch": false,
+  "classifier": "Dropout -> Linear -> LayerNorm -> ReLU -> Dropout -> Linear",
+  "classes": [
+    "crack",
+    "faulty_imprint",
+    "good",
+    "poke",
+    "scratch",
+    "squeeze"
+  ],
+  "class_to_idx": {
+    "crack": 0,
+    "faulty_imprint": 1,
+    "good": 2,
+    "poke": 3,
+    "scratch": 4,
+    "squeeze": 5
+  },
+  "dataset_size": 351,
+  "training_size": 281,
+  "validation_size": 70,
+  "best_epoch": 35,
+  "metrics": {
+    "accuracy": 0.6857142857142857,
+    "precision": 0.5233570036201615,
+    "recall": 0.6048611111111111,
+    "f1": 0.5012626262626262
+  },
+  "configuration": {
+    "image_size": 224,
+    "batch_size": 8,
+    "max_epochs": 40,
+    "head_epochs": 5,
+    "head_lr": 0.0003,
+    "finetune_lr": 2e-05,
+    "weight_decay": 0.0001,
+    "validation_ratio": 0.2,
+    "patience": 8,
+    "label_smoothing": 0.03,
+    "gradient_clip": 1.0
+  }
+}

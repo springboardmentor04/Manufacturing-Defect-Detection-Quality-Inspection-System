@@ -1,0 +1,47 @@
+services:
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+    container_name: visioninspect-backend
+
+    ports:
+      - "8001:8000"
+
+    env_file:
+      - ./backend/.env
+
+    environment:
+      FRONTEND_URL: http://localhost:3000
+      MONGO_URI=mongodb+srv://muralisankarreddy93_db_user:sankar321@cluster0.uzvprxe.mongodb.net/visioninspect_ai?retryWrites=true&w=majority&appName=Cluster0
+
+    volumes:
+      - visioninspect_uploads:/app/app/uploads
+      - visioninspect_reports:/app/app/reports
+
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
+      args:
+        VITE_API_URL: http://localhost:8001
+
+    container_name: visioninspect-frontend
+
+    ports:
+      - "3000:80"
+
+    depends_on:
+      - backend
+
+    restart: unless-stopped
+
+
+volumes:
+  visioninspect_uploads:
+  visioninspect_reports:

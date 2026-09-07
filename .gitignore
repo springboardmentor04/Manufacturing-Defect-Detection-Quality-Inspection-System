@@ -1,14 +1,36 @@
-# Node dependencies
-node_modules/
-**/node_modules/
+# Environment and secrets
+backend/.env
+backend/.env.*
+!backend/.env.example
 
-# Python virtual environments
+# Python
 venv/
 .venv/
-
-# Python cache
 __pycache__/
-*.pyc
+*.py[cod]
 
-# Environment variables
-.env
+# Node
+node_modules/
+frontend/node_modules/
+
+# Build output
+dist/
+frontend/dist/
+
+# Runtime/generated data
+backend/app/uploads/*
+backend/app/reports/*
+*.log
+
+# Local datasets
+dataset/
+datasets/
+MVTec/
+mvtec/
+
+# IDE
+.vscode/
+
+# OS
+Thumbs.db
+.DS_Store

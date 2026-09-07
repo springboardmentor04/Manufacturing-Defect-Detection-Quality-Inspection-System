@@ -1,0 +1,225 @@
+/* =========================================================
+   STATUS BADGES
+   ========================================================= */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 28px;
+  padding: 5px 11px;
+
+  border: 1px solid transparent;
+  border-radius: 6px;
+
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   SUCCESS
+   ========================================================= */
+
+.status-success {
+  color: #5ee7a0;
+  background: rgba(46, 204, 113, 0.10);
+  border-color: rgba(46, 204, 113, 0.25);
+}
+
+
+/* =========================================================
+   DANGER
+   ========================================================= */
+
+.status-danger {
+  color: #ff7373;
+  background: rgba(231, 76, 60, 0.10);
+  border-color: rgba(231, 76, 60, 0.25);
+}
+
+
+/* =========================================================
+   WARNING
+   ========================================================= */
+
+.status-warning {
+  color: #f5c76b;
+  background: rgba(241, 196, 15, 0.10);
+  border-color: rgba(241, 196, 15, 0.25);
+}
+
+
+/* =========================================================
+   LOW
+   ========================================================= */
+
+.status-low {
+  color: #65d6a0;
+  background: rgba(46, 204, 113, 0.09);
+  border-color: rgba(46, 204, 113, 0.22);
+}
+
+
+/* =========================================================
+   MEDIUM
+   ========================================================= */
+
+.status-medium {
+  color: #f4c76b;
+  background: rgba(243, 156, 18, 0.10);
+  border-color: rgba(243, 156, 18, 0.25);
+}
+
+
+/* =========================================================
+   HIGH
+   ========================================================= */
+
+.status-high {
+  color: #ff9d69;
+  background: rgba(230, 126, 34, 0.10);
+  border-color: rgba(230, 126, 34, 0.25);
+}
+
+
+/* =========================================================
+   CRITICAL
+   ========================================================= */
+
+.status-critical {
+  color: #ff6868;
+  background: rgba(192, 57, 43, 0.12);
+  border-color: rgba(192, 57, 43, 0.30);
+}
+
+
+/* =========================================================
+   NEUTRAL
+   ========================================================= */
+
+.status-neutral {
+  color: #aeb8c5;
+  background: rgba(174, 184, 197, 0.08);
+  border-color: rgba(174, 184, 197, 0.18);
+}
+
+
+/* =========================================================
+   UNAVAILABLE
+   ========================================================= */
+
+.status-unavailable {
+  color: #7f8996;
+  background: rgba(127, 137, 150, 0.06);
+  border-color: rgba(127, 137, 150, 0.14);
+}
+
+
+/* =========================================================
+   CONFIDENCE
+   ========================================================= */
+
+.confidence-value {
+  display: inline-flex;
+  align-items: center;
+
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.confidence-high {
+  color: #5ee7a0;
+}
+
+.confidence-medium {
+  color: #f5c76b;
+}
+
+.confidence-low {
+  color: #ff7373;
+}
+
+.confidence-unavailable {
+  color: #7f8996;
+}
+
+
+/* =========================================================
+   SEVERITY SCORE
+   ========================================================= */
+
+.severity-score-wrapper {
+  width: 100%;
+  max-width: 320px;
+}
+
+.severity-score-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 8px;
+
+  color: #aeb8c5;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.severity-score-header strong {
+  color: #ffffff;
+  font-size: 13px;
+}
+
+.severity-score-track {
+  width: 100%;
+  height: 6px;
+
+  overflow: hidden;
+
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+}
+
+.severity-score-fill {
+  height: 100%;
+
+  background: currentColor;
+  border-radius: inherit;
+
+  transition: width 0.3s ease;
+}
+
+.severity-score.unavailable {
+  color: #7f8996;
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 640px) {
+  .status-badge {
+    min-height: 26px;
+    padding: 5px 9px;
+
+    font-size: 10px;
+  }
+
+  .confidence-value {
+    font-size: 12px;
+  }
+
+  .severity-score-wrapper {
+    max-width: 100%;
+  }
+}

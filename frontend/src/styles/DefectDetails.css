@@ -1,0 +1,1386 @@
+.defect-details-container {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 32px 36px 60px;
+  box-sizing: border-box;
+}
+.defect-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+.defect-eyebrow,
+.card-eyebrow {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+.defect-page-header h1 {
+  margin: 0;
+  font-size: clamp(28px, 3vw, 42px);
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.defect-page-header p {
+  margin: 10px 0 0;
+  max-width: 720px;
+  font-size: 14px;
+  line-height: 1.7;
+  opacity: 0.68;
+}
+.defect-decision-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 11px 16px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.decision-pass {
+  color: #15803d;
+  background: rgba(34, 197, 94, 0.11);
+  border-color: rgba(34, 197, 94, 0.22);
+}
+.decision-warning {
+  color: #a16207;
+  background: rgba(234, 179, 8, 0.12);
+  border-color: rgba(234, 179, 8, 0.24);
+}
+.decision-fail {
+  color: #dc2626;
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.22);
+}
+.classification-workflow {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  margin-bottom: 24px;
+  padding: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 12px 35px rgba(15, 23, 42, 0.05);
+  box-sizing: border-box;
+}
+.workflow-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+}
+.workflow-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+.workflow-step > div {
+  min-width: 0;
+}
+.workflow-step > div > span {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  opacity: 0.5;
+}
+.workflow-step strong {
+  display: block;
+  max-width: 150px;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.workflow-connector {
+  align-self: center;
+  width: 28px;
+  height: 1px;
+  flex-shrink: 0;
+  background: rgba(148, 163, 184, 0.35);
+}
+.classification-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+  gap: 18px;
+  margin-bottom: 24px;
+}
+.classification-main {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 150px;
+  padding: 25px;
+  border: 1px solid transparent;
+  border-radius: 22px;
+  box-sizing: border-box;
+}
+.classification-normal {
+  color: #166534;
+  background: linear-gradient(
+    135deg,
+    rgba(34, 197, 94, 0.12),
+    rgba(34, 197, 94, 0.035)
+  );
+  border-color: rgba(34, 197, 94, 0.18);
+}
+.classification-defective {
+  color: #b91c1c;
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.12),
+    rgba(239, 68, 68, 0.035)
+  );
+  border-color: rgba(239, 68, 68, 0.18);
+}
+.classification-main-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+.classification-main span {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  opacity: 0.62;
+}
+.classification-main h2 {
+  margin: 0;
+  color: inherit;
+  font-size: 25px;
+  line-height: 1.15;
+  font-weight: 800;
+}
+.classification-main p {
+  margin: 8px 0 0;
+  color: inherit;
+  font-size: 12px;
+  opacity: 0.72;
+}
+.classification-main p strong {
+  font-weight: 800;
+}
+.confidence-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 25px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 12px 35px rgba(15, 23, 42, 0.05);
+}
+.confidence-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 15px;
+}
+.confidence-header span {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  opacity: 0.55;
+}
+.confidence-header strong {
+  font-size: 23px;
+  font-weight: 850;
+}
+.confidence-track {
+  width: 100%;
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.16);
+}
+.confidence-fill {
+  height: 100%;
+  min-width: 0;
+  border-radius: inherit;
+  transition: width 0.5s ease;
+}
+.confidence-normal {
+  background: #22c55e;
+}
+.confidence-defective {
+  background: #ef4444;
+}
+.confidence-note {
+  margin-top: 12px;
+  font-size: 11px;
+  line-height: 1.5;
+  opacity: 0.55;
+}
+.assessment-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.assessment-card {
+  position: relative;
+  min-width: 0;
+  padding: 21px;
+  border: 1px solid rgba(148, 163, 184, 0.17);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 10px 28px rgba(15, 23, 42, 0.045);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+.assessment-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(59, 130, 246, 0.25);
+  box-shadow:
+    0 16px 36px rgba(15, 23, 42, 0.08);
+}
+.assessment-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: 16px 0 14px;
+  border-radius: 12px;
+  background: rgba(59, 130, 246, 0.09);
+  color: #2563eb;
+}
+.assessment-card h3 {
+  margin: 0;
+  overflow: hidden;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+}
+.assessment-card p {
+  margin: 8px 0 0;
+  font-size: 11px;
+  line-height: 1.6;
+  opacity: 0.58;
+}
+.info-card {
+  margin-bottom: 24px;
+  padding: 24px;
+  border: 1px solid rgba(148, 163, 184, 0.17);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 12px 35px rgba(15, 23, 42, 0.05);
+  box-sizing: border-box;
+}
+.card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+.card-heading h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.icon-refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+.icon-refresh-btn:hover:not(:disabled) {
+  transform: rotate(15deg);
+  background: rgba(59, 130, 246, 0.08);
+}
+.icon-refresh-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 15px;
+  background: rgba(148, 163, 184, 0.15);
+}
+.info-item {
+  min-width: 0;
+  padding: 17px;
+  background: rgba(255, 255, 255, 0.62);
+}
+.info-item span {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+.info-item strong {
+  display: block;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.filename-value {
+  cursor: help;
+}
+.defective-text {
+  color: #dc2626;
+}
+.normal-text {
+  color: #16a34a;
+}
+.image-section {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18px;
+  margin-bottom: 24px;
+}
+.image-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.17);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 12px 35px rgba(15, 23, 42, 0.05);
+}
+.image-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 22px 22px 17px;
+}
+.image-card-header span:first-child {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  opacity: 0.5;
+}
+.image-card-header h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+}
+.image-tag {
+  padding: 6px 9px;
+  border: 1px solid rgba(59, 130, 246, 0.16);
+  border-radius: 7px;
+  color: #2563eb;
+  background: rgba(59, 130, 246, 0.07);
+  font-size: 8px !important;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+.inspection-image-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  margin: 0 18px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 15px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(241, 245, 249, 0.9),
+      rgba(248, 250, 252, 0.65)
+    );
+}
+.inspection-image {
+  display: block;
+  width: 100%;
+  max-height: 390px;
+  object-fit: contain;
+}
+.image-unavailable-text {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 9px;
+  min-height: 300px;
+  font-size: 12px;
+  opacity: 0.5;
+}
+.image-unavailable .image-unavailable-text {
+  display: flex;
+}
+.image-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 15px 22px 19px;
+}
+.image-footer span {
+  font-size: 10px;
+  opacity: 0.5;
+}
+.image-footer strong {
+  max-width: 70%;
+  overflow: hidden;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.model-details {
+  display: grid;
+  gap: 0;
+  margin: 0 22px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 14px;
+}
+.model-details > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 15px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.13);
+}
+.model-details > div:last-child {
+  border-bottom: 0;
+}
+.model-details span {
+  font-size: 10px;
+  opacity: 0.52;
+}
+.model-details strong {
+  max-width: 60%;
+  overflow: hidden;
+  font-size: 11px;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.model-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 16px 22px 22px;
+  padding: 13px;
+  border-radius: 11px;
+  background: rgba(59, 130, 246, 0.055);
+  color: #2563eb;
+}
+.model-note p {
+  margin: 0;
+  color: inherit;
+  font-size: 10px;
+  line-height: 1.6;
+  opacity: 0.78;
+}
+.recommendation-card {
+  position: relative;
+  margin-bottom: 24px;
+  padding: 25px;
+  overflow: hidden;
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 20px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(59, 130, 246, 0.08),
+      rgba(255, 255, 255, 0.72)
+    );
+  box-shadow:
+    0 12px 35px rgba(15, 23, 42, 0.045);
+}
+.recommendation-card::after {
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.07);
+  content: "";
+}
+.recommendation-card h2 {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 15px;
+  font-size: 20px;
+  font-weight: 800;
+}
+.recommendation-content {
+  position: relative;
+  z-index: 1;
+  padding: 16px 18px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.65);
+}
+.recommendation-content p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.75;
+  opacity: 0.72;
+}
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.primary-btn,
+.secondary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 17px;
+  border-radius: 11px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+.primary-btn {
+  border: 1px solid transparent;
+  color: #ffffff;
+  background: #2563eb;
+  box-shadow:
+    0 8px 20px rgba(37, 99, 235, 0.2);
+}
+.primary-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow:
+    0 11px 25px rgba(37, 99, 235, 0.27);
+}
+.secondary-btn {
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  color: inherit;
+  background: rgba(255, 255, 255, 0.7);
+}
+.secondary-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(59, 130, 246, 0.06);
+}
+.primary-btn:disabled,
+.secondary-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.defect-state-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  min-height: 420px;
+  padding: 40px;
+  border: 1px solid rgba(148, 163, 184, 0.17);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 15px 40px rgba(15, 23, 42, 0.06);
+  text-align: center;
+}
+.defect-state-card h2 {
+  margin: 18px 0 8px;
+  font-size: 21px;
+  font-weight: 800;
+}
+.defect-state-card p {
+  max-width: 520px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.7;
+  opacity: 0.62;
+}
+.defect-loading-icon {
+  opacity: 0.7;
+}
+.defect-error-state {
+  border-color: rgba(239, 68, 68, 0.16);
+}
+.defect-error-state > svg {
+  color: #dc2626;
+}
+.defect-state-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+.spin {
+  animation: defect-spin 0.9s linear infinite;
+}
+@keyframes defect-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.record-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.record-meta-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 13px;
+  background: rgba(248, 250, 252, 0.58);
+}
+.record-meta-item > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  opacity: 0.55;
+}
+.record-meta-item > div {
+  min-width: 0;
+}
+.record-meta-item span {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  opacity: 0.5;
+}
+.record-meta-item strong {
+  display: block;
+  overflow: hidden;
+  font-size: 11px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+}
+@media (prefers-color-scheme: dark) {
+  .classification-workflow,
+  .confidence-panel,
+  .assessment-card,
+  .info-card,
+  .image-card,
+  .defect-state-card {
+    background: rgba(15, 23, 42, 0.68);
+    border-color: rgba(148, 163, 184, 0.14);
+  }
+  .info-item {
+    background: rgba(15, 23, 42, 0.55);
+  }
+  .model-details {
+    border-color: rgba(148, 163, 184, 0.14);
+  }
+  .model-details > div {
+    border-color: rgba(148, 163, 184, 0.12);
+  }
+  .inspection-image-wrapper {
+    background:
+      linear-gradient(
+        135deg,
+        rgba(15, 23, 42, 0.85),
+        rgba(30, 41, 59, 0.7)
+      );
+  }
+  .secondary-btn,
+  .icon-refresh-btn {
+    background: rgba(15, 23, 42, 0.65);
+  }
+  .recommendation-content {
+    background: rgba(15, 23, 42, 0.45);
+  }
+  .record-meta-item {
+    background: rgba(15, 23, 42, 0.5);
+  }
+}
+@media (max-width: 1100px) {
+  .defect-details-container {
+    padding: 28px 24px 50px;
+  }
+  .classification-workflow {
+    overflow-x: auto;
+  }
+  .workflow-step {
+    min-width: 145px;
+  }
+  .assessment-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .record-meta-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  .defect-details-container {
+    padding: 22px 15px 40px;
+  }
+  .defect-page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .defect-page-header h1 {
+    font-size: 29px;
+  }
+  .defect-decision-pill {
+    align-self: flex-start;
+  }
+  .classification-workflow {
+    padding: 13px;
+  }
+  .workflow-step {
+    min-width: 135px;
+  }
+  .classification-summary {
+    grid-template-columns: 1fr;
+  }
+  .classification-main {
+    min-height: 125px;
+    padding: 20px;
+  }
+  .confidence-panel {
+    padding: 20px;
+  }
+  .assessment-grid {
+    grid-template-columns: 1fr;
+  }
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+  .image-section {
+    grid-template-columns: 1fr;
+  }
+  .inspection-image-wrapper {
+    min-height: 240px;
+  }
+  .inspection-image {
+    max-height: 300px;
+  }
+  .record-meta-grid {
+    grid-template-columns: 1fr;
+  }
+  .action-buttons {
+    justify-content: stretch;
+  }
+  .action-buttons button {
+    flex: 1;
+    min-width: 150px;
+  }
+}
+@media (max-width: 480px) {
+  .defect-details-container {
+    padding: 18px 11px 32px;
+  }
+  .defect-page-header h1 {
+    font-size: 25px;
+  }
+  .classification-main {
+    align-items: flex-start;
+  }
+  .classification-main-icon {
+    width: 46px;
+    height: 46px;
+  }
+  .classification-main h2 {
+    font-size: 20px;
+  }
+  .assessment-card,
+  .info-card,
+  .recommendation-card {
+    padding: 18px;
+  }
+  .image-card-header {
+    padding: 18px 18px 14px;
+  }
+  .inspection-image-wrapper {
+    margin: 0 12px;
+    min-height: 210px;
+  }
+  .image-footer {
+    padding: 13px 18px 17px;
+  }
+  .model-details {
+    margin: 0 16px;
+  }
+  .model-note {
+    margin: 14px 16px 18px;
+  }
+  .action-buttons {
+    flex-direction: column;
+  }
+  .action-buttons button {
+    width: 100%;
+  }
+}
+.defect-details-container{max-width:1400px;padding:24px 28px 42px}
+.defect-page-header{gap:16px;margin-bottom:18px}
+.defect-page-header h1{font-size:clamp(25px,2.4vw,34px)}
+.defect-page-header p{margin-top:6px;font-size:13px;line-height:1.5}
+.defect-decision-pill{gap:6px;padding:8px 12px;font-size:10px}
+.classification-workflow{margin-bottom:16px;padding:11px;border-radius:13px}
+.workflow-step{gap:8px;padding:4px 6px}
+.workflow-number{width:28px;height:28px;border-radius:8px;font-size:8px}
+.workflow-step>div>span{font-size:8px}
+.workflow-step strong{max-width:120px;font-size:10px}
+.workflow-connector{width:16px}
+.classification-summary{gap:12px;margin-bottom:16px}
+.classification-main{min-height:108px;padding:16px;gap:12px;border-radius:14px}
+.classification-main-icon{width:42px;height:42px;border-radius:10px}
+.classification-main h2{font-size:19px}
+.classification-main p{margin-top:5px;font-size:10px}
+.confidence-panel{padding:16px;border-radius:14px}
+.confidence-header{margin-bottom:9px}
+.confidence-header strong{font-size:19px}
+.confidence-track{height:7px}
+.confidence-note{margin-top:7px;font-size:10px}
+.assessment-grid{gap:10px;margin-bottom:16px}
+.assessment-card{padding:14px;border-radius:12px}
+.assessment-icon{width:31px;height:31px;margin:10px 0 8px;border-radius:8px}
+.assessment-card h3{font-size:14px}
+.assessment-card p{margin-top:5px;font-size:10px;line-height:1.5}
+.info-card{margin-bottom:16px;padding:16px;border-radius:13px}
+.card-heading{margin-bottom:13px}
+.card-heading h2{font-size:17px}
+.icon-refresh-btn{width:32px;height:32px;border-radius:9px}
+.info-item{padding:11px}
+.info-item strong{font-size:10px}
+.image-section{gap:12px;margin-bottom:16px}
+.image-card{border-radius:13px}
+.image-card-header{padding:14px 16px 11px}
+.image-card-header h3{font-size:14px}
+.image-tag{padding:4px 6px}
+.inspection-image-wrapper{min-height:220px;margin:0 12px;border-radius:10px}
+.inspection-image{max-height:290px}
+.image-footer{padding:10px 16px 13px}
+.model-details{margin:0 16px}
+.model-details>div{padding:11px}
+.model-note{margin:10px 16px 14px;padding:10px}
+.recommendation-card{margin-bottom:16px;padding:16px;border-radius:13px}
+.recommendation-card h2{margin-bottom:9px;font-size:17px}
+.recommendation-content{padding:10px 12px;border-radius:10px}
+.recommendation-content p{font-size:10px;line-height:1.55}
+.action-buttons{gap:8px}
+.primary-btn,.secondary-btn{min-height:36px;padding:0 13px;border-radius:8px;font-size:10px}
+.defect-state-card{min-height:330px;padding:25px;border-radius:14px}
+.defect-state-card h2{font-size:18px}
+.record-meta-grid{gap:9px}
+.record-meta-item{padding:11px;border-radius:10px}
+@media(max-width:1100px){
+.defect-details-container{padding:22px 20px 40px}
+}
+@media(max-width:760px){
+.defect-details-container{padding:18px 13px 32px}
+.defect-page-header h1{font-size:27px}
+.classification-workflow{padding:10px}
+.workflow-step{min-width:125px}
+.classification-main{min-height:100px;padding:15px}
+.confidence-panel{padding:15px}
+.info-card{padding:14px}
+.image-card-header{padding:13px 14px 10px}
+.inspection-image-wrapper{min-height:200px}
+.inspection-image{max-height:270px}
+.recommendation-card{padding:14px}
+}
+@media(max-width:480px){
+.defect-details-container{padding:15px 10px 28px}
+.defect-page-header h1{font-size:24px}
+.classification-main{gap:10px;padding:13px}
+.classification-main-icon{width:38px;height:38px}
+.classification-main h2{font-size:18px}
+.assessment-card,.info-card,.recommendation-card{padding:13px}
+.image-card-header{padding:12px 13px 9px}
+.inspection-image-wrapper{margin:0 10px;min-height:185px}
+.image-footer{padding:9px 13px 11px}
+.model-details{margin:0 13px}
+.model-note{margin:9px 13px 12px}
+}
+
+/* ============================================================
+   VISIONINSPECT AI — COMPACT POLISH
+   Keeps the existing component structure and behavior.
+   ============================================================ */
+
+.defect-details-container {
+  max-width: 1400px;
+  padding: 24px 28px 42px;
+}
+
+.defect-page-header {
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.defect-eyebrow,
+.card-eyebrow {
+  margin-bottom: 6px;
+  font-size: 9px;
+}
+
+.defect-page-header h1 {
+  font-size: clamp(25px, 2.5vw, 34px);
+}
+
+.defect-page-header p {
+  margin-top: 7px;
+  max-width: 650px;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.defect-decision-pill {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 10px;
+}
+
+.classification-workflow {
+  margin-bottom: 18px;
+  padding: 12px;
+  border-radius: 14px;
+}
+
+.workflow-step {
+  gap: 9px;
+  padding: 6px 8px;
+}
+
+.workflow-number {
+  width: 29px;
+  height: 29px;
+  border-radius: 8px;
+  font-size: 9px;
+}
+
+.workflow-step > div > span {
+  margin-bottom: 3px;
+  font-size: 8px;
+}
+
+.workflow-step strong {
+  font-size: 11px;
+}
+
+.workflow-connector {
+  width: 18px;
+}
+
+.classification-summary {
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.classification-main {
+  min-height: 118px;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 15px;
+}
+
+.classification-main-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+}
+
+.classification-main span {
+  margin-bottom: 5px;
+  font-size: 9px;
+}
+
+.classification-main h2 {
+  font-size: 21px;
+}
+
+.classification-main p {
+  margin-top: 6px;
+  font-size: 11px;
+}
+
+.confidence-panel {
+  padding: 18px;
+  border-radius: 15px;
+}
+
+.confidence-header {
+  margin-bottom: 10px;
+}
+
+.confidence-header span {
+  font-size: 9px;
+}
+
+.confidence-header strong {
+  font-size: 20px;
+}
+
+.confidence-track {
+  height: 7px;
+}
+
+.confidence-note {
+  margin-top: 9px;
+  font-size: 10px;
+}
+
+.assessment-grid {
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.assessment-card {
+  padding: 16px;
+  border-radius: 14px;
+}
+
+.assessment-card:hover {
+  transform: translateY(-2px);
+}
+
+.assessment-icon {
+  width: 34px;
+  height: 34px;
+  margin: 11px 0 10px;
+  border-radius: 9px;
+}
+
+.assessment-card h3 {
+  font-size: 14px;
+}
+
+.assessment-card p {
+  margin-top: 6px;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.info-card {
+  margin-bottom: 18px;
+  padding: 18px;
+  border-radius: 15px;
+}
+
+.card-heading {
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.card-heading h2 {
+  font-size: 17px;
+}
+
+.icon-refresh-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+}
+
+.info-grid {
+  border-radius: 11px;
+}
+
+.info-item {
+  padding: 13px;
+}
+
+.info-item span {
+  margin-bottom: 5px;
+  font-size: 8px;
+}
+
+.info-item strong {
+  font-size: 11px;
+}
+
+.image-section {
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.image-card {
+  border-radius: 15px;
+}
+
+.image-card-header {
+  padding: 16px 17px 12px;
+}
+
+.image-card-header span:first-child {
+  margin-bottom: 4px;
+  font-size: 8px;
+}
+
+.image-card-header h3 {
+  font-size: 15px;
+}
+
+.image-tag {
+  padding: 5px 7px;
+  font-size: 7px !important;
+}
+
+.inspection-image-wrapper {
+  min-height: 230px;
+  margin: 0 14px;
+  border-radius: 11px;
+}
+
+.inspection-image {
+  max-height: 310px;
+}
+
+.image-unavailable-text {
+  min-height: 230px;
+  font-size: 10px;
+}
+
+.image-footer {
+  padding: 11px 17px 14px;
+}
+
+.image-footer span {
+  font-size: 9px;
+}
+
+.image-footer strong {
+  font-size: 10px;
+}
+
+.model-details {
+  margin: 0 17px;
+  border-radius: 11px;
+}
+
+.model-details > div {
+  gap: 12px;
+  padding: 12px;
+}
+
+.model-details span {
+  font-size: 9px;
+}
+
+.model-details strong {
+  font-size: 10px;
+}
+
+.model-note {
+  gap: 7px;
+  margin: 12px 17px 17px;
+  padding: 10px;
+  border-radius: 9px;
+}
+
+.model-note p {
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.recommendation-card {
+  margin-bottom: 18px;
+  padding: 18px;
+  border-radius: 15px;
+}
+
+.recommendation-card h2 {
+  margin-bottom: 11px;
+  font-size: 17px;
+}
+
+.recommendation-content {
+  padding: 12px 14px;
+  border-radius: 10px;
+}
+
+.recommendation-content p {
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.action-buttons {
+  gap: 8px;
+}
+
+.primary-btn,
+.secondary-btn {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 9px;
+  font-size: 10px;
+}
+
+.defect-state-card {
+  min-height: 330px;
+  padding: 28px;
+  border-radius: 16px;
+}
+
+.defect-state-card h2 {
+  margin: 13px 0 6px;
+  font-size: 18px;
+}
+
+.defect-state-card p {
+  max-width: 460px;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.defect-state-actions {
+  gap: 8px;
+  margin-top: 17px;
+}
+
+.record-meta-grid {
+  gap: 9px;
+}
+
+.record-meta-item {
+  gap: 8px;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.record-meta-item span {
+  margin-bottom: 4px;
+  font-size: 8px;
+}
+
+.record-meta-item strong {
+  font-size: 10px;
+}
+
+@media (max-width: 1100px) {
+  .defect-details-container {
+    padding: 22px 22px 36px;
+  }
+
+  .workflow-step {
+    min-width: 125px;
+  }
+}
+
+@media (max-width: 760px) {
+  .defect-details-container {
+    padding: 18px 14px 30px;
+  }
+
+  .defect-page-header h1 {
+    font-size: 26px;
+  }
+
+  .classification-workflow {
+    padding: 10px;
+  }
+
+  .workflow-step {
+    min-width: 120px;
+  }
+
+  .classification-main {
+    min-height: 110px;
+    padding: 16px;
+  }
+
+  .confidence-panel {
+    padding: 16px;
+  }
+
+  .inspection-image-wrapper {
+    min-height: 210px;
+  }
+
+  .inspection-image {
+    max-height: 270px;
+  }
+}
+
+@media (max-width: 480px) {
+  .defect-details-container {
+    padding: 15px 10px 26px;
+  }
+
+  .defect-page-header h1 {
+    font-size: 23px;
+  }
+
+  .classification-main {
+    gap: 11px;
+  }
+
+  .classification-main-icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .classification-main h2 {
+    font-size: 19px;
+  }
+
+  .assessment-card,
+  .info-card,
+  .recommendation-card {
+    padding: 14px;
+  }
+}

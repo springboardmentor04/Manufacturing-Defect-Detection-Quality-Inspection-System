@@ -1,0 +1,90 @@
+/* =========================================
+   DASHBOARD STAT CARD
+========================================= */
+
+.card {
+  position: relative;
+
+  background: #080b0d;
+
+  padding: 24px;
+
+  min-height: 135px;
+
+  border-radius: 14px;
+
+  border: 1px solid #1c272d;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.35);
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/* subtle cyan glow */
+.card::after {
+  content: "";
+
+  position: absolute;
+
+  width: 100px;
+  height: 100px;
+
+  right: -45px;
+  top: -45px;
+
+  border-radius: 50%;
+
+  background: rgba(0, 174, 255, 0.08);
+
+  filter: blur(25px);
+
+  pointer-events: none;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+
+  border-color: rgba(0, 174, 255, 0.35);
+
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.45),
+    0 0 25px rgba(0, 174, 255, 0.04);
+}
+
+/* Card title */
+
+.card h2 {
+  margin: 0 0 14px;
+
+  color: #687780;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  letter-spacing: 1.2px;
+
+  text-transform: uppercase;
+}
+
+/* Card number */
+
+.card p {
+  margin: 0;
+
+  color: #edf3f6;
+
+  font-size: 34px;
+
+  line-height: 1;
+
+  font-weight: 700;
+
+  letter-spacing: -1px;
+}

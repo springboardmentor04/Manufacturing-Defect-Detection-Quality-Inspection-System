@@ -1,0 +1,29 @@
+{
+  "architecture": "resnet18",
+  "category": "capsule",
+  "classes": [
+    "crack",
+    "faulty_imprint",
+    "good",
+    "poke",
+    "scratch",
+    "squeeze"
+  ],
+  "num_classes": 6,
+  "image_size": 224,
+  "pretrained": true,
+  "imagenet": true,
+  "fine_tuned": true,
+  "training_from_scratch": false,
+  "best_epoch": 27,
+  "validation_metrics": {
+    "accuracy": 0.7857142857142857,
+    "precision": 0.5202020202020202,
+    "recall": 0.4548611111111111,
+    "f1": 0.476971284738275,
+    "loss": 0.7766907691955567
+  },
+  "model_path": "C:\\Users\\mural\\Desktop\\VisionInspect-AI\\backend\\app\\ai\\saved_models\\capsule_resnet18.pth",
+  "classifier": "Linear(512,256) -> ReLU -> Dropout -> Linear(256,N)",
+  "batchnorm": false
+}
