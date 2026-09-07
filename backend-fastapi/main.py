@@ -16,7 +16,10 @@ app = FastAPI(title="VisionInspect AI API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://manufacturing-defect-detection-quality-83s0.onrender.com",
+        "http://localhost:5173",  # keep this for local dev with Vite
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
