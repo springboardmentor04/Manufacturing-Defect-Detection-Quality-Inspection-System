@@ -325,9 +325,7 @@ def dashboard():
         # ====================================================
 
         cursor.execute("""
-            SELECT
-                COUNT(*) AS defects_detected
-            FROM defects
+            select COUNT(*) as defects_detected from inspections where pass_fail = 'FAIL';
         """)
 
         row = cursor.fetchone()
@@ -1908,6 +1906,9 @@ def inspection_history():
                 i.id,
                 p.product_code,
                 p.product_name,
+                p.category,
+                p.production_line,
+                p.batch_number,
                 i.pass_fail,
                 i.confidence_score,
                 i.inspection_status,
@@ -1920,11 +1921,9 @@ def inspection_history():
             """
         )
 
-
         history = cursor.fetchall()
 
         return history
-
 
     finally:
 
@@ -2749,5 +2748,50 @@ def quality_reports():
 
     finally:
 
+        cursor.close()
+        conn.close()
+
+@router.get("/defect-distribution")
+def get_defect_distribution():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+            SELECT
+                d.defect_type,
+                COUNT(*) AS count
+            FROM defects d
+            WHERE d.defect_type IS NOT NULL
+              AND TRIM(d.defect_type) <> ''
+            GROUP BY d.defect_type
+            ORDER BY COUNT(*) DESC
+        """)
+
+        rows = cursor.fetchall()
+
+        print("DEFECT DISTRIBUTION ROWS:", rows)
+
+        defect_distribution = []
+
+        for row in rows:
+            defect_distribution.append({
+                "defect_type": row["defect_type"],
+                "count": int(row["count"])
+            })
+
+        return {
+            "defect_distribution": defect_distribution
+        }
+
+    except Exception as e:
+        print("DEFECT DISTRIBUTION ERROR:", repr(e))
+
+        return {
+            "defect_distribution": [],
+            "error": repr(e)
+        }
+
+    finally:
         cursor.close()
         conn.close()

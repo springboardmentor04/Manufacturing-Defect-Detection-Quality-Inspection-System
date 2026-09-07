@@ -1,0 +1,29 @@
+/* PRODUCT INFORMATION */
+.product-info {
+    color: #e4c5c5 !important;
+}
+
+/* INSPECTION STATUS */
+.inspection-status {
+    color: #c4b5fd;
+}
+
+/* PASS */
+.status-pass {
+    color: #4ade80;
+    font-weight: 600;
+    background: rgba(74, 222, 128, 0.12);
+    padding: 5px 12px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+/* FAIL */
+.status-fail {
+    color: #f87171;
+    font-weight: 600;
+    background: rgba(248, 113, 113, 0.12);
+    padding: 5px 12px;
+    border-radius: 6px;
+    display: inline-block;
+}
