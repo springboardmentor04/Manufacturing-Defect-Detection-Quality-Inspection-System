@@ -2079,88 +2079,192 @@ def supervisor_dashboard():
 
     try:
 
-        cursor.execute(
-            """
-            SELECT COUNT(*)
+        # -----------------------------------
+        # 1. TOTAL PRODUCTS
+        # -----------------------------------
+
+        cursor.execute("""
+            SELECT COUNT(*) AS count
             FROM products
-            """
-        )
+        """)
 
-        total_products = (
-            cursor.fetchone()["count"]
-        )
+        total_products = cursor.fetchone()["count"]
 
 
-        cursor.execute(
-            """
+        # -----------------------------------
+        # 2. TOTAL INSPECTIONS
+        # -----------------------------------
+
+        cursor.execute("""
+            SELECT COUNT(*) AS count
+            FROM inspections
+        """)
+
+        total_inspections = cursor.fetchone()["count"]
+
+
+        # -----------------------------------
+        # 3. TOTAL DEFECTIVE PRODUCTS
+        # -----------------------------------
+
+        cursor.execute("""
             SELECT COUNT(*)
             FROM inspections
-            """
-        )
+            WHERE pass_fail = 'FAIL'
+        """)
 
-        total_inspections = (
-            cursor.fetchone()["count"]
-        )
+        total_defects = cursor.fetchone()["count"]
 
 
-        cursor.execute(
-            """
-            SELECT COUNT(*)
-            FROM inspections
-            WHERE pass_fail='FAIL'
-            """
-        )
+        # -----------------------------------
+        # 4. QUALITY SCORE
+        # -----------------------------------
 
-        total_defects = (
-            cursor.fetchone()["count"]
-        )
-
-
-        cursor.execute(
-            """
+        cursor.execute("""
             SELECT
                 ROUND(
                     COALESCE(
-                        COUNT(*) FILTER
-                        (
-                            WHERE pass_fail='PASS'
-                        )
-                        * 100.0
+                        COUNT(*) FILTER (
+                            WHERE pass_fail = 'PASS'
+                        ) * 100.0
                         /
-                        NULLIF(
-                            COUNT(*),
-                            0
-                        ),
+                        NULLIF(COUNT(*), 0),
                         0
                     ),
                     2
                 ) AS quality_score
-
             FROM inspections
-            """
-        )
+        """)
+
+        quality_score = cursor.fetchone()["quality_score"]
 
 
-        quality_score = (
-            cursor.fetchone()[
-                "quality_score"
-            ]
-        )
+        # -----------------------------------
+        # 5. PRODUCTION LINE MONITORING
+        # -----------------------------------
 
+        # -----------------------------------
+# 5. PRODUCTION LINE MONITORING
+# -----------------------------------
+
+        cursor.execute("""
+    SELECT
+        TRIM(p.production_line) AS production_line,
+
+        COUNT(i.id) AS total_inspections,
+
+        COUNT(i.id) FILTER (
+            WHERE i.pass_fail = 'PASS'
+        ) AS passed_inspections,
+
+        COUNT(i.id) FILTER (
+            WHERE i.pass_fail = 'FAIL'
+        ) AS failed_inspections,
+
+        ROUND(
+            COALESCE(
+                COUNT(i.id) FILTER (
+                    WHERE i.pass_fail = 'PASS'
+                ) * 100.0
+                /
+                NULLIF(COUNT(i.id), 0),
+                0
+            ),
+            2
+        ) AS efficiency
+
+    FROM products p
+
+    LEFT JOIN inspections i
+        ON i.product_id = p.id
+
+    WHERE p.production_line IS NOT NULL
+      AND TRIM(p.production_line) <> ''
+
+    GROUP BY
+        TRIM(p.production_line)
+
+    ORDER BY
+        TRIM(p.production_line)
+""")
+
+        production_lines = cursor.fetchall()
+
+        production_monitoring = []
+
+        for row in production_lines:
+            production_monitoring.append({
+        "line_name": row["production_line"],
+        "status": "Running" if row["total_inspections"] > 0 else "No Activity",
+        "total_inspections": int(row["total_inspections"]),
+        "passed_inspections": int(row["passed_inspections"]),
+        "failed_inspections": int(row["failed_inspections"]),
+        "efficiency": float(row["efficiency"])
+    })
+
+
+        # -----------------------------------
+        # 6. RECENT FACTORY ACTIVITY
+        # -----------------------------------
+
+        cursor.execute("""
+            SELECT
+                i.id AS inspection_id,
+                p.product_code,
+                p.product_name,
+                i.pass_fail,
+                i.confidence_score,
+                i.inspection_date
+            FROM inspections i
+
+            JOIN products p
+                ON p.id = i.product_id
+
+            ORDER BY
+                i.inspection_date DESC,
+                i.id DESC
+
+            LIMIT 5
+        """)
+
+        recent_rows = cursor.fetchall()
+
+
+        recent_activity = []
+
+        for row in recent_rows:
+
+            recent_activity.append({
+                "inspection_id": row["inspection_id"],
+                "product_code": row["product_code"],
+                "product_name": row["product_name"],
+                "pass_fail": row["pass_fail"],
+                "confidence_score": (
+                    float(row["confidence_score"])
+                    if row["confidence_score"] is not None
+                    else None
+                ),
+                "inspection_date": row["inspection_date"]
+            })
+
+
+        # -----------------------------------
+        # 7. FINAL RESPONSE
+        # -----------------------------------
 
         return {
 
-            "total_products":
-                total_products,
+            "total_products": total_products,
 
-            "total_inspections":
-                total_inspections,
+            "total_inspections": total_inspections,
 
-            "total_defects":
-                total_defects,
+            "total_defects": total_defects,
 
-            "quality_score":
-                quality_score
+            "quality_score": quality_score,
+
+            "production_monitoring": production_monitoring,
+
+            "recent_activity": recent_activity
 
         }
 

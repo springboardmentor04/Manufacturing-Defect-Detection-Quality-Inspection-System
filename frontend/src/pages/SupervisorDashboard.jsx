@@ -17,7 +17,9 @@ function SupervisorDashboard() {
         total_products: 0,
         total_inspections: 0,
         total_defects: 0,
-        quality_score: 0
+        quality_score: 0,
+        production_monitoring: [],
+        recent_activity: []
 
     });
 
@@ -85,138 +87,156 @@ function SupervisorDashboard() {
 
                     <div className="panel">
 
-                        <h2>
+    <h2>
+        Production Monitoring
+    </h2>
 
-                            Production Overview
+    <table>
 
-                        </h2>
+        <thead>
+            <tr>
+                <th>Production Line</th>
+                <th>Status</th>
+                <th>Efficiency</th>
+            </tr>
+        </thead>
 
-                        <p>
+        <tbody>
 
-                            Total Products Produced:
-                            <b> {dashboardData.total_products}</b>
+            {dashboardData.production_monitoring.length > 0 ? (
 
-                        </p>
+                dashboardData.production_monitoring.map((line) => (
 
-                        <p>
+                    <tr key={line.line_name}>
 
-                            Products Inspected:
-                            <b> {dashboardData.total_inspections}</b>
+                        <td>
+                            {line.line_name}
+                        </td>
 
-                        </p>
+                        <td
+                            className={
+                                line.status === "Running"
+                                    ? "pass"
+                                    : ""
+                            }
+                        >
+                            {line.status}
+                        </td>
 
-                        <p>
+                        <td>
+                            {line.efficiency.toFixed(1)}%
+                        </td>
 
-                            Defective Products:
-                            <b> {dashboardData.total_defects}</b>
+                    </tr>
 
-                        </p>
+                ))
 
-                        <p>
+            ) : (
 
-                            Overall Quality Score:
-                            <b> {dashboardData.quality_score}%</b>
+                <tr>
+                    <td colSpan="3">
+                        No production line data available.
+                    </td>
+                </tr>
 
-                        </p>
+            )}
 
-                    </div>
+        </tbody>
 
-                    <div className="panel">
+    </table>
 
-                        <h2>
+</div>
 
-                            Production Monitoring
-
-                        </h2>
-
-                        <table>
-
-                            <thead>
-
-                                <tr>
-
-                                    <th>Production Line</th>
-                                    <th>Status</th>
-                                    <th>Efficiency</th>
-
-                                </tr>
-
-                            </thead>
-
-                            <tbody>
-
-                                <tr>
-
-                                    <td>Line A</td>
-                                    <td className="pass">Running</td>
-                                    <td>98.7%</td>
-
-                                </tr>
-
-                                <tr>
-
-                                    <td>Line B</td>
-                                    <td className="pass">Running</td>
-                                    <td>97.9%</td>
-
-                                </tr>
-
-                                <tr>
-
-                                    <td>Line C</td>
-                                    <td className="pass">Running</td>
-                                    <td>99.1%</td>
-
-                                </tr>
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
+                    
                 </div>
 
                 <div className="panel">
 
-                    <h2>
+    <h2>
+        Recent Factory Activity
+    </h2>
 
-                        Recent Factory Activity
+    <table>
 
-                    </h2>
+        <thead>
 
-                    <table>
+            <tr>
+                <th>Product</th>
+                <th>Inspection Result</th>
+                <th>Confidence</th>
+                <th>Date</th>
+            </tr>
 
-                        <thead>
+        </thead>
 
-                            <tr>
+        <tbody>
 
-                                <th>Product</th>
-                                <th>Inspection Result</th>
-                                <th>Confidence</th>
-                                <th>Date</th>
+            {dashboardData.recent_activity &&
+            dashboardData.recent_activity.length > 0 ? (
 
-                            </tr>
+                dashboardData.recent_activity.map((activity) => (
 
-                        </thead>
+                    <tr key={activity.inspection_id}>
 
-                        <tbody>
+                        <td>
+                            <strong>
+                                {activity.product_code}
+                            </strong>
+                            <br />
+                            <span>
+                                {activity.product_name}
+                            </span>
+                        </td>
 
-                            <tr>
+                        <td>
+                            <span
+                                className={
+                                    activity.pass_fail === "PASS"
+                                        ? "status-pass"
+                                        : "status-fail"
+                                }
+                            >
+                                {activity.pass_fail}
+                            </span>
+                        </td>
 
-                                <td colspan="4">
+                        <td>
+                            {activity.confidence_score !== null
+                                ? `${Number(
+                                      activity.confidence_score
+                                  ).toFixed(1)}%`
+                                : "-"}
+                        </td>
 
-                                    Activity will appear after inspections are performed.
+                        <td>
+                            {activity.inspection_date
+                                ? new Date(
+                                      activity.inspection_date
+                                  ).toLocaleDateString()
+                                : "-"}
+                        </td>
 
-                                </td>
+                    </tr>
 
-                            </tr>
+                ))
 
-                        </tbody>
+            ) : (
 
-                    </table>
+                <tr>
 
-                </div>
+                    <td colSpan="4">
+                        No inspection activity available.
+                    </td>
+
+                </tr>
+
+            )}
+
+        </tbody>
+
+    </table>
+
+</div>
 
             </div>
 
