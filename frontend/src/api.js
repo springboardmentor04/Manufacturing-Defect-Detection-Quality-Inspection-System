@@ -1,5 +1,5 @@
 // Central API client. Change API_BASE if the backend runs on a different host/port.
-const API_BASE = window.VISIONINSPECT_API_BASE || 'http://localhost:8000';
+const API_BASE = window.VISIONINSPECT_API_BASE || "https://manufacturing-defect-detection-quality.onrender.com";
 
 export const Auth = {
   getToken: () => localStorage.getItem('vi_token'),
