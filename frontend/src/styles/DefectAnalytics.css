@@ -41,3 +41,93 @@
     }
 
 }
+
+.analytics-page-header {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    color:white;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+.panel maximum-defect-panel{
+
+    background:rgba(255,255,255,.08);
+
+    padding:15px;
+
+    border-radius:6px;
+
+    color:white;
+
+}
+
+/* =========================================================
+   HIGHEST DEFECT PRODUCT
+========================================================= */
+
+.maximum-defect-panel {
+    min-height: 330px;
+    display: flex;
+    flex-direction: column;
+}
+
+.maximum-defect-panel h2 {
+    margin-bottom: 8px;
+}
+
+.maximum-defect-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 25px 15px;
+}
+
+.maximum-defect-number {
+    font-size: 64px;
+    font-weight: 800;
+    line-height: 1;
+    color: #f87171;
+    margin-bottom: 10px;
+}
+
+.maximum-defect-label {
+    font-size: 15px;
+    color: #94a3b8;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.maximum-defect-product {
+    width: 100%;
+    max-width: 320px;
+    padding: 16px 20px;
+    border: 1px solid rgba(248, 113, 113, 0.25);
+    background: rgba(248, 113, 113, 0.07);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.maximum-defect-product strong {
+    font-size: 18px;
+    color: #f1f5f9;
+    font-weight: 700;
+}
+
+.maximum-defect-product span {
+    font-size: 14px;
+    color: #94a3b8;
+    letter-spacing: 0.5px;
+}

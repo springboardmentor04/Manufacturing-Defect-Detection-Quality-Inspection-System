@@ -2751,47 +2751,319 @@ def quality_reports():
         cursor.close()
         conn.close()
 
-@router.get("/defect-distribution")
-def get_defect_distribution():
+@router.get("/defect-advanced-analytics")
+def get_defect_advanced_analytics():
+
     conn = get_connection()
     cursor = conn.cursor()
 
     try:
+
+        # ============================================================
+        # 1. DEFECT SIZE
+        # Actual size = YOLO bounding-box width × height
+        # ============================================================
+
         cursor.execute("""
             SELECT
                 d.defect_type,
-                COUNT(*) AS count
+                ROUND(
+                    AVG(
+                        COALESCE(d.bbox_width, 0) *
+                        COALESCE(d.bbox_height, 0)
+                    )::numeric,
+                    2
+                ) AS average_size,
+                ROUND(
+                    MAX(
+                        COALESCE(d.bbox_width, 0) *
+                        COALESCE(d.bbox_height, 0)
+                    )::numeric,
+                    2
+                ) AS maximum_size,
+                COUNT(d.defect_id) AS defect_count
             FROM defects d
             WHERE d.defect_type IS NOT NULL
-              AND TRIM(d.defect_type) <> ''
             GROUP BY d.defect_type
-            ORDER BY COUNT(*) DESC
+            ORDER BY defect_count DESC
         """)
 
         rows = cursor.fetchall()
 
-        print("DEFECT DISTRIBUTION ROWS:", rows)
-
-        defect_distribution = []
-
-        for row in rows:
-            defect_distribution.append({
+        defect_size = [
+            {
                 "defect_type": row["defect_type"],
-                "count": int(row["count"])
-            })
+                "average_size": float(row["average_size"] or 0),
+                "maximum_size": float(row["maximum_size"] or 0),
+                "defect_count": int(row["defect_count"] or 0)
+            }
+            for row in rows
+        ]
+
+
+        # ============================================================
+        # 2. DEFECT LOCATION
+        # Actual YOLO bounding-box X/Y coordinates
+        # ============================================================
+
+        cursor.execute("""
+            SELECT
+                d.defect_id,
+                d.defect_type,
+                d.bbox_x,
+                d.bbox_y,
+                d.bbox_width,
+                d.bbox_height,
+                d.confidence,
+                d.severity
+            FROM defects d
+            WHERE
+                d.bbox_x IS NOT NULL
+                AND d.bbox_y IS NOT NULL
+            ORDER BY d.defect_id
+        """)
+
+        rows = cursor.fetchall()
+
+        defect_location = [
+            {
+                "defect_id": int(row["defect_id"]),
+                "defect_type": row["defect_type"],
+                "bbox_x": float(row["bbox_x"]),
+                "bbox_y": float(row["bbox_y"]),
+                "bbox_width": float(row["bbox_width"] or 0),
+                "bbox_height": float(row["bbox_height"] or 0),
+                "confidence": float(row["confidence"] or 0),
+                "severity": row["severity"]
+            }
+            for row in rows
+        ]
+
+
+        # ============================================================
+        # 3. DEFECT TREND
+        # defects + inspections
+        # ============================================================
+
+        cursor.execute("""
+            SELECT
+                DATE(i.inspection_date) AS inspection_date,
+                COUNT(d.defect_id) AS defect_count
+            FROM defects d
+            JOIN inspections i
+                ON i.id = d.inspection_id
+            WHERE i.inspection_date IS NOT NULL
+            GROUP BY DATE(i.inspection_date)
+            ORDER BY DATE(i.inspection_date)
+        """)
+
+        rows = cursor.fetchall()
+
+        defect_trend = [
+            {
+                "inspection_date": str(row["inspection_date"]),
+                "defect_count": int(row["defect_count"] or 0)
+            }
+            for row in rows
+        ]
+
+
+        # ============================================================
+        # 4. DEFECTS ACROSS PRODUCTION LINES
+        # defects + inspections + products
+        # ============================================================
+
+        cursor.execute("""
+            SELECT
+                TRIM(p.production_line) AS production_line,
+                COUNT(d.defect_id) AS defect_count
+            FROM defects d
+            JOIN inspections i
+                ON i.id = d.inspection_id
+            JOIN products p
+                ON p.id = i.product_id
+            WHERE p.production_line IS NOT NULL
+            GROUP BY TRIM(p.production_line)
+            ORDER BY defect_count DESC
+        """)
+
+        rows = cursor.fetchall()
+
+        production_lines = [
+            {
+                "production_line": row["production_line"],
+                "defect_count": int(row["defect_count"] or 0)
+            }
+            for row in rows
+        ]
+
+
+        # ============================================================
+        # 5. DEFECTS PER PRODUCT
+        # ============================================================
+
+        cursor.execute("""
+            SELECT
+                p.product_code,
+                p.product_name,
+                COUNT(d.defect_id) AS defect_count
+            FROM defects d
+            JOIN inspections i
+                ON i.id = d.inspection_id
+            JOIN products p
+                ON p.id = i.product_id
+            GROUP BY
+                p.id,
+                p.product_code,
+                p.product_name
+            ORDER BY defect_count DESC
+        """)
+
+        rows = cursor.fetchall()
+
+        defects_per_product = [
+            {
+                "product_code": row["product_code"],
+                "product_name": row["product_name"],
+                "defect_count": int(row["defect_count"] or 0)
+            }
+            for row in rows
+        ]
+
+
+        # ============================================================
+        # 6. SEVERITY DISTRIBUTION
+        # ============================================================
+
+        cursor.execute("""
+            SELECT
+                COALESCE(d.severity, 'Unknown') AS severity,
+                COUNT(d.defect_id) AS defect_count
+            FROM defects d
+            GROUP BY COALESCE(d.severity, 'Unknown')
+            ORDER BY defect_count DESC
+        """)
+
+        rows = cursor.fetchall()
+
+        severity_distribution = [
+            {
+                "severity": row["severity"],
+                "defect_count": int(row["defect_count"] or 0)
+            }
+            for row in rows
+        ]
+
+
+        # ============================================================
+        # 7. DEFECT DETECTION CONFIDENCE
+        # ============================================================
+
+        cursor.execute("""
+            SELECT
+                d.defect_type,
+                ROUND(
+                    AVG(d.confidence)::numeric,
+                    2
+                ) AS average_confidence,
+                ROUND(
+                    MAX(d.confidence)::numeric,
+                    2
+                ) AS maximum_confidence
+            FROM defects d
+            WHERE
+                d.defect_type IS NOT NULL
+                AND d.confidence IS NOT NULL
+            GROUP BY d.defect_type
+            ORDER BY average_confidence DESC
+        """)
+
+        rows = cursor.fetchall()
+
+        defect_confidence = [
+            {
+                "defect_type": row["defect_type"],
+                "average_confidence": float(
+                    row["average_confidence"] or 0
+                ),
+                "maximum_confidence": float(
+                    row["maximum_confidence"] or 0
+                )
+            }
+            for row in rows
+        ]
+
+
+        # ============================================================
+        # 8. PRODUCT WITH MAXIMUM NUMBER OF DEFECTS
+        # ============================================================
+
+        cursor.execute("""
+            SELECT
+                p.product_code,
+                p.product_name,
+                COUNT(d.defect_id) AS defect_count
+            FROM defects d
+            JOIN inspections i
+                ON i.id = d.inspection_id
+            JOIN products p
+                ON p.id = i.product_id
+            GROUP BY
+                p.id,
+                p.product_code,
+                p.product_name
+            ORDER BY defect_count DESC
+            LIMIT 1
+        """)
+
+        row = cursor.fetchone()
+
+        if row:
+            maximum_defects_product = {
+                "product_code": row["product_code"],
+                "product_name": row["product_name"],
+                "defect_count": int(row["defect_count"] or 0)
+            }
+        else:
+            maximum_defects_product = None
+
+
+        # ============================================================
+        # RETURN
+        # ============================================================
 
         return {
-            "defect_distribution": defect_distribution
+            "defect_size": defect_size,
+            "defect_location": defect_location,
+            "defect_trend": defect_trend,
+            "production_lines": production_lines,
+            "defects_per_product": defects_per_product,
+            "severity_distribution": severity_distribution,
+            "defect_confidence": defect_confidence,
+            "maximum_defects_product": maximum_defects_product
         }
 
+
     except Exception as e:
-        print("DEFECT DISTRIBUTION ERROR:", repr(e))
+
+        print(
+            "Error fetching advanced defect analytics:",
+            repr(e)
+        )
 
         return {
-            "defect_distribution": [],
-            "error": repr(e)
+            "error": str(e),
+            "defect_size": [],
+            "defect_location": [],
+            "defect_trend": [],
+            "production_lines": [],
+            "defects_per_product": [],
+            "severity_distribution": [],
+            "defect_confidence": [],
+            "maximum_defects_product": None
         }
 
     finally:
+
         cursor.close()
         conn.close()

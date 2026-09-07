@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
     "recharts": "^3.10.1"
   }
 }
