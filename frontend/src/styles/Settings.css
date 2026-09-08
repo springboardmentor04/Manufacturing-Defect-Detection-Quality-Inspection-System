@@ -12,9 +12,6 @@
     min-height: 100vh;
 }
 
-
-/* Main content must sit BESIDE the Sidebar */
-
 .dashboard-layout > .dashboard-main {
     flex: 1 1 auto !important;
 

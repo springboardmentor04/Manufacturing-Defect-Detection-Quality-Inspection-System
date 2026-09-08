@@ -5105,3 +5105,136 @@ def supervisor_user_management(
 
         cursor.close()
         conn.close()
+
+@router.get("/settings/profile")
+def get_settings_profile(
+    current_user=Depends(get_current_user)
+):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+        user_id = current_user["user_id"]
+
+        cursor.execute("""
+            SELECT
+                u.first_name,
+                u.last_name,
+                u.employee_id,
+                u.email,
+                u.phone,
+                u.department,
+                r.role_name
+            FROM users u
+            LEFT JOIN roles r
+                ON r.id = u.role_id
+            WHERE u.id = %s
+        """, (user_id,))
+
+        row = cursor.fetchone()
+
+        if not row:
+            raise HTTPException(
+                status_code=404,
+                detail="User profile not found"
+            )
+
+        return {
+            "firstName": row["first_name"] or "",
+            "lastName": row["last_name"] or "",
+            "employeeId": row["employee_id"] or "",
+            "email": row["email"] or "",
+            "phone": row["phone"] or "",
+            "department": row["department"] or "",
+            "role": row["role_name"] or ""
+        }
+
+    finally:
+        cursor.close()
+        conn.close()
+
+@router.put("/settings/profile")
+def update_settings_profile(
+    profile: dict,
+    current_user=Depends(get_current_user)
+):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+        user_id = current_user["user_id"]
+
+        cursor.execute("""
+            UPDATE users
+            SET
+                first_name = %s,
+                last_name = %s,
+                employee_id = %s,
+                email = %s,
+                phone = %s,
+                department = %s,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = %s
+        """, (
+            profile.get("firstName", "").strip(),
+            profile.get("lastName", "").strip(),
+            profile.get("employeeId", "").strip(),
+            profile.get("email", "").strip(),
+            profile.get("phone", "").strip(),
+            profile.get("department", "").strip(),
+            user_id
+        ))
+
+        if cursor.rowcount == 0:
+            raise HTTPException(
+                status_code=404,
+                detail="User profile not found"
+            )
+
+        conn.commit()
+
+        return {
+            "message": "Profile updated successfully."
+        }
+
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
+    finally:
+        cursor.close()
+        conn.close()
+
+@router.get("/dashboard-header")
+def get_dashboard_header(current_user=Depends(get_current_user)):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+        user_id = current_user["user_id"]
+
+        cursor.execute("""
+            SELECT first_name, last_name
+            FROM users
+            WHERE id = %s
+        """, (user_id,))
+
+        row = cursor.fetchone()
+
+        if not row:
+            raise HTTPException(
+                status_code=404,
+                detail="Logged-in user not found"
+            )
+
+        return {
+            "first_name": row["first_name"] or "",
+            "last_name": row["last_name"] or ""
+        }
+
+    finally:
+        cursor.close()
+        conn.close()

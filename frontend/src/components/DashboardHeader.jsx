@@ -1,43 +1,58 @@
-function DashboardHeader(){
+import { useEffect, useState } from "react";
+import api from "../services/api";
 
-return(
+function DashboardHeader() {
 
-<div className="header">
+    const [userName, setUserName] = useState("User");
 
+    useEffect(() => {
+        let isMounted = true;
 
-<div>
+        const loadUserName = async () => {
+            try {
+                const response = await api.get("/dashboard-header");
 
-<h1>
-Welcome, Ishita
-</h1>
+                const firstName = response.data.first_name || "";
+                const lastName = response.data.last_name || "";
 
+                const fullName = `${firstName} ${lastName}`.trim();
 
-<p>
-Quality Engineer Dashboard
-</p>
+                if (isMounted) {
+                    setUserName(fullName || "User");
+                }
+            } catch (error) {
+                console.error("Error loading logged-in user:", error);
+            }
+        };
 
+        void loadUserName();
 
-<span>
-Monitor product quality using AI-powered inspection.
-</span>
+        return () => {
+            isMounted = false;
+        };
+    }, []);
 
+    return (
+        <div className="header">
 
-</div>
+            <div>
 
+                <h1>
+                    Welcome, {userName}
+                </h1>
 
+                <p>
+                    Quality Engineer Dashboard
+                </p>
 
-<div className="notification">
+                <span>
+                    Monitor product quality using AI-powered inspection.
+                </span>
 
-🔔
+            </div>
 
-</div>
-
-
-</div>
-
-)
-
+        </div>
+    );
 }
-
 
 export default DashboardHeader;
