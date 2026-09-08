@@ -4,7 +4,7 @@ import uuid
 import os
 import hashlib
 from datetime import date, datetime, timedelta
-
+from fastapi import Depends, HTTPException
 
 from fastapi import (
     Form,
@@ -3859,3 +3859,1249 @@ def get_inspection_image_data(filename: str):
             status_code=500,
             detail=str(e)
         )
+
+@router.get("/supervisor/quality-analytics")
+def supervisor_quality_analytics():
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+
+        # ============================================================
+        # 1. SUMMARY
+        # ============================================================
+
+        # ============================================================
+        # DEFECTIVE PRODUCTS
+        # Count failed inspections from inspections table
+        # ============================================================
+
+        cursor.execute("""
+            SELECT COUNT(*) AS defective_products
+            FROM inspections
+            WHERE UPPER(TRIM(pass_fail)) = 'FAIL'
+        """)
+
+        defective_products = cursor.fetchone()
+
+
+        # ============================================================
+        # DEFECT SUMMARY
+        # Take defect information from defects table
+        # ============================================================
+
+        cursor.execute("""
+            SELECT
+                COUNT(*) AS total_defects,
+
+                COUNT(*) FILTER (
+                    WHERE LOWER(TRIM(severity)) = 'high'
+                ) AS high_severity,
+
+                COUNT(*) FILTER (
+                    WHERE LOWER(TRIM(severity)) = 'medium'
+                ) AS medium_severity,
+
+                COUNT(*) FILTER (
+                    WHERE LOWER(TRIM(severity)) = 'low'
+                ) AS low_severity,
+
+                COALESCE(AVG(confidence), 0) AS average_confidence,
+
+                COALESCE(MAX(confidence), 0) AS maximum_confidence
+
+            FROM defects
+        """)
+
+        summary = cursor.fetchone()
+
+
+        # ============================================================
+        # 2. DEFECT TYPE DISTRIBUTION
+        # ============================================================
+
+        cursor.execute("""
+            SELECT
+                TRIM(defect_type) AS defect_type,
+                COUNT(*) AS defect_count
+
+            FROM defects
+
+            WHERE defect_type IS NOT NULL
+              AND TRIM(defect_type) <> ''
+
+            GROUP BY TRIM(defect_type)
+
+            ORDER BY defect_count DESC
+        """)
+
+        defect_distribution = cursor.fetchall()
+
+
+        # ============================================================
+        # 3. DEFECT SEVERITY
+        # ============================================================
+
+        cursor.execute("""
+            SELECT
+                INITCAP(TRIM(severity)) AS severity,
+                COUNT(*) AS defect_count
+
+            FROM defects
+
+            WHERE severity IS NOT NULL
+              AND TRIM(severity) <> ''
+
+            GROUP BY INITCAP(TRIM(severity))
+
+            ORDER BY
+                CASE INITCAP(TRIM(severity))
+                    WHEN 'High' THEN 1
+                    WHEN 'Medium' THEN 2
+                    WHEN 'Low' THEN 3
+                    ELSE 4
+                END
+        """)
+
+        severity_distribution = cursor.fetchall()
+
+
+        # ============================================================
+        # 4. CONFIDENCE BY DEFECT TYPE
+        # ============================================================
+
+        cursor.execute("""
+            SELECT
+                TRIM(defect_type) AS defect_type,
+
+                ROUND(
+                    AVG(confidence)::numeric,
+                    2
+                ) AS average_confidence,
+
+                ROUND(
+                    MAX(confidence)::numeric,
+                    2
+                ) AS maximum_confidence
+
+            FROM defects
+
+            WHERE defect_type IS NOT NULL
+              AND TRIM(defect_type) <> ''
+              AND confidence IS NOT NULL
+
+            GROUP BY TRIM(defect_type)
+
+            ORDER BY average_confidence DESC
+        """)
+
+        confidence_by_type = cursor.fetchall()
+
+
+        # ============================================================
+        # 5. CONFIDENCE DISTRIBUTION
+        # ============================================================
+
+        cursor.execute("""
+            SELECT
+                CASE
+                    WHEN confidence < 50
+                        THEN '0-49%'
+
+                    WHEN confidence < 60
+                        THEN '50-59%'
+
+                    WHEN confidence < 70
+                        THEN '60-69%'
+
+                    WHEN confidence < 80
+                        THEN '70-79%'
+
+                    WHEN confidence < 90
+                        THEN '80-89%'
+
+                    ELSE '90-100%'
+                END AS range,
+
+                COUNT(*) AS defect_count
+
+            FROM defects
+
+            WHERE confidence IS NOT NULL
+
+            GROUP BY
+                CASE
+                    WHEN confidence < 50
+                        THEN '0-49%'
+
+                    WHEN confidence < 60
+                        THEN '50-59%'
+
+                    WHEN confidence < 70
+                        THEN '60-69%'
+
+                    WHEN confidence < 80
+                        THEN '70-79%'
+
+                    WHEN confidence < 90
+                        THEN '80-89%'
+
+                    ELSE '90-100%'
+                END
+
+            ORDER BY MIN(confidence)
+        """)
+
+        confidence_distribution = cursor.fetchall()
+
+
+        # ============================================================
+        # 6. DEFECT SIZE
+        #
+        # Actual formula:
+        # bbox_width * bbox_height
+        # ============================================================
+
+        cursor.execute("""
+            SELECT
+                TRIM(defect_type) AS defect_type,
+
+                ROUND(
+                    AVG(
+                        bbox_width * bbox_height
+                    )::numeric,
+                    2
+                ) AS average_size,
+
+                MAX(
+                    bbox_width * bbox_height
+                ) AS maximum_size,
+
+                COUNT(*) AS defect_count
+
+            FROM defects
+
+            WHERE defect_type IS NOT NULL
+              AND TRIM(defect_type) <> ''
+              AND bbox_width IS NOT NULL
+              AND bbox_height IS NOT NULL
+
+            GROUP BY TRIM(defect_type)
+
+            ORDER BY average_size DESC
+        """)
+
+        defect_size = cursor.fetchall()
+
+
+        # ============================================================
+        # 7. DEFECT LOCATION
+        # ============================================================
+
+        cursor.execute("""
+            SELECT
+                defect_id,
+                TRIM(defect_type) AS defect_type,
+
+                bbox_x,
+                bbox_y,
+                bbox_width,
+                bbox_height,
+
+                confidence,
+                INITCAP(TRIM(severity)) AS severity
+
+            FROM defects
+
+            WHERE bbox_x IS NOT NULL
+              AND bbox_y IS NOT NULL
+
+            ORDER BY defect_id
+        """)
+
+        defect_location = cursor.fetchall()
+
+
+        # ============================================================
+        # 8. PRODUCTION LINE QUALITY
+        #
+        # Pass rate =
+        # PASS inspections / total inspections * 100
+        # ============================================================
+
+        cursor.execute("""
+            SELECT
+                TRIM(p.production_line) AS production_line,
+
+                COUNT(i.id) AS total_inspections,
+
+                COUNT(i.id) FILTER (
+                    WHERE UPPER(TRIM(i.pass_fail)) = 'PASS'
+                ) AS passed_inspections,
+
+                COUNT(i.id) FILTER (
+                    WHERE UPPER(TRIM(i.pass_fail)) = 'FAIL'
+                ) AS failed_inspections,
+
+                ROUND(
+                    (
+                        COUNT(i.id) FILTER (
+                            WHERE UPPER(TRIM(i.pass_fail)) = 'PASS'
+                        )::numeric
+                        /
+                        NULLIF(COUNT(i.id), 0)
+                    ) * 100,
+                    2
+                ) AS pass_rate
+
+            FROM products p
+
+            INNER JOIN inspections i
+                ON i.product_id = p.id
+
+            WHERE p.production_line IS NOT NULL
+              AND TRIM(p.production_line) <> ''
+
+            GROUP BY TRIM(p.production_line)
+
+            ORDER BY TRIM(p.production_line)
+        """)
+
+        production_line_quality = cursor.fetchall()
+
+
+        # ============================================================
+        # 9. DEFECTS PER PRODUCT
+        # ============================================================
+
+        cursor.execute("""
+            SELECT
+                p.product_code,
+                p.product_name,
+
+                COUNT(d.defect_id) AS defect_count
+
+            FROM products p
+
+            INNER JOIN inspections i
+                ON i.product_id = p.id
+
+            INNER JOIN defects d
+                ON d.inspection_id = i.id
+
+            WHERE p.product_code IS NOT NULL
+
+            GROUP BY
+                p.product_code,
+                p.product_name
+
+            ORDER BY
+                defect_count DESC,
+                p.product_code
+        """)
+
+        defects_per_product = cursor.fetchall()
+
+
+        # ============================================================
+        # 10. HIGHEST DEFECT PRODUCT
+        # ============================================================
+
+        cursor.execute("""
+            SELECT
+                p.product_code,
+                p.product_name,
+
+                COUNT(d.defect_id) AS defect_count
+
+            FROM products p
+
+            INNER JOIN inspections i
+                ON i.product_id = p.id
+
+            INNER JOIN defects d
+                ON d.inspection_id = i.id
+
+            GROUP BY
+                p.product_code,
+                p.product_name
+
+            ORDER BY
+                defect_count DESC
+
+            LIMIT 1
+        """)
+
+        highest_defect_product = cursor.fetchone()
+
+
+        # ============================================================
+        # RETURN RESPONSE
+        # ============================================================
+
+        return {
+            "summary": {
+
+                # IMPORTANT:
+                # This comes from inspections table.
+                # It represents the number of defective products.
+                "defective_products": int(
+                    defective_products["defective_products"] or 0
+                ),
+
+                # This comes from defects table.
+                # It represents individual detected defects.
+                "total_defects": int(
+                    summary["total_defects"] or 0
+                ),
+
+                "high_severity": int(
+                    summary["high_severity"] or 0
+                ),
+
+                "medium_severity": int(
+                    summary["medium_severity"] or 0
+                ),
+
+                "low_severity": int(
+                    summary["low_severity"] or 0
+                ),
+
+                "average_confidence": float(
+                    summary["average_confidence"] or 0
+                ),
+
+                "maximum_confidence": float(
+                    summary["maximum_confidence"] or 0
+                )
+            },
+
+
+            # ========================================================
+            # DEFECT TYPE DISTRIBUTION
+            # ========================================================
+
+            "defect_distribution": [
+                {
+                    "defect_type": row["defect_type"],
+                    "defect_count": int(
+                        row["defect_count"]
+                    )
+                }
+
+                for row in defect_distribution
+            ],
+
+
+            # ========================================================
+            # SEVERITY DISTRIBUTION
+            # ========================================================
+
+            "severity_distribution": [
+                {
+                    "severity": row["severity"],
+                    "defect_count": int(
+                        row["defect_count"]
+                    )
+                }
+
+                for row in severity_distribution
+            ],
+
+
+            # ========================================================
+            # CONFIDENCE BY DEFECT TYPE
+            # ========================================================
+
+            "confidence_by_type": [
+                {
+                    "defect_type": row["defect_type"],
+
+                    "average_confidence": float(
+                        row["average_confidence"] or 0
+                    ),
+
+                    "maximum_confidence": float(
+                        row["maximum_confidence"] or 0
+                    )
+                }
+
+                for row in confidence_by_type
+            ],
+
+
+            # ========================================================
+            # CONFIDENCE DISTRIBUTION
+            # ========================================================
+
+            "confidence_distribution": [
+                {
+                    "range": row["range"],
+                    "defect_count": int(
+                        row["defect_count"]
+                    )
+                }
+
+                for row in confidence_distribution
+            ],
+
+
+            # ========================================================
+            # DEFECT SIZE
+            # ========================================================
+
+            "defect_size": [
+                {
+                    "defect_type": row["defect_type"],
+
+                    "average_size": float(
+                        row["average_size"] or 0
+                    ),
+
+                    "maximum_size": float(
+                        row["maximum_size"] or 0
+                    ),
+
+                    "defect_count": int(
+                        row["defect_count"] or 0
+                    )
+                }
+
+                for row in defect_size
+            ],
+
+
+            # ========================================================
+            # DEFECT LOCATION
+            # ========================================================
+
+            "defect_location": [
+                {
+                    "defect_id": int(
+                        row["defect_id"]
+                    ),
+
+                    "defect_type": row["defect_type"],
+
+                    "bbox_x": float(
+                        row["bbox_x"]
+                    ),
+
+                    "bbox_y": float(
+                        row["bbox_y"]
+                    ),
+
+                    "bbox_width": float(
+                        row["bbox_width"]
+                    ),
+
+                    "bbox_height": float(
+                        row["bbox_height"]
+                    ),
+
+                    "confidence": float(
+                        row["confidence"] or 0
+                    ),
+
+                    "severity": row["severity"]
+                }
+
+                for row in defect_location
+            ],
+
+
+            # ========================================================
+            # PRODUCTION LINE QUALITY
+            # ========================================================
+
+            "production_line_quality": [
+                {
+                    "production_line":
+                        row["production_line"],
+
+                    "total_inspections": int(
+                        row["total_inspections"] or 0
+                    ),
+
+                    "passed_inspections": int(
+                        row["passed_inspections"] or 0
+                    ),
+
+                    "failed_inspections": int(
+                        row["failed_inspections"] or 0
+                    ),
+
+                    "pass_rate": float(
+                        row["pass_rate"] or 0
+                    )
+                }
+
+                for row in production_line_quality
+            ],
+
+
+            # ========================================================
+            # DEFECTS PER PRODUCT
+            # ========================================================
+
+            "defects_per_product": [
+                {
+                    "product_code":
+                        row["product_code"],
+
+                    "product_name":
+                        row["product_name"],
+
+                    "defect_count": int(
+                        row["defect_count"] or 0
+                    )
+                }
+
+                for row in defects_per_product
+            ],
+
+
+            # ========================================================
+            # HIGHEST DEFECT PRODUCT
+            # ========================================================
+
+            "highest_defect_product": (
+
+                {
+                    "product_code":
+                        highest_defect_product[
+                            "product_code"
+                        ],
+
+                    "product_name":
+                        highest_defect_product[
+                            "product_name"
+                        ],
+
+                    "defect_count": int(
+                        highest_defect_product[
+                            "defect_count"
+                        ]
+                    )
+                }
+
+                if highest_defect_product
+
+                else None
+            )
+        }
+
+
+    except Exception as e:
+
+        print(
+            "Error fetching supervisor quality analytics:",
+            e
+        )
+
+        return {
+            "error": str(e),
+
+            "summary": {
+
+                "defective_products": int(
+                    defective_products["defective_products"] or 0
+                ),
+
+                "total_defects": int(
+                    summary["total_defects"] or 0
+                ),
+
+                "high_severity": int(
+                    summary["high_severity"] or 0
+                ),
+
+                "medium_severity": int(
+                    summary["medium_severity"] or 0
+                ),
+
+                "low_severity": int(
+                    summary["low_severity"] or 0
+                ),
+
+                "average_confidence": float(
+                    summary["average_confidence"] or 0
+                ),
+
+                "maximum_confidence": float(
+                    summary["maximum_confidence"] or 0
+                )
+            },
+
+            "defect_distribution": [],
+            "severity_distribution": [],
+            "confidence_by_type": [],
+            "confidence_distribution": [],
+            "defect_size": [],
+            "defect_location": [],
+            "production_line_quality": [],
+            "defects_per_product": [],
+            "highest_defect_product": None
+        }
+
+
+    finally:
+
+        cursor.close()
+        conn.close()
+
+@router.get("/supervisor/production-monitoring")
+def supervisor_production_monitoring():
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+
+        # ============================================================
+        # 1. GET PRODUCTION LINES FROM PRODUCTS
+        #
+        # IMPORTANT:
+        # production_line TABLE IS EMPTY IN THE CURRENT DATABASE.
+        #
+        # Therefore production lines are taken from:
+        # products.production_line
+        # ============================================================
+
+        cursor.execute("""
+            SELECT DISTINCT
+                TRIM(p.production_line) AS production_line
+            FROM products p
+            WHERE p.production_line IS NOT NULL
+              AND TRIM(p.production_line) <> ''
+            ORDER BY TRIM(p.production_line)
+        """)
+
+        line_rows = cursor.fetchall()
+
+
+        # ============================================================
+        # 2. BUILD MONITORING DATA
+        # ============================================================
+
+        production_lines = []
+
+
+        for line_row in line_rows:
+
+            production_line = line_row["production_line"]
+
+
+            # ========================================================
+            # INSPECTION STATISTICS FOR THIS LINE
+            # ========================================================
+
+            cursor.execute("""
+                SELECT
+
+                    COUNT(i.id) AS inspections_performed,
+
+                    COUNT(i.id) FILTER (
+                        WHERE UPPER(TRIM(i.pass_fail)) = 'PASS'
+                    ) AS passed_inspections,
+
+                    COUNT(i.id) FILTER (
+                        WHERE UPPER(TRIM(i.pass_fail)) = 'FAIL'
+                    ) AS failed_inspections
+
+                FROM products p
+
+                INNER JOIN inspections i
+                    ON i.product_id = p.id
+
+                WHERE TRIM(p.production_line) = TRIM(%s)
+            """, (production_line,))
+
+            statistics = cursor.fetchone()
+
+
+            inspections_performed = int(
+                statistics["inspections_performed"] or 0
+            )
+
+            passed_inspections = int(
+                statistics["passed_inspections"] or 0
+            )
+
+            failed_inspections = int(
+                statistics["failed_inspections"] or 0
+            )
+
+
+            # ========================================================
+            # QUALITY RATE
+            #
+            # PASS / TOTAL INSPECTIONS * 100
+            # ========================================================
+
+            if inspections_performed > 0:
+
+                quality_rate = round(
+                    (
+                        passed_inspections
+                        / inspections_performed
+                    ) * 100,
+                    2
+                )
+
+            else:
+
+                quality_rate = 0
+
+
+            # ========================================================
+            # LATEST INSPECTION ON THIS LINE
+            # ========================================================
+
+            cursor.execute("""
+                SELECT
+
+                    i.id AS inspection_id,
+
+                    i.inspection_status,
+                    i.pass_fail,
+
+                    i.inspection_date,
+                    i.inspection_time,
+
+                    i.confidence_score,
+
+                    p.product_code,
+                    p.product_name,
+                    p.category,
+                    p.batch_number
+
+                FROM products p
+
+                INNER JOIN inspections i
+                    ON i.product_id = p.id
+
+                WHERE TRIM(p.production_line) = TRIM(%s)
+
+                ORDER BY
+                    i.inspection_date DESC,
+                    i.id DESC
+
+                LIMIT 1
+            """, (production_line,))
+
+            latest = cursor.fetchone()
+
+
+            # ========================================================
+            # DEFECTS DETECTED ON THIS LINE
+            # ========================================================
+
+            cursor.execute("""
+                SELECT
+                    COUNT(d.defect_id) AS defect_count
+
+                FROM products p
+
+                INNER JOIN inspections i
+                    ON i.product_id = p.id
+
+                INNER JOIN defects d
+                    ON d.inspection_id = i.id
+
+                WHERE TRIM(p.production_line) = TRIM(%s)
+            """, (production_line,))
+
+            defect_result = cursor.fetchone()
+
+
+            defect_count = int(
+                defect_result["defect_count"] or 0
+            )
+
+
+            # ========================================================
+            # CURRENT / OPERATIONAL STATUS
+            #
+            # production_line.status cannot be used because the
+            # production_line table contains no data.
+            #
+            # We derive the status from the latest inspection.
+            # ========================================================
+
+            if latest is None:
+
+                current_status = "Waiting"
+
+            elif (
+                latest["inspection_status"] is not None
+                and
+                latest["inspection_status"]
+                    .strip()
+                    .lower()
+                == "completed"
+            ):
+
+                current_status = "Running"
+
+            else:
+
+                current_status = "Stopped"
+
+
+            # ========================================================
+            # LAST INSPECTION DATE
+            # ========================================================
+
+            last_inspection_time = None
+
+            if latest is not None:
+
+                if latest["inspection_date"] is not None:
+
+                    last_inspection_time = (
+                        latest["inspection_date"].isoformat()
+                    )
+
+
+            # ========================================================
+            # APPEND LINE
+            # ========================================================
+
+            production_lines.append({
+
+                "production_line":
+                    production_line,
+
+                "status":
+                    current_status,
+
+                "inspections_performed":
+                    inspections_performed,
+
+                "passed_inspections":
+                    passed_inspections,
+
+                "failed_inspections":
+                    failed_inspections,
+
+                "quality_rate":
+                    quality_rate,
+
+                "defect_count":
+                    defect_count,
+
+
+                # Latest inspection information
+
+                "latest_inspection_id": (
+                    int(latest["inspection_id"])
+                    if latest is not None
+                    and latest["inspection_id"] is not None
+                    else None
+                ),
+
+                "latest_inspection_status": (
+                    latest["inspection_status"]
+                    if latest is not None
+                    else None
+                ),
+
+                "latest_pass_fail": (
+                    latest["pass_fail"]
+                    if latest is not None
+                    else None
+                ),
+
+                "last_inspection_time":
+                    last_inspection_time,
+
+
+                # Current product
+
+                "current_product_code": (
+                    latest["product_code"]
+                    if latest is not None
+                    else None
+                ),
+
+                "current_product_name": (
+                    latest["product_name"]
+                    if latest is not None
+                    else None
+                ),
+
+                "current_category": (
+                    latest["category"]
+                    if latest is not None
+                    else None
+                ),
+
+                "current_batch": (
+                    latest["batch_number"]
+                    if latest is not None
+                    else None
+                ),
+
+                "latest_confidence": (
+                    float(latest["confidence_score"])
+                    if latest is not None
+                    and latest["confidence_score"] is not None
+                    else 0
+                ),
+
+                "latest_inspection_time": (
+                    float(latest["inspection_time"])
+                    if latest is not None
+                    and latest["inspection_time"] is not None
+                    else 0
+                )
+            })
+
+
+        # ============================================================
+        # 3. SUMMARY
+        # ============================================================
+
+        total_lines = len(production_lines)
+
+        running_lines = sum(
+            1
+            for line in production_lines
+            if line["status"] == "Running"
+        )
+
+        stopped_lines = sum(
+            1
+            for line in production_lines
+            if line["status"] == "Stopped"
+        )
+
+        waiting_lines = sum(
+            1
+            for line in production_lines
+            if line["status"] == "Waiting"
+        )
+
+
+        # ============================================================
+        # 4. CURRENT ACTIVE LINE
+        #
+        # Select the line with the most recent inspection.
+        # ============================================================
+
+        active_line = None
+
+        if production_lines:
+
+            sorted_lines = sorted(
+                production_lines,
+                key=lambda x: (
+                    x["last_inspection_time"]
+                    or ""
+                ),
+                reverse=True
+            )
+
+            for line in sorted_lines:
+
+                if line["status"] == "Running":
+
+                    active_line = {
+
+                        "production_line":
+                            line["production_line"],
+
+                        "status":
+                            line["status"],
+
+                        "current_product_code":
+                            line["current_product_code"],
+
+                        "current_product_name":
+                            line["current_product_name"],
+
+                        "current_batch":
+                            line["current_batch"],
+
+                        "last_inspection_time":
+                            line["last_inspection_time"]
+                    }
+
+                    break
+
+
+        # ============================================================
+        # 5. RETURN RESPONSE
+        # ============================================================
+
+        return {
+
+            "summary": {
+
+                "total_lines":
+                    total_lines,
+
+                "running_lines":
+                    running_lines,
+
+                "stopped_lines":
+                    stopped_lines,
+
+                "waiting_lines":
+                    waiting_lines
+            },
+
+            "active_line":
+                active_line,
+
+            "production_lines":
+                production_lines
+        }
+
+
+    except Exception as e:
+
+        print(
+            "Error fetching supervisor production monitoring:",
+            e
+        )
+
+        return {
+
+            "error":
+                str(e),
+
+            "summary": {
+
+                "total_lines": 0,
+
+                "running_lines": 0,
+
+                "stopped_lines": 0,
+
+                "waiting_lines": 0
+            },
+
+            "active_line":
+                None,
+
+            "production_lines":
+                []
+        }
+
+
+    finally:
+
+        cursor.close()
+        conn.close()
+
+@router.get("/supervisor/user-management")
+def supervisor_user_management(
+    current_user=Depends(get_current_user)
+):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+
+        cursor.execute("""
+            SELECT
+                u.id,
+                u.first_name,
+                u.last_name,
+                u.employee_id,
+                u.email,
+                u.phone,
+                u.department,
+                u.is_active,
+                u.last_login,
+                r.role_name
+            FROM users u
+            LEFT JOIN roles r
+                ON r.id = u.role_id
+            ORDER BY u.id ASC
+        """)
+
+        user_rows = cursor.fetchall()
+
+        users = []
+
+        for row in user_rows:
+
+            users.append({
+                "id": str(row["id"]),
+                "first_name": row["first_name"],
+                "last_name": row["last_name"],
+                "employee_id": row["employee_id"],
+                "email": row["email"],
+                "phone": row["phone"],
+                "department": row["department"],
+                "role_name": row["role_name"],
+                "is_active": bool(row["is_active"]),
+                "last_login": (
+                    row["last_login"].isoformat()
+                    if row["last_login"]
+                    else None
+                )
+            })
+
+        cursor.execute("""
+            SELECT
+                a.id,
+                u.first_name,
+                u.last_name,
+                a.activity,
+                a.ip_address,
+                a.activity_time
+            FROM audit_logs a
+            LEFT JOIN users u
+                ON u.id = a.user_id
+            ORDER BY a.activity_time DESC
+        """)
+
+        activity_rows = cursor.fetchall()
+
+        activity = []
+
+        for row in activity_rows:
+
+            activity.append({
+                "id": str(row["id"]),
+                "user": (
+                    f"{row['first_name']} {row['last_name']}"
+                    if row["first_name"]
+                    else "Unknown User"
+                ),
+                "activity": row["activity"],
+                "ip_address": row["ip_address"],
+                "activity_time": (
+                    row["activity_time"].isoformat()
+                    if row["activity_time"]
+                    else None
+                )
+            })
+
+        return {
+            "users": users,
+            "activity": activity
+        }
+
+    except Exception as e:
+
+        print(
+            "Error loading supervisor user management:",
+            e
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
+    finally:
+
+        cursor.close()
+        conn.close()

@@ -12,6 +12,9 @@ import InspectionReports from "./pages/InspectionReports";
 import DefectTrends from "./pages/DefectTrends";
 import QualityReports from "./pages/QualityReports";
 import Settings from "./pages/Settings";
+import QualityAnalytics from "./pages/QualityAnalytics";
+import ProductionMonitoring from "./pages/ProductionMonitoring";
+import UserManagement from "./pages/UserManagement";
 function App() {
 
     return (
@@ -60,9 +63,21 @@ function App() {
     element={<DefectTrends/>}
 />
 <Route
+        path="/supervisor/quality-analytics"
+        element={<QualityAnalytics />}
+    />
+<Route
+        path="/supervisor/production-monitoring"
+        element={<ProductionMonitoring />}
+    />
+<Route
         path="/quality-reports"
         element={<QualityReports />}
     />
+<Route
+  path="/supervisor/user-management"
+  element={<UserManagement />}
+/>
             </Routes>
           
 
