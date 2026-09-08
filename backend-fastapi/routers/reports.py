@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, Query
-
 from database import get_conn
 from auth import get_current_user
 
@@ -10,8 +9,13 @@ router = APIRouter(prefix="/api/reports", tags=["reports"])
 def list_reports(days: int = Query(30, le=180), current_user: dict = Depends(get_current_user)):
     conn = get_conn()
     cur = conn.cursor()
+
+    is_qe = current_user.get("role") == "quality_engineer"
+    user_clause = "AND i.inspected_by = %s" if is_qe else ""
+    params = [days] + ([current_user["id"]] if is_qe else [])
+
     cur.execute(
-        """SELECT
+        f"""SELECT
              i.created_at::date AS report_date,
              COUNT(*) AS total_inspected,
              SUM(CASE WHEN i.status = 'fail' THEN 1 ELSE 0 END) AS defects,
@@ -21,13 +25,13 @@ def list_reports(days: int = Query(30, le=180), current_user: dict = Depends(get
              AVG(i.confidence_score) AS avg_confidence
            FROM inspections i
            WHERE i.created_at >= NOW() - (%s * INTERVAL '1 day')
+           {user_clause}
            GROUP BY report_date ORDER BY report_date DESC""",
-        (days,),
+        params,
     )
     rows = cur.fetchall()
     cur.close()
     conn.close()
-
     reports = [
         {
             "report_date": str(r["report_date"]),
@@ -48,18 +52,23 @@ def list_reports(days: int = Query(30, le=180), current_user: dict = Depends(get
 def report_detail(report_date: str, current_user: dict = Depends(get_current_user)):
     conn = get_conn()
     cur = conn.cursor()
+
+    is_qe = current_user.get("role") == "quality_engineer"
+    user_clause = "AND i.inspected_by = %s" if is_qe else ""
+    params = [report_date] + ([current_user["id"]] if is_qe else [])
+
     cur.execute(
-        """SELECT i.id, i.defect_type, i.status, i.severity_score, i.severity_level, i.recommendation,
+        f"""SELECT i.id, i.defect_type, i.status, i.severity_score, i.severity_level, i.recommendation,
                   i.created_at, p.product_code, p.product_name, p.production_line, u.full_name
            FROM inspections i
            JOIN products p ON p.id = i.product_id
            JOIN users u ON u.id = i.inspected_by
            WHERE i.created_at::date = %s
+           {user_clause}
            ORDER BY i.created_at DESC""",
-        (report_date,),
+        params,
     )
     rows = cur.fetchall()
     cur.close()
     conn.close()
-
     return {"date": report_date, "inspections": [dict(r) for r in rows]}
