@@ -1,168 +1,125 @@
-from fastapi import APIRouter, Depends, Query
+const express = require('express');
+const db = require('../db');
+const { requireAuth } = require('../middleware/auth');
 
-from database import get_conn
-from auth import get_current_user
+const router = express.Router();
 
-router = APIRouter(prefix="/api/analytics", tags=["analytics"])
-
-
-def _user_filter(current_user: dict):
-    """Returns (sql_clause, params) restricting to the current user's own
-    inspections when they're a Quality Engineer. Supervisors see everything."""
-    if current_user.get("role") == "quality_engineer":
-        return "WHERE inspected_by = %s", [current_user["id"]]
-    return "", []
-
-
-@router.get("/summary")
-def summary(current_user: dict = Depends(get_current_user)):
-    conn = get_conn()
-    cur = conn.cursor()
-    where_clause, params = _user_filter(current_user)
-    cur.execute(
-        f"""SELECT
-             COUNT(*) AS total_inspected,
-             SUM(CASE WHEN status = 'fail' THEN 1 ELSE 0 END) AS defects_detected,
-             SUM(CASE WHEN status = 'pass' THEN 1 ELSE 0 END) AS passed,
-             AVG(confidence_score) AS avg_confidence
-           FROM inspections {where_clause}""",
-        params,
+// GET /api/analytics/summary — top KPI cards for both dashboards
+router.get('/summary', requireAuth, (req, res) => {
+  const totals = db
+    .prepare(
+      `SELECT
+         COUNT(*) AS total_inspected,
+         SUM(CASE WHEN status = 'fail' THEN 1 ELSE 0 END) AS defects_detected,
+         SUM(CASE WHEN status = 'pass' THEN 1 ELSE 0 END) AS passed,
+         AVG(confidence_score) AS avg_confidence
+       FROM inspections`
     )
-    row = cur.fetchone()
-    cur.close()
-    conn.close()
+    .get();
 
-    total = row["total_inspected"] or 0
-    passed = row["passed"] or 0
-    quality_score = round((passed / total) * 100, 1) if total > 0 else 0
+  const total = totals.total_inspected || 0;
+  const passed = totals.passed || 0;
+  const quality_score = total > 0 ? Math.round((passed / total) * 1000) / 10 : 0;
 
-    return {
-        "total_products_inspected": total,
-        "defects_detected": row["defects_detected"] or 0,
-        "quality_score_percent": quality_score,
-        "ai_confidence_percent": round(float(row["avg_confidence"]), 1) if row["avg_confidence"] else 0,
-    }
+  res.json({
+    total_products_inspected: total,
+    defects_detected: totals.defects_detected || 0,
+    quality_score_percent: quality_score,
+    ai_confidence_percent: totals.avg_confidence ? Math.round(totals.avg_confidence * 10) / 10 : 0,
+  });
+});
 
-
-@router.get("/defect-breakdown")
-def defect_breakdown(current_user: dict = Depends(get_current_user)):
-    conn = get_conn()
-    cur = conn.cursor()
-    where_clause, params = _user_filter(current_user)
-    fail_clause = "status = 'fail'"
-    combined_where = f"{where_clause} AND {fail_clause}" if where_clause else f"WHERE {fail_clause}"
-
-    cur.execute(
-        f"""SELECT defect_type, COUNT(*) AS count
-           FROM inspections {combined_where}
-           GROUP BY defect_type ORDER BY count DESC""",
-        params,
+// GET /api/analytics/defect-breakdown — counts per defect type (for Defect Analytics page)
+router.get('/defect-breakdown', requireAuth, (req, res) => {
+  const rows = db
+    .prepare(
+      `SELECT defect_type, COUNT(*) AS count
+       FROM inspections
+       WHERE status = 'fail'
+       GROUP BY defect_type
+       ORDER BY count DESC`
     )
-    rows = cur.fetchall()
-    cur.execute(
-        f"""SELECT severity_level, COUNT(*) AS count
-           FROM inspections {combined_where}
-           GROUP BY severity_level""",
-        params,
+    .all();
+
+  const totalDefects = rows.reduce((sum, r) => sum + r.count, 0);
+  const breakdown = rows.map((r) => ({
+    defect_type: r.defect_type,
+    count: r.count,
+    percent: totalDefects > 0 ? Math.round((r.count / totalDefects) * 1000) / 10 : 0,
+  }));
+
+  const severityRows = db
+    .prepare(
+      `SELECT severity_level, COUNT(*) AS count
+       FROM inspections
+       WHERE status = 'fail'
+       GROUP BY severity_level`
     )
-    severity_rows = cur.fetchall()
-    cur.close()
-    conn.close()
+    .all();
 
-    total_defects = sum(r["count"] for r in rows)
-    breakdown = [
-        {
-            "defect_type": r["defect_type"],
-            "count": r["count"],
-            "percent": round((r["count"] / total_defects) * 100, 1) if total_defects > 0 else 0,
-        }
-        for r in rows
-    ]
-    severity_breakdown = [{"severity_level": r["severity_level"], "count": r["count"]} for r in severity_rows]
+  res.json({ breakdown, severity_breakdown: severityRows });
+});
 
-    return {"breakdown": breakdown, "severity_breakdown": severity_breakdown}
+// GET /api/analytics/trends?days=14 — daily inspection trend (for Trends / Defect Analytics charts)
+router.get('/trends', requireAuth, (req, res) => {
+  const days = Math.min(Number(req.query.days) || 14, 90);
 
-
-@router.get("/trends")
-def trends(days: int = Query(14, le=90), current_user: dict = Depends(get_current_user)):
-    conn = get_conn()
-    cur = conn.cursor()
-    where_clause, params = _user_filter(current_user)
-    date_clause = "created_at >= NOW() - (%s * INTERVAL '1 day')"
-    combined_where = f"{where_clause} AND {date_clause}" if where_clause else f"WHERE {date_clause}"
-
-    cur.execute(
-        f"""SELECT
-              created_at::date AS day,
-              COUNT(*) AS total,
-              SUM(CASE WHEN status = 'fail' THEN 1 ELSE 0 END) AS defects,
-              SUM(CASE WHEN status = 'pass' THEN 1 ELSE 0 END) AS passed,
-              AVG(severity_score) AS avg_severity
-            FROM inspections
-            {combined_where}
-            GROUP BY day ORDER BY day ASC""",
-        params + [days],
+  const rows = db
+    .prepare(
+      `SELECT
+         date(created_at) AS day,
+         COUNT(*) AS total,
+         SUM(CASE WHEN status = 'fail' THEN 1 ELSE 0 END) AS defects,
+         SUM(CASE WHEN status = 'pass' THEN 1 ELSE 0 END) AS passed,
+         AVG(severity_score) AS avg_severity
+       FROM inspections
+       WHERE created_at >= datetime('now', ?)
+       GROUP BY day
+       ORDER BY day ASC`
     )
-    rows = cur.fetchall()
-    cur.close()
-    conn.close()
+    .all(`-${days} days`);
 
-    return {
-        "days": [
-            {
-                "date": str(r["day"]),
-                "total": r["total"],
-                "defects": r["defects"],
-                "passed": r["passed"],
-                "avg_severity": round(float(r["avg_severity"]), 1) if r["avg_severity"] else 0,
-            }
-            for r in rows
-        ]
-    }
+  res.json({
+    days: rows.map((r) => ({
+      date: r.day,
+      total: r.total,
+      defects: r.defects,
+      passed: r.passed,
+      avg_severity: r.avg_severity ? Math.round(r.avg_severity * 10) / 10 : 0,
+    })),
+  });
+});
 
-
-@router.get("/production-lines")
-def production_lines(current_user: dict = Depends(get_current_user)):
-    conn = get_conn()
-    cur = conn.cursor()
-    where_clause, params = _user_filter(current_user)
-    # Note: table is aliased "i" here, so the filter column needs the prefix.
-    where_clause_i = where_clause.replace("inspected_by", "i.inspected_by")
-
-    cur.execute(
-        f"""SELECT
-             COALESCE(p.production_line, 'Unassigned') AS production_line,
-             COUNT(i.id) AS total_inspected,
-             SUM(CASE WHEN i.status = 'fail' THEN 1 ELSE 0 END) AS defects,
-             SUM(CASE WHEN i.status = 'pass' THEN 1 ELSE 0 END) AS passed,
-             AVG(i.severity_score) AS avg_severity,
-             MAX(i.created_at) AS last_inspection
-           FROM inspections i
-           JOIN products p ON p.id = i.product_id
-           {where_clause_i}
-           GROUP BY production_line
-           ORDER BY total_inspected DESC""",
-        params,
+// GET /api/analytics/production-lines — per-line stats for Supervisor Production Overview/Monitoring
+router.get('/production-lines', requireAuth, (req, res) => {
+  const rows = db
+    .prepare(
+      `SELECT
+         COALESCE(p.production_line, 'Unassigned') AS production_line,
+         COUNT(i.id) AS total_inspected,
+         SUM(CASE WHEN i.status = 'fail' THEN 1 ELSE 0 END) AS defects,
+         SUM(CASE WHEN i.status = 'pass' THEN 1 ELSE 0 END) AS passed,
+         AVG(i.severity_score) AS avg_severity,
+         MAX(i.created_at) AS last_inspection
+       FROM inspections i
+       JOIN products p ON p.id = i.product_id
+       GROUP BY production_line
+       ORDER BY total_inspected DESC`
     )
-    rows = cur.fetchall()
-    cur.close()
-    conn.close()
+    .all();
 
-    lines = []
-    for r in rows:
-        avg_sev = float(r["avg_severity"]) if r["avg_severity"] else 0
-        status = "Attention Needed" if avg_sev >= 60 else "Monitor" if avg_sev >= 40 else "Healthy"
-        lines.append(
-            {
-                "production_line": r["production_line"],
-                "total_inspected": r["total_inspected"],
-                "defects": r["defects"],
-                "passed": r["passed"],
-                "yield_percent": round((r["passed"] / r["total_inspected"]) * 100, 1) if r["total_inspected"] else 0,
-                "avg_severity": round(avg_sev, 1),
-                "status": status,
-                "last_inspection": r["last_inspection"],
-            }
-        )
+  const lines = rows.map((r) => ({
+    production_line: r.production_line,
+    total_inspected: r.total_inspected,
+    defects: r.defects,
+    passed: r.passed,
+    yield_percent: r.total_inspected > 0 ? Math.round((r.passed / r.total_inspected) * 1000) / 10 : 0,
+    avg_severity: r.avg_severity ? Math.round(r.avg_severity * 10) / 10 : 0,
+    status: r.avg_severity >= 60 ? 'Attention Needed' : r.avg_severity >= 40 ? 'Monitor' : 'Healthy',
+    last_inspection: r.last_inspection,
+  }));
 
-    return {"lines": lines}
+  res.json({ lines });
+});
+
+module.exports = router;
