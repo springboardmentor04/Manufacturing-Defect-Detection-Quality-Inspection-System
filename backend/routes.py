@@ -387,7 +387,8 @@ def dashboard():
         quality_score = float(
             row["quality_score"] or 0
         )
-
+        # -----------------------------------
+        
 
         # ====================================================
         # 5. AVERAGE AI CONFIDENCE
@@ -2138,6 +2139,44 @@ def supervisor_dashboard():
 
         quality_score = cursor.fetchone()["quality_score"]
 
+        # 5. AI MODEL PERFORMANCE
+                # -----------------------------------
+        
+        cursor.execute("""
+            SELECT
+                ROUND(
+                    COALESCE(
+                        AVG(
+                            COALESCE(i.inspection_time, i.processing_time)
+                        ),
+                        0
+                    ),
+                    2
+                ) AS average_processing_time,
+        
+                ROUND(
+                    COALESCE(
+                        AVG(i.confidence_score),
+                        0
+                    ),
+                    2
+                ) AS average_confidence_score
+        
+            FROM inspections i
+        """)
+        
+        model_performance = cursor.fetchone()
+        
+        
+        average_processing_time = float(
+            model_performance["average_processing_time"]
+            or 0
+        )
+        
+        average_confidence_score = float(
+            model_performance["average_confidence_score"]
+            or 0
+        )
 
         # -----------------------------------
         # 5. PRODUCTION LINE MONITORING
@@ -2264,7 +2303,13 @@ def supervisor_dashboard():
 
             "production_monitoring": production_monitoring,
 
-            "recent_activity": recent_activity
+            "recent_activity": recent_activity,
+
+            "average_processing_time":
+    average_processing_time,
+
+            "average_confidence_score":
+    average_confidence_score
 
         }
 
@@ -2287,128 +2332,362 @@ def production_overview():
 
     try:
 
-        cursor.execute(
-            """
-            SELECT COUNT(*)
+        # =========================================
+        # 1. TOTAL PRODUCTS PRODUCED
+        # =========================================
+
+        cursor.execute("""
+            SELECT COUNT(*) AS count
             FROM products
-            """
-        )
+        """)
 
-        total_products = (
-            cursor.fetchone()["count"]
-        )
+        total_products = cursor.fetchone()["count"]
 
 
-        cursor.execute(
-            """
-            SELECT COUNT(*)
+        # =========================================
+        # 2. PASSED INSPECTIONS
+        # =========================================
+
+        cursor.execute("""
+            SELECT COUNT(*) AS count
             FROM inspections
-            WHERE pass_fail='PASS'
-            """
-        )
+            WHERE pass_fail = 'PASS'
+        """)
 
-        passed = (
-            cursor.fetchone()["count"]
-        )
+        passed = cursor.fetchone()["count"]
 
 
-        cursor.execute(
-            """
-            SELECT COUNT(*)
+        # =========================================
+        # 3. FAILED INSPECTIONS
+        # =========================================
+
+        cursor.execute("""
+            SELECT COUNT(*) AS count
             FROM inspections
-            WHERE pass_fail='FAIL'
-            """
-        )
+            WHERE pass_fail = 'FAIL'
+        """)
 
-        failed = (
-            cursor.fetchone()["count"]
-        )
+        failed = cursor.fetchone()["count"]
 
 
-        cursor.execute(
-            """
-            SELECT COUNT(*)
-            FROM inspections
-            WHERE inspection_status='Pending'
-            """
-        )
+        # =========================================
+        # 4. PENDING PRODUCTS
+        #
+        # Products that do not yet have a
+        # completed inspection
+        # =========================================
 
-        pending = (
-            cursor.fetchone()["count"]
-        )
+        cursor.execute("""
+            SELECT COUNT(*) AS count
+            FROM products p
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM inspections i
+                WHERE i.product_id = p.id
+                AND i.inspection_status = 'Completed'
+            )
+        """)
+
+        pending = cursor.fetchone()["count"]
 
 
-        cursor.execute(
-            """
+        # =========================================
+        # 5. PRODUCTION VOLUME
+        #
+        # Currently each product record represents
+        # one manufactured product.
+        # =========================================
+
+        production_volume = total_products
+
+
+        # =========================================
+        # 6. PRODUCTS MANUFACTURED
+        # =========================================
+
+        products_manufactured = total_products
+
+        # =========================================
+# PRODUCTION KPIs
+# =========================================
+
+# Total units/products produced
+        cursor.execute("""
+    SELECT COUNT(*) AS count
+    FROM products
+""")
+
+        total_production = cursor.fetchone()["count"]
+
+
+# Number of production lines
+        cursor.execute("""
+    SELECT COUNT(DISTINCT TRIM(production_line)) AS count
+    FROM products
+    WHERE production_line IS NOT NULL
+      AND TRIM(production_line) <> ''
+""")
+
+        production_lines_count = cursor.fetchone()["count"]
+
+
+# Number of product categories
+        cursor.execute("""
+    SELECT COUNT(DISTINCT TRIM(category)) AS count
+    FROM products
+    WHERE category IS NOT NULL
+      AND TRIM(category) <> ''
+""")
+
+        product_categories_count = cursor.fetchone()["count"]
+
+
+# Number of production batches
+        cursor.execute("""
+    SELECT COUNT(DISTINCT TRIM(batch_number)) AS count
+    FROM products
+    WHERE batch_number IS NOT NULL
+      AND TRIM(batch_number) <> ''
+""")
+
+        production_batches_count = cursor.fetchone()["count"]
+        # =========================================
+        # 7. PRODUCTS BY CATEGORY
+        # =========================================
+
+        cursor.execute("""
             SELECT
-                production_line,
+                category,
+                COUNT(*) AS count
 
-                COUNT(*) AS total_products,
+            FROM products
 
-                COUNT(*) FILTER
-                (
-                    WHERE inspection_status='Completed'
+            WHERE category IS NOT NULL
+              AND TRIM(category) <> ''
+
+            GROUP BY category
+
+            ORDER BY count DESC
+        """)
+
+        category_summary = cursor.fetchall()
+
+
+        # =========================================
+        # 8. PRODUCTS BY PRODUCTION LINE
+        # =========================================
+
+        cursor.execute("""
+            SELECT
+                TRIM(p.production_line) AS production_line,
+                COUNT(DISTINCT p.id) AS count
+
+            FROM products p
+
+            WHERE p.production_line IS NOT NULL
+              AND TRIM(p.production_line) <> ''
+
+            GROUP BY TRIM(p.production_line)
+
+            ORDER BY TRIM(p.production_line)
+        """)
+
+        line_summary = cursor.fetchall()
+
+
+        # =========================================
+        # 9. PRODUCTION BY BATCH
+        # =========================================
+
+        cursor.execute("""
+            SELECT
+                batch_number,
+                COUNT(*) AS count
+
+            FROM products
+
+            WHERE batch_number IS NOT NULL
+              AND TRIM(batch_number) <> ''
+
+            GROUP BY batch_number
+
+            ORDER BY count DESC
+        """)
+
+        batch_summary = cursor.fetchall()
+
+
+        # =========================================
+        # 10. PRODUCTION OVER TIME
+        #
+        # Uses manufacturing_date from products
+        # =========================================
+
+        cursor.execute("""
+            SELECT
+                manufacturing_date AS production_date,
+                COUNT(*) AS count
+
+            FROM products
+
+            WHERE manufacturing_date IS NOT NULL
+
+            GROUP BY manufacturing_date
+
+            ORDER BY manufacturing_date
+        """)
+
+        production_over_time = cursor.fetchall()
+
+
+        # =========================================
+        # 11. PRODUCTION LINE DETAILS
+        #
+        # Total products
+        # Inspected products
+        # Pending products
+        # =========================================
+
+        cursor.execute("""
+            SELECT
+                TRIM(p.production_line) AS production_line,
+
+                COUNT(DISTINCT p.id) AS total_products,
+
+                COUNT(
+                    DISTINCT CASE
+                        WHEN i.inspection_status = 'Completed'
+                        THEN p.id
+                    END
                 ) AS inspected,
 
-                COUNT(*) FILTER
-                (
-                    WHERE inspection_status='Pending'
+                COUNT(
+                    DISTINCT CASE
+                        WHEN i.id IS NULL
+                             OR i.inspection_status = 'Pending'
+                        THEN p.id
+                    END
                 ) AS pending
 
-            FROM products
+            FROM products p
 
-            GROUP BY production_line
+            LEFT JOIN inspections i
+                ON i.product_id = p.id
 
-            ORDER BY production_line
-            """
-        )
+            WHERE p.production_line IS NOT NULL
+              AND TRIM(p.production_line) <> ''
+
+            GROUP BY TRIM(p.production_line)
+
+            ORDER BY TRIM(p.production_line)
+        """)
+
+        production_lines = cursor.fetchall()
 
 
-        production_lines = (
-            cursor.fetchall()
-        )
+        # =========================================
+        # 12. RECENT PRODUCTION
+        #
+        # Product information + latest inspection
+        # =========================================
 
-
-        cursor.execute(
-            """
+        cursor.execute("""
             SELECT
-                product_code,
-                product_name,
-                category,
-                production_line,
-                inspection_status
+                p.product_code,
+                p.product_name,
+                p.category,
+                p.batch_number,
+                p.production_line,
+                p.manufacturing_date,
+                COALESCE(
+                    latest_inspection.inspection_status,
+                    'Pending'
+                ) AS inspection_status
 
-            FROM products
+            FROM products p
 
-            ORDER BY created_at DESC
+            LEFT JOIN LATERAL (
+                SELECT
+                    i.inspection_status,
+                    i.id
 
-            LIMIT 10
-            """
-        )
+                FROM inspections i
 
+                WHERE i.product_id = p.id
+
+                ORDER BY
+                    i.id DESC
+
+                LIMIT 1
+            ) latest_inspection
+                ON TRUE
+
+            ORDER BY
+                p.created_at DESC
+
+            
+        """)
 
         latest = cursor.fetchall()
 
 
+        # =========================================
+        # 13. RETURN RESPONSE
+        # =========================================
+
         return {
 
             "total_products":
-                total_products,
+                int(total_products),
 
             "passed":
-                passed,
+                int(passed),
 
             "failed":
-                failed,
+                int(failed),
 
             "pending":
-                pending,
+                int(pending),
+
+            "production_volume":
+                int(production_volume),
+
+            "products_manufactured":
+                int(products_manufactured),
+
+            "category_summary":
+                category_summary,
+
+            "line_summary":
+                line_summary,
+
+            "batch_summary":
+                batch_summary,
+
+            "production_over_time":
+                production_over_time,
 
             "production_lines":
                 production_lines,
 
             "latest":
-                latest
+                latest,
+
+            # The new JSX uses "products"
+            # for the Product Information table.
+            "products":
+                latest,
+            "total_production":
+    int(total_production),
+
+"production_lines_count":
+    int(production_lines_count),
+
+"product_categories_count":
+    int(product_categories_count),
+
+"production_batches_count":
+    int(production_batches_count),
 
         }
 

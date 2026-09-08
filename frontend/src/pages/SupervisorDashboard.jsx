@@ -19,7 +19,9 @@ function SupervisorDashboard() {
         total_defects: 0,
         quality_score: 0,
         production_monitoring: [],
-        recent_activity: []
+        recent_activity: [],
+        average_processing_time: 0,
+        average_confidence_score: 0,
 
     });
 
@@ -84,6 +86,60 @@ function SupervisorDashboard() {
                 </div>
 
                 <div className="dashboard-grid">
+
+                    <div className="panel ai-model-panel">
+
+    <h2>
+        AI Model Performance
+    </h2>
+
+    <div className="ai-model-description">
+
+        <div className="ai-model-name">
+            ResNet18 + YOLOv8s
+        </div>
+
+        <p>
+            ResNet18 performs product-level defect classification,
+            while YOLOv8s detects and localizes defects within the
+            inspected product image.
+        </p>
+
+    </div>
+
+    <div className="ai-performance-stats">
+
+        <div className="ai-performance-item">
+
+            <span>
+                Average Processing Time
+            </span>
+
+            <strong>
+                {Number(
+                    dashboardData.average_processing_time
+                ).toFixed(2)} s
+            </strong>
+
+        </div>
+
+        <div className="ai-performance-item">
+
+            <span>
+                Average Confidence Score
+            </span>
+
+            <strong>
+                {Number(
+                    dashboardData.average_confidence_score
+                ).toFixed(2)}%
+            </strong>
+
+        </div>
+
+    </div>
+
+</div>
 
                     <div className="panel">
 
@@ -150,7 +206,7 @@ function SupervisorDashboard() {
                     
                 </div>
 
-                <div className="panel">
+                <div className="panel recent-factory-panel">
 
     <h2>
         Recent Factory Activity

@@ -1493,3 +1493,111 @@ tr:hover {
     }
 
 }
+
+.recent-factory-panel {
+    margin-top: 30px;
+}
+.ai-model-panel {
+    min-height: 95%;
+    margin-bottom: auto;
+}
+
+.ai-model-description {
+    margin-top: 20px;
+    padding: 16px;
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(0, 217, 255, 0.12);
+    border-radius: 10px;
+}
+
+.ai-model-name {
+    color: #00d9ff;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.ai-model-description p {
+    color: #94a3b8;
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.ai-performance-stats {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.ai-performance-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 16px;
+    background: rgba(30, 41, 59, 0.55);
+    border-radius: 9px;
+    border: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.ai-performance-item span {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.ai-performance-item strong {
+    color: #f1f5f9;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+/* =========================================
+   PRODUCTION CHART PANELS
+========================================= */
+
+.production-chart-panel {
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+
+/* =========================================
+   HORIZONTAL CHART SCROLLING
+========================================= */
+
+.chart-scroll-container {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 10px;
+}
+
+
+/* Actual chart area */
+
+.chart-scroll-content {
+    height: 320px;
+}
+
+
+/* Scrollbar */
+
+.chart-scroll-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.chart-scroll-container::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 10px;
+}
+
+.chart-scroll-container::-webkit-scrollbar-thumb {
+    background: rgba(56, 189, 248, 0.35);
+    border-radius: 10px;
+}
+
+.chart-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(56, 189, 248, 0.55);
+}
