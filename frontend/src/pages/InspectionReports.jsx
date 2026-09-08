@@ -2529,12 +2529,12 @@ function InspectionsReports() {
 
                                                 <img
                                                     src={
-                                                        `http://localhost:8000/inspection-image/${
-                                                            selectedReport
-                                                                .result_image_path
-                                                                .split(/[\\/]/)
-                                                                .pop()
-                                                        }`
+                                                        `${import.meta.env.VITE_API_URL}/inspection-image/${
+    selectedReport
+        .result_image_path
+        .split(/[\\/]/)
+        .pop()
+}`
                                                     }
                                                     alt="AI inspection with bounding boxes"
                                                 />

@@ -11,7 +11,7 @@ function DefectAnalytics() {
         const loadDefectDistribution = async () => {
             try {
                 const response = await fetch(
-                    "http://localhost:8000/defect-distribution"
+                    `${import.meta.env.VITE_API_URL}/defect-distribution`
                 );
 
                 if (!response.ok) {
