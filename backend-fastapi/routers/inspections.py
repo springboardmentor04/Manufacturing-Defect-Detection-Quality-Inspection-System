@@ -166,6 +166,13 @@ def list_inspections(
     cur = conn.cursor()
     sql = SELECT_INSPECTION
     clauses, params = [], []
+
+    # Quality Engineers only see inspections they personally ran.
+    # Supervisors (and any other non-QE role) see everything, plant-wide.
+    if current_user.get("role") == "quality_engineer":
+        clauses.append("i.inspected_by = %s")
+        params.append(current_user["id"])
+
     if status:
         clauses.append("i.status = %s")
         params.append(status)
@@ -194,4 +201,9 @@ def get_inspection(inspection_id: int, current_user: dict = Depends(get_current_
     conn.close()
     if not row:
         raise HTTPException(status_code=404, detail="Inspection not found")
+
+    # Quality Engineers can't view another QE's inspection detail directly.
+    if current_user.get("role") == "quality_engineer" and row["inspected_by"] != current_user["id"]:
+        raise HTTPException(status_code=404, detail="Inspection not found")
+
     return {"inspection": row_to_inspection(row)}
