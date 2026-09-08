@@ -1,179 +1,209 @@
-const express = require('express');
-const path = require('path');
-const fs = require('fs');
-const multer = require('multer');
-const db = require('../db');
-const { requireAuth } = require('../middleware/auth');
-const { runInspection } = require('../defectEngine');
+import os
+import time
+import random
+from typing import Optional
 
-const router = express.Router();
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 
-const uploadDir = path.join(__dirname, '..', 'uploads');
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+from database import get_conn
+from auth import get_current_user
+from defect_engine import run_inspection
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname) || '.jpg';
-    cb(null, `product_${Date.now()}_${Math.round(Math.random() * 1e6)}${ext}`);
-  },
-});
+router = APIRouter(prefix="/api/inspections", tags=["inspections"])
 
-const upload = multer({
-  storage,
-  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB, matches spec's upload limit
-  fileFilter: (req, file, cb) => {
-    if (/^image\/(png|jpe?g|bmp|webp)$/.test(file.mimetype)) cb(null, true);
-    else cb(new Error('Only PNG, JPG, JPEG and BMP images are supported'));
-  },
-});
+UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "..", "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-function rowToInspection(row) {
-  return {
-    id: row.id,
-    product: {
-      id: row.product_id,
-      product_code: row.product_code,
-      product_name: row.product_name,
-      category: row.category,
-      batch_number: row.batch_number,
-      production_line: row.production_line,
-      image_url: `/uploads/${path.basename(row.image_path)}`,
-    },
-    defect_type: row.defect_type,
-    status: row.status,
-    scores: {
-      size: row.size_score,
-      location: row.location_score,
-      type: row.type_score,
-      confidence: row.confidence_score,
-    },
-    severity_score: row.severity_score,
-    severity_level: row.severity_level,
-    recommendation: row.recommendation,
-    bbox:
-      row.bbox_x == null
-        ? null
-        : { x: row.bbox_x, y: row.bbox_y, w: row.bbox_w, h: row.bbox_h },
-    inspected_by: row.full_name,
-    created_at: row.created_at,
-  };
-}
+ALLOWED_TYPES = {"image/png", "image/jpeg", "image/jpg", "image/bmp", "image/webp"}
+MAX_SIZE_BYTES = 20 * 1024 * 1024  # 20MB
 
-const SELECT_INSPECTION = `
+SELECT_INSPECTION = """
   SELECT i.*, p.product_code, p.product_name, p.category, p.batch_number, p.production_line,
          p.image_path, u.full_name
   FROM inspections i
   JOIN products p ON p.id = i.product_id
   JOIN users u ON u.id = i.inspected_by
-`;
+"""
 
-// POST /api/inspections/upload  (multipart/form-data, field name: image)
-router.post('/upload', requireAuth, upload.single('image'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'A product image file is required' });
 
-  const { product_code, product_name, category, batch_number, production_line, production_date } =
-    req.body || {};
+def row_to_inspection(row) -> dict:
+    return {
+        "id": row["id"],
+        "product": {
+            "id": row["product_id"],
+            "product_code": row["product_code"],
+            "product_name": row["product_name"],
+            "category": row["category"],
+            "batch_number": row["batch_number"],
+            "production_line": row["production_line"],
+            "image_url": f"/uploads/{os.path.basename(row['image_path'])}",
+        },
+        "defect_type": row["defect_type"],
+        "status": row["status"],
+        "scores": {
+            "size": row["size_score"],
+            "location": row["location_score"],
+            "type": row["type_score"],
+            "confidence": row["confidence_score"],
+        },
+        "severity_score": row["severity_score"],
+        "severity_level": row["severity_level"],
+        "recommendation": row["recommendation"],
+        "bbox": None
+        if row["bbox_x"] is None
+        else {"x": row["bbox_x"], "y": row["bbox_y"], "w": row["bbox_w"], "h": row["bbox_h"]},
+        "inspected_by": row["full_name"],
+        "created_at": row["created_at"],
+    }
 
-  if (!product_code || !product_name) {
-    return res.status(400).json({ error: 'product_code and product_name are required' });
-  }
 
-  const info = db
-    .prepare(
-      `INSERT INTO products
-        (product_code, product_name, category, batch_number, production_line, production_date, image_path, uploaded_by)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+@router.post("/upload", status_code=201)
+async def upload_product(
+    image: UploadFile = File(...),
+    product_code: str = Form(...),
+    product_name: str = Form(...),
+    category: Optional[str] = Form(None),
+    batch_number: Optional[str] = Form(None),
+    production_line: Optional[str] = Form(None),
+    production_date: Optional[str] = Form(None),
+    current_user: dict = Depends(get_current_user),
+):
+    if image.content_type not in ALLOWED_TYPES:
+        raise HTTPException(status_code=400, detail="Only PNG, JPG, JPEG, BMP and WEBP images are supported")
+
+    contents = await image.read()
+    if len(contents) > MAX_SIZE_BYTES:
+        raise HTTPException(status_code=400, detail="Image exceeds the 20MB upload limit")
+
+    ext = os.path.splitext(image.filename or "")[1] or ".jpg"
+    filename = f"product_{int(time.time() * 1000)}_{random.randint(0, 999999)}{ext}"
+    with open(os.path.join(UPLOAD_DIR, filename), "wb") as f:
+        f.write(contents)
+
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(
+        """INSERT INTO products
+           (product_code, product_name, category, batch_number, production_line, production_date, image_path, uploaded_by)
+           VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id""",
+        (product_code, product_name, category, batch_number, production_line, production_date, filename, current_user["id"]),
     )
-    .run(
-      product_code,
-      product_name,
-      category || null,
-      batch_number || null,
-      production_line || null,
-      production_date || null,
-      req.file.filename,
-      req.user.id
-    );
+    product_id = cur.fetchone()["id"]
+    conn.commit()
+    cur.close()
+    conn.close()
 
-  res.status(201).json({
-    product: {
-      id: info.lastInsertRowid,
-      product_code,
-      product_name,
-      category,
-      batch_number,
-      production_line,
-      image_url: `/uploads/${req.file.filename}`,
-    },
-  });
-});
+    return {
+        "product": {
+            "id": product_id,
+            "product_code": product_code,
+            "product_name": product_name,
+            "category": category,
+            "batch_number": batch_number,
+            "production_line": production_line,
+            "image_url": f"/uploads/{filename}",
+        }
+    }
 
-// POST /api/inspections/run/:productId  — trigger AI inspection on an uploaded image
-router.post('/run/:productId', requireAuth, (req, res) => {
-  const product = db.prepare('SELECT * FROM products WHERE id = ?').get(req.params.productId);
-  if (!product) return res.status(404).json({ error: 'Product not found' });
 
-  const imagePath = path.join(__dirname, '..', 'uploads', product.image_path);
-  const result = runInspection(imagePath);
+@router.post("/run/{product_id}", status_code=201)
+def run_inspection_endpoint(product_id: int, current_user: dict = Depends(get_current_user)):
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM products WHERE id = %s", (product_id,))
+    product = cur.fetchone()
+    if not product:
+        cur.close()
+        conn.close()
+        raise HTTPException(status_code=404, detail="Product not found")
 
-  const info = db
-    .prepare(
-      `INSERT INTO inspections
-        (product_id, defect_type, status, size_score, location_score, type_score, confidence_score,
-         severity_score, severity_level, recommendation, bbox_x, bbox_y, bbox_w, bbox_h, inspected_by)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    image_path = os.path.join(UPLOAD_DIR, product["image_path"])
+    result = run_inspection(image_path)
+    bbox = result["bbox"]
+
+    cur.execute(
+        """INSERT INTO inspections
+           (product_id, defect_type, status, size_score, location_score, type_score, confidence_score,
+            severity_score, severity_level, recommendation, bbox_x, bbox_y, bbox_w, bbox_h, inspected_by)
+           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id""",
+        (
+            product_id,
+            result["defect_type"],
+            result["status"],
+            result["size_score"],
+            result["location_score"],
+            result["type_score"],
+            result["confidence_score"],
+            result["severity_score"],
+            result["severity_level"],
+            result["recommendation"],
+            bbox["x"] if bbox else None,
+            bbox["y"] if bbox else None,
+            bbox["w"] if bbox else None,
+            bbox["h"] if bbox else None,
+            current_user["id"],
+        ),
     )
-    .run(
-      product.id,
-      result.defect_type,
-      result.status,
-      result.size_score,
-      result.location_score,
-      result.type_score,
-      result.confidence_score,
-      result.severity_score,
-      result.severity_level,
-      result.recommendation,
-      result.bbox ? result.bbox.x : null,
-      result.bbox ? result.bbox.y : null,
-      result.bbox ? result.bbox.w : null,
-      result.bbox ? result.bbox.h : null,
-      req.user.id
-    );
+    new_id = cur.fetchone()["id"]
+    conn.commit()
 
-  const row = db.prepare(`${SELECT_INSPECTION} WHERE i.id = ?`).get(info.lastInsertRowid);
-  res.status(201).json({ inspection: rowToInspection(row) });
-});
+    cur.execute(f"{SELECT_INSPECTION} WHERE i.id = %s", (new_id,))
+    row = cur.fetchone()
+    cur.close()
+    conn.close()
 
-// GET /api/inspections  — list / history (supports ?limit=, ?status=, ?line=)
-router.get('/', requireAuth, (req, res) => {
-  const { limit = 50, status, line } = req.query;
-  let sql = SELECT_INSPECTION;
-  const clauses = [];
-  const params = [];
+    return {"inspection": row_to_inspection(row)}
 
-  if (status) {
-    clauses.push('i.status = ?');
-    params.push(status);
-  }
-  if (line) {
-    clauses.push('p.production_line = ?');
-    params.push(line);
-  }
-  if (clauses.length) sql += ' WHERE ' + clauses.join(' AND ');
-  sql += ' ORDER BY i.created_at DESC LIMIT ?';
-  params.push(Number(limit) || 50);
 
-  const rows = db.prepare(sql).all(...params);
-  res.json({ inspections: rows.map(rowToInspection) });
-});
+@router.get("")
+def list_inspections(
+    limit: int = 50,
+    status: Optional[str] = None,
+    line: Optional[str] = None,
+    current_user: dict = Depends(get_current_user),
+):
+    conn = get_conn()
+    cur = conn.cursor()
+    sql = SELECT_INSPECTION
+    clauses, params = [], []
 
-// GET /api/inspections/:id
-router.get('/:id', requireAuth, (req, res) => {
-  const row = db.prepare(`${SELECT_INSPECTION} WHERE i.id = ?`).get(req.params.id);
-  if (!row) return res.status(404).json({ error: 'Inspection not found' });
-  res.json({ inspection: rowToInspection(row) });
-});
+    # Quality Engineers only see inspections they personally ran.
+    # Supervisors (and any other non-QE role) see everything, plant-wide.
+    if current_user.get("role") == "quality_engineer":
+        clauses.append("i.inspected_by = %s")
+        params.append(current_user["id"])
 
-module.exports = router;
+    if status:
+        clauses.append("i.status = %s")
+        params.append(status)
+    if line:
+        clauses.append("p.production_line = %s")
+        params.append(line)
+    if clauses:
+        sql += " WHERE " + " AND ".join(clauses)
+    sql += " ORDER BY i.created_at DESC LIMIT %s"
+    params.append(limit)
+
+    cur.execute(sql, params)
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return {"inspections": [row_to_inspection(r) for r in rows]}
+
+
+@router.get("/{inspection_id}")
+def get_inspection(inspection_id: int, current_user: dict = Depends(get_current_user)):
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(f"{SELECT_INSPECTION} WHERE i.id = %s", (inspection_id,))
+    row = cur.fetchone()
+    cur.close()
+    conn.close()
+    if not row:
+        raise HTTPException(status_code=404, detail="Inspection not found")
+
+    # Quality Engineers can't view another QE's inspection detail directly.
+    if current_user.get("role") == "quality_engineer" and row["inspected_by"] != current_user["id"]:
+        raise HTTPException(status_code=404, detail="Inspection not found")
+
+    return {"inspection": row_to_inspection(row)}s
