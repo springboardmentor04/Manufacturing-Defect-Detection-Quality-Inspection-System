@@ -1815,7 +1815,7 @@ addTwoColumnFields(
 
                                         <strong>
                                             {
-                                                selectedReport.processing_time ??
+                                                selectedReport.inspection_time ??
                                                 "-"
                                             }
                                         </strong>

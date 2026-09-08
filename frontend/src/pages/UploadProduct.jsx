@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 import {
     Camera,
@@ -6,7 +6,9 @@ import {
     Package,
     CheckCircle,
     AlertTriangle,
-    ScanSearch
+    ScanSearch,
+    Video,
+    X,
 } from "lucide-react";
 
 import Sidebar from "../components/Sidebar";
@@ -47,7 +49,15 @@ function UploadProduct() {
         width: 0,
         height: 0
     });
+    // =========================================================
+// LIVE CAMERA
+// =========================================================
 
+    const [cameraOpen, setCameraOpen] = useState(false);
+    const [cameraStream, setCameraStream] = useState(null);
+
+    const videoRef = useRef(null);
+    const canvasRef = useRef(null);
 
     // =========================================================
     // UPLOAD / INSPECTION STATE
@@ -104,7 +114,155 @@ function UploadProduct() {
         });
     }
 
+    // =========================================================
+// START LIVE CAMERA
+// =========================================================
 
+    async function startCamera() {
+
+    try {
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: "environment"
+            },
+            audio: false
+        });
+
+        setCameraStream(stream);
+        setCameraOpen(true);
+
+        // Wait until video element is rendered
+        setTimeout(() => {
+
+            if (videoRef.current) {
+
+                videoRef.current.srcObject = stream;
+
+                videoRef.current.play();
+
+            }
+
+        }, 100);
+
+    } catch (error) {
+
+        console.error("Camera access error:", error);
+
+        alert(
+            "Unable to access the camera. Please allow camera permission and try again."
+        );
+
+    }
+}
+
+
+// =========================================================
+// STOP LIVE CAMERA
+// =========================================================
+
+    function stopCamera() {
+
+    if (cameraStream) {
+
+        cameraStream.getTracks().forEach(
+            (track) => track.stop()
+        );
+
+    }
+
+    setCameraStream(null);
+    setCameraOpen(false);
+
+}
+
+
+// =========================================================
+// CAPTURE IMAGE FROM CAMERA
+// =========================================================
+
+    function captureImage() {
+
+    if (!videoRef.current) {
+        return;
+    }
+
+    const video = videoRef.current;
+
+    const canvas = canvasRef.current;
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const context = canvas.getContext("2d");
+
+    context.drawImage(
+        video,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    canvas.toBlob(
+        (blob) => {
+
+            if (!blob) {
+                return;
+            }
+
+            const file = new File(
+                [blob],
+                `camera_capture_${Date.now()}.jpg`,
+                {
+                    type: "image/jpeg"
+                }
+            );
+
+            setSelectedFile(file);
+
+            setPreview(
+                URL.createObjectURL(file)
+            );
+
+            setInspectionResult(null);
+
+            setMessage("");
+
+            setImageDimensions({
+                width: canvas.width,
+                height: canvas.height
+            });
+
+            stopCamera();
+
+        },
+        "image/jpeg",
+        0.95
+    );
+
+}
+
+
+// =========================================================
+// CLEAN CAMERA WHEN PAGE IS CLOSED
+// =========================================================
+
+    useEffect(() => {
+
+    return () => {
+
+        if (cameraStream) {
+
+            cameraStream
+                .getTracks()
+                .forEach((track) => track.stop());
+
+        }
+
+    };
+
+}, [cameraStream]);
     // =========================================================
     // UPLOAD + AI INSPECTION
     // =========================================================
@@ -565,83 +723,198 @@ function UploadProduct() {
                         IMAGE UPLOAD
                     ================================================= */}
 
-                    <div className="upload-box">
+                    {/* =================================================
+    IMAGE UPLOAD / LIVE CAMERA
+================================================= */}
+
+    <div className="upload-box">
+
+    {/* =============================================
+        CAMERA PREVIEW
+    ============================================= */}
+
+    {cameraOpen ? (
+
+        <div className="camera-container">
+
+            <video
+                ref={videoRef}
+                className="camera-preview"
+                autoPlay
+                playsInline
+                muted
+            />
+
+            <div className="camera-controls">
+
+                <button
+                    type="button"
+                    className="capture-camera-btn"
+                    onClick={captureImage}
+                >
+                    <Camera size={18} />
+                    &nbsp;
+                    Capture Image
+                </button>
+
+                <button
+                    type="button"
+                    className="close-camera-btn"
+                    onClick={stopCamera}
+                >
+                    <X size={18} />
+                    &nbsp;
+                    Close Camera
+                </button>
+
+            </div>
+
+        </div>
+
+    ) : (
+
+        <>
+
+            {/* =============================================
+                IMAGE PREVIEW
+            ============================================= */}
+
+            {preview ? (
+
+                <img
+                    src={preview}
+                    alt="Product Preview"
+                    className="preview-image"
+                />
+
+            ) : (
+
+                <Camera size={80} />
+
+            )}
 
 
-                        {
-                            preview ?
-
-                                <img
-                                    src={preview}
-                                    alt="Product Preview"
-                                    className="preview-image"
-                                />
-
-                                :
-
-                                <Camera size={80} />
-
-                        }
+            <h3>
+                Select Product Image
+            </h3>
 
 
-                        <h3>
+            {/* =============================================
+                IMAGE SOURCE OPTIONS
+            ============================================= */}
 
-                            Select Product Image
+            <div className="image-source-options">
 
-                        </h3>
+    {/* CHOOSE IMAGE FILE */}
+    <label
+        htmlFor="product-image-file"
+        className="image-source-btn"
+    >
+        <Upload size={18} />
+        <span>Choose Image File</span>
+    </label>
 
-
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageChange}
-                            disabled={uploading}
-                        />
-
-
-                        {/* =================================================
-                            AI INSPECTION BUTTON
-                        ================================================= */}
-
-                        <button
-                            onClick={uploadImage}
-                            disabled={uploading}
-                        >
-
-                            {
-                                uploading ?
-
-                                    <>
-
-                                        <ScanSearch
-                                            size={18}
-                                        />
-
-                                        &nbsp;
-
-                                        Inspecting...
-
-                                    </>
-
-                                    :
-
-                                    <>
-
-                                        <Upload
-                                            size={18}
-                                        />
-
-                                        &nbsp;
-
-                                        Run AI Inspection
-
-                                    </>
-                            }
-
-                        </button>
+    <input
+        id="product-image-file"
+        type="file"
+        accept="image/*"
+        onChange={handleImageChange}
+        disabled={uploading}
+        style={{ display: "none" }}
+    />
 
 
-                    </div>
+    {/* LIVE CAMERA */}
+    <button
+        type="button"
+        className="image-source-btn"
+        onClick={startCamera}
+        disabled={uploading}
+    >
+        <Video size={18} />
+        <span>Live Camera</span>
+    </button>
+
+</div>
+
+
+            {/* =============================================
+                SELECTED IMAGE INFORMATION
+            ============================================= */}
+
+            {selectedFile && (
+
+                <div className="selected-image-info">
+
+                    <span>
+                        Selected:
+                    </span>
+
+                    <strong>
+                        {selectedFile.name}
+                    </strong>
+
+                </div>
+
+            )}
+
+        </>
+
+    )}
+
+
+    {/* =============================================
+        HIDDEN CANVAS
+    ============================================= */}
+
+    <canvas
+        ref={canvasRef}
+        style={{ display: "none" }}
+    />
+
+
+    {/* =============================================
+        AI INSPECTION BUTTON
+    ============================================= */}
+
+    {!cameraOpen && (
+
+        <button
+            onClick={uploadImage}
+            disabled={uploading || !selectedFile}
+        >
+
+            {uploading ? (
+
+                <>
+
+                    <ScanSearch size={18} />
+
+                    &nbsp;
+
+                    Inspecting...
+
+                </>
+
+            ) : (
+
+                <>
+
+                    <ScanSearch size={18} />
+
+                    &nbsp;
+
+                    Run AI Inspection
+
+                </>
+
+            )}
+
+        </button>
+
+    )}
+
+</div>
 
 
                     {/* =================================================

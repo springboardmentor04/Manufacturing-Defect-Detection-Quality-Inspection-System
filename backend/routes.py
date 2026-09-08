@@ -3431,8 +3431,6 @@ def quality_reports():
                 i.inspection_status,
                 i.inspection_date,
                 i.inspection_time,
-
-                i.processing_time,
                 i.model_name
 
             FROM inspection_analysis ia

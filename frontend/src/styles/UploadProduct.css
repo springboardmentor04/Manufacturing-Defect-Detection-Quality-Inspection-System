@@ -2002,3 +2002,185 @@
     background-color: #1f5f95;
     color: #ffffff;
 }
+
+/* ================================
+   IMAGE SOURCE BUTTONS
+   Both buttons MUST look identical
+================================ */
+
+.image-source-options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.image-source-options .image-source-btn {
+    width: 190px !important;
+    height: 46px !important;
+    min-width: 190px !important;
+    max-width: 190px !important;
+
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 0 18px !important;
+
+    border: 1px solid rgba(0, 217, 255, 0.25) !important;
+    border-radius: 8px !important;
+
+    background: rgba(15, 23, 42, 0.8) !important;
+    color: #7dd3fc !important;
+
+    font-family: inherit !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+
+    appearance: none !important;
+    -webkit-appearance: none !important;
+}
+
+/* Hover — SAME for both */
+.image-source-options .image-source-btn:hover {
+    border-color: rgba(0, 217, 255, 0.55) !important;
+    background: rgba(0, 217, 255, 0.08) !important;
+    color: #7dd3fc !important;
+
+    transform: translateY(-1px) !important;
+    box-shadow: none !important;
+}
+
+/* Icon */
+.image-source-options .image-source-btn svg {
+    flex-shrink: 0;
+}
+
+/* Disabled */
+.image-source-options .image-source-btn:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .image-source-options {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .image-source-options .image-source-btn {
+        width: 190px !important;
+        min-width: 190px !important;
+        max-width: 190px !important;
+    }
+}
+
+/* ================================
+   LIVE CAMERA PREVIEW
+================================ */
+
+.camera-container {
+    width: 100%;
+    max-width: 520px;
+    margin: 24px auto 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+}
+
+.camera-preview {
+    width: 100%;
+    max-width: 520px;
+    height: 390px;
+    object-fit: cover;
+
+    display: block;
+
+    border: 1px solid rgba(0, 217, 255, 0.3);
+    border-radius: 10px;
+
+    background: #0f172a;
+
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.08);
+}
+
+/* Camera controls */
+.camera-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+}
+
+.camera-control-btn {
+    height: 46px;
+    padding: 0 20px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    border: 1px solid rgba(0, 217, 255, 0.25);
+    border-radius: 8px;
+
+    background: rgba(15, 23, 42, 0.8);
+    color: #7dd3fc;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.camera-control-btn:hover {
+    border-color: rgba(0, 217, 255, 0.55);
+    background: rgba(0, 217, 255, 0.08);
+    transform: translateY(-1px);
+}
+
+/* Capture button */
+.capture-camera-btn {
+    min-width: 180px;
+}
+
+/* Close camera button */
+.close-camera-btn {
+    min-width: 140px;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .camera-container {
+        max-width: 100%;
+        margin-top: 20px;
+    }
+
+    .camera-preview {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 4 / 3;
+    }
+
+    .camera-controls {
+        flex-direction: column;
+    }
+
+    .camera-control-btn {
+        width: 100%;
+        max-width: 260px;
+    }
+}
