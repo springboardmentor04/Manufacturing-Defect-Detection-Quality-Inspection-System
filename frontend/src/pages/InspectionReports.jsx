@@ -2,576 +2,1471 @@ import { useEffect, useState } from "react";
 
 import SupervisorSidebar from "../components/SupervisorSidebar";
 import SupervisorHeader from "../components/SupervisorHeader";
+
+import jsPDF from "jspdf";
 import api from "../services/api";
 
-import {
-    PieChart,
-    Pie,
-    Cell,
-    Tooltip,
-    ResponsiveContainer,
-    Legend,
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    LineChart,
-    Line
-} from "recharts";
-
 import "../styles/Dashboard.css";
-import "../styles/Supervisor.css";
+import "../styles/Sidebar.css";
+import "../styles/Components.css";
+import "../styles/QualityReports.css";
 
 
-/* ============================================================
-   CHART COLORS
-============================================================ */
+function InspectionsReports() {
 
-const COLORS = [
-    "#00C49F",
-    "#FF4D4F",
-    "#FFBB28",
-    "#8884D8"
-];
+    // ============================================================
+    // STATE
+    // ============================================================
 
+    const [reports, setReports] = useState([]);
+    const [selectedId, setSelectedId] = useState("");
 
-function InspectionReportsSupervisor() {
-
-    /* ============================================================
-       EXISTING DATA STRUCTURE
-    ============================================================ */
-
-    const [data, setData] = useState({
-
-        summary: {},
-
-        chart: [],
-
-        reports: []
-
-    });
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const [downloading, setDownloading] = useState(false);
 
 
-    /* ============================================================
-       LOAD INSPECTION REPORTS
-    ============================================================ */
+    // ============================================================
+    // LOAD INSPECTION REPORTS
+    // ============================================================
 
     useEffect(() => {
 
-        api.get("/supervisor/inspection-reports")
+        const loadReports = async () => {
 
-            .then((response) => {
+            try {
 
-                setData(response.data);
+                setLoading(true);
+                setError("");
 
-            })
+                /*
+                 * Uses the same database-backed report endpoint
+                 * already used by QualityReports.jsx.
+                 *
+                 * If your backend has a dedicated
+                 * /inspection-reports endpoint, replace only
+                 * the URL below.
+                 */
+                const response =
+                    await api.get("/quality-reports");
 
-            .catch(console.error);
+                setReports(
+                    Array.isArray(response.data)
+                        ? response.data
+                        : []
+                );
+
+            }
+            catch (err) {
+
+                console.error(
+                    "Inspection Reports Error:",
+                    err
+                );
+
+                setError(
+                    "Unable to load inspection reports."
+                );
+
+            }
+            finally {
+
+                setLoading(false);
+
+            }
+
+        };
+
+
+        loadReports();
 
     }, []);
 
 
-    /* ============================================================
-       SAFE REPORT DATA
-    ============================================================ */
+    // ============================================================
+    // SELECTED REPORT
+    // ============================================================
 
-    const reports = Array.isArray(data.reports)
-        ? data.reports
-        : [];
-
-
-    /* ============================================================
-       BASIC ANALYTICS
-    ============================================================ */
-
-    const passedReports = reports.filter(
-        (report) =>
-            String(report.pass_fail || "").toUpperCase() === "PASS"
-    );
-
-
-    const defectReports = reports.filter(
-        (report) => {
-
-            const result =
-                String(report.pass_fail || "").toUpperCase();
-
-            return (
-                result === "FAIL" ||
-                result === "DEFECT"
-            );
-
-        }
-    );
-
-
-    const noDataReports = reports.filter(
-        (report) =>
-            String(report.pass_fail || "").toUpperCase() ===
-            "NO DATA"
-    );
-
-
-    /* ============================================================
-       PASS RATE
-    ============================================================ */
-
-    const passRate = reports.length > 0
-        ? (
-            passedReports.length /
-            reports.length *
-            100
-        ).toFixed(1)
-        : "0.0";
-
-
-    /* ============================================================
-       DEFECT RATE
-    ============================================================ */
-
-    const defectRate = reports.length > 0
-        ? (
-            defectReports.length /
-            reports.length *
-            100
-        ).toFixed(1)
-        : "0.0";
-
-
-    /* ============================================================
-       CONFIDENCE ANALYTICS
-    ============================================================ */
-
-    const confidenceValues = reports
-        .map((report) =>
-            Number(report.confidence_score)
-        )
-        .filter((value) =>
-            Number.isFinite(value)
+    const selectedReport =
+        reports.find(
+            (item) =>
+                String(item.inspection_id) ===
+                String(selectedId)
         );
 
 
-    const averageConfidence =
-        confidenceValues.length > 0
-            ? (
-                confidenceValues.reduce(
-                    (sum, value) =>
-                        sum + value,
-                    0
-                ) /
-                confidenceValues.length
-            ).toFixed(2)
-            : "0.00";
+    // ============================================================
+    // FORMAT DATE
+    // ============================================================
 
+    const formatDate = (date) => {
 
-    /* ============================================================
-       INSPECTION TIME ANALYTICS
-    ============================================================ */
-
-    const inspectionTimeValues = reports
-        .map((report) =>
-            Number(report.inspection_time)
-        )
-        .filter((value) =>
-            Number.isFinite(value)
-        );
-
-
-    const averageInspectionTime =
-        inspectionTimeValues.length > 0
-            ? (
-                inspectionTimeValues.reduce(
-                    (sum, value) =>
-                        sum + value,
-                    0
-                ) /
-                inspectionTimeValues.length
-            ).toFixed(2)
-            : "0.00";
-
-
-    /* ============================================================
-       CONFIDENCE LEVEL ANALYTICS
-    ============================================================ */
-
-    const highConfidence =
-        confidenceValues.filter(
-            (value) => value >= 95
-        ).length;
-
-
-    const reliableConfidence =
-        confidenceValues.filter(
-            (value) =>
-                value >= 85 &&
-                value < 95
-        ).length;
-
-
-    const reviewConfidence =
-        confidenceValues.filter(
-            (value) =>
-                value >= 70 &&
-                value < 85
-        ).length;
-
-
-    const lowConfidence =
-        confidenceValues.filter(
-            (value) => value < 70
-        ).length;
-
-
-    const confidenceAnalytics = [
-
-        {
-            range: "< 70%",
-            count: lowConfidence
-        },
-
-        {
-            range: "70–85%",
-            count: reviewConfidence
-        },
-
-        {
-            range: "85–95%",
-            count: reliableConfidence
-        },
-
-        {
-            range: "≥ 95%",
-            count: highConfidence
+        if (!date) {
+            return "-";
         }
 
-    ];
-
-
-    /* ============================================================
-       PASS / DEFECT STATUS ANALYTICS
-    ============================================================ */
-
-    const statusAnalytics = [
-
-        {
-            status: "PASS",
-            count: passedReports.length
-        },
-
-        {
-            status: "DEFECT",
-            count: defectReports.length
-        },
-
-        {
-            status: "NO DATA",
-            count: noDataReports.length
-        }
-
-    ];
-
-
-    /* ============================================================
-       PRODUCTION LINE ANALYTICS
-       
-       Uses only production_line already present
-       in the existing reports.
-    ============================================================ */
-
-    const productionLineMap = {};
-
-
-    reports.forEach((report) => {
-
-        const line =
-            report.production_line ||
-            "Unknown";
-
-
-        if (!productionLineMap[line]) {
-
-            productionLineMap[line] = {
-
-                line,
-
-                inspections: 0,
-
-                defects: 0
-
-            };
-
-        }
-
-
-        productionLineMap[line].inspections++;
-
-
-        const result =
-            String(report.pass_fail || "")
-                .toUpperCase();
-
-
-        if (
-            result === "FAIL" ||
-            result === "DEFECT"
-        ) {
-
-            productionLineMap[line].defects++;
-
-        }
-
-    });
-
-
-    const productionLineAnalytics =
-        Object.values(
-            productionLineMap
-        ).map((item) => ({
-
-            line: item.line,
-
-            inspections: item.inspections,
-
-            defects: item.defects
-
-        }));
-
-
-    /* ============================================================
-       INSPECTION PROCESSING TIME TREND
-    ============================================================ */
-
-    const inspectionTimeAnalytics =
-        reports
-            .map((report, index) => ({
-
-                inspection:
-                    index + 1,
-
-                time:
-                    Number(
-                        report.inspection_time
-                    ) || 0
-
-            }))
-            .filter(
-                (item) =>
-                    item.time > 0
-            );
-
-
-    /* ============================================================
-       DOWNLOAD REPORT
-       
-       Downloads the currently loaded report data as CSV.
-       No new backend/database fields required.
-    ============================================================ */
-
-    const downloadReport = () => {
-
-        if (reports.length === 0) {
-
-            alert(
-                "There are no inspection reports available to download."
-            );
-
-            return;
-
-        }
-
-
-        const headers = [
-
-            "Inspection ID",
-
-            "Product Code",
-
-            "Product Name",
-
-            "Production Line",
-
-            "Inspection Status",
-
-            "Result",
-
-            "Confidence (%)",
-
-            "Inspection Time (sec)"
-
-        ];
-
-
-        const rows = reports.map((report) => [
-
-            report.id ?? "",
-
-            report.product_code ?? "",
-
-            report.product_name ?? "",
-
-            report.production_line ?? "",
-
-            report.inspection_status ?? "",
-
-            report.pass_fail ?? "",
-
-            report.confidence_score ?? "",
-
-            report.inspection_time ?? ""
-
-        ]);
-
-
-        const csvRows = [
-
-            headers,
-
-            ...rows
-
-        ].map((row) =>
-
-            row.map((value) => {
-
-                const text =
-                    String(value);
-
-                return `"${text.replace(
-                    /"/g,
-                    '""'
-                )}"`;
-
-            }).join(",")
-
-        );
-
-
-        /* ========================================================
-           ANALYTICS SUMMARY
-        ======================================================== */
-
-        csvRows.push("");
-
-        csvRows.push(
-            "INSPECTION ANALYTICS"
-        );
-
-
-        csvRows.push(
-            `Total Inspections,${reports.length}`
-        );
-
-
-        csvRows.push(
-            `Passed Inspections,${passedReports.length}`
-        );
-
-
-        csvRows.push(
-            `Defective Inspections,${defectReports.length}`
-        );
-
-
-        csvRows.push(
-            `No Data Inspections,${noDataReports.length}`
-        );
-
-
-        csvRows.push(
-            `Pass Rate,${passRate}%`
-        );
-
-
-        csvRows.push(
-            `Defect Rate,${defectRate}%`
-        );
-
-
-        csvRows.push(
-            `Average AI Confidence,${averageConfidence}%`
-        );
-
-
-        csvRows.push(
-            `Average Inspection Time,${averageInspectionTime} sec`
-        );
-
-
-        csvRows.push(
-            `Confidence >= 95%,${highConfidence}`
-        );
-
-
-        csvRows.push(
-            `Confidence 85-95%,${reliableConfidence}`
-        );
-
-
-        csvRows.push(
-            `Confidence 70-85%,${reviewConfidence}`
-        );
-
-
-        csvRows.push(
-            `Confidence < 70%,${lowConfidence}`
-        );
-
-
-        /* ========================================================
-           CREATE FILE
-        ======================================================== */
-
-        const csvContent =
-            csvRows.join("\n");
-
-
-        const blob = new Blob(
-            [csvContent],
-            {
-                type:
-                    "text/csv;charset=utf-8;"
+        try {
+
+            const formatted =
+                new Date(date);
+
+            if (
+                Number.isNaN(
+                    formatted.getTime()
+                )
+            ) {
+                return String(date);
             }
-        );
 
+            return formatted.toLocaleString();
 
-        const url =
-            URL.createObjectURL(blob);
+        }
+        catch {
 
+            return String(date);
 
-        const link =
-            document.createElement("a");
-
-
-        link.href = url;
-
-
-        const today =
-            new Date()
-                .toISOString()
-                .split("T")[0];
-
-
-        link.download =
-            `VisionInspectAI_Inspection_Report_${today}.csv`;
-
-
-        document.body.appendChild(link);
-
-
-        link.click();
-
-
-        document.body.removeChild(link);
-
-
-        URL.revokeObjectURL(url);
+        }
 
     };
 
 
-    /* ============================================================
-       RENDER
-    ============================================================ */
+    // ============================================================
+    // FORMAT NUMBER
+    // ============================================================
+
+    const formatNumber = (value) => {
+
+        if (
+            value === null ||
+            value === undefined ||
+            value === ""
+        ) {
+            return "-";
+        }
+
+        const number =
+            Number(value);
+
+        return Number.isNaN(number)
+            ? value
+            : number.toFixed(2);
+
+    };
+
+
+    // ============================================================
+    // SAFE VALUE
+    // ============================================================
+
+    const safeValue = (
+        value,
+        fallback = "-"
+    ) => {
+
+        if (
+            value === null ||
+            value === undefined ||
+            value === ""
+        ) {
+            return fallback;
+        }
+
+        return String(value);
+
+    };
+
+
+    // ============================================================
+    // STATUS CLASS
+    // ============================================================
+
+    const getStatusClass = (status) => {
+
+        const value =
+            String(status)
+                .toUpperCase();
+
+        if (value === "PASS") {
+            return "report-pass";
+        }
+
+        if (value === "FAIL") {
+            return "report-fail";
+        }
+
+        return "";
+
+    };
+
+
+    // ============================================================
+    // SEVERITY CLASS
+    // ============================================================
+
+    const getSeverityClass = (severity) => {
+
+        if (!severity) {
+            return "";
+        }
+
+        return String(severity)
+            .toLowerCase();
+
+    };
+
+
+    // ============================================================
+    // GET DEFECT LIST
+    // ============================================================
+
+    const getDefects = (report) => {
+
+        if (
+            report &&
+            Array.isArray(report.defects)
+        ) {
+            return report.defects;
+        }
+
+        return [];
+
+    };
+
+
+    // ============================================================
+    // GET BOUNDING BOX TEXT
+    // ============================================================
+
+    const getBoundingBox = (defect) => {
+
+        if (!defect) {
+            return "-";
+        }
+
+        /*
+         * Supports:
+         *
+         * bbox_x
+         * bbox_y
+         * bbox_width
+         * bbox_height
+         */
+
+        if (
+            defect.bbox_x !== undefined &&
+            defect.bbox_y !== undefined &&
+            defect.bbox_width !== undefined &&
+            defect.bbox_height !== undefined
+        ) {
+
+            return (
+                `X: ${formatNumber(defect.bbox_x)}, ` +
+                `Y: ${formatNumber(defect.bbox_y)}, ` +
+                `Width: ${formatNumber(defect.bbox_width)}, ` +
+                `Height: ${formatNumber(defect.bbox_height)}`
+            );
+
+        }
+
+        /*
+         * Also supports a preformatted bounding_box
+         * field if your backend returns one.
+         */
+
+        if (defect.bounding_box) {
+            return defect.bounding_box;
+        }
+
+        return "-";
+
+    };
+
+
+    // ============================================================
+    // GET DEFECT SIZE
+    // ============================================================
+
+    const getDefectSize = (defect) => {
+
+        if (!defect) {
+            return "-";
+        }
+
+        if (
+            defect.defect_size !== undefined &&
+            defect.defect_size !== null
+        ) {
+            return formatNumber(
+                defect.defect_size
+            );
+        }
+
+        if (
+            defect.bbox_width !== undefined &&
+            defect.bbox_height !== undefined
+        ) {
+
+            return formatNumber(
+                Number(defect.bbox_width) *
+                Number(defect.bbox_height)
+            );
+
+        }
+
+        return "-";
+
+    };
+
+
+    // ============================================================
+    // GET DEFECT LOCATION
+    // ============================================================
+
+    const getDefectLocation = (defect) => {
+
+        if (!defect) {
+            return "-";
+        }
+
+        if (defect.defect_location) {
+            return defect.defect_location;
+        }
+
+        if (
+            defect.bbox_x !== undefined &&
+            defect.bbox_y !== undefined
+        ) {
+
+            return (
+                `X: ${formatNumber(defect.bbox_x)}, ` +
+                `Y: ${formatNumber(defect.bbox_y)}`
+            );
+
+        }
+
+        return "-";
+
+    };
+
+
+    // ============================================================
+    // DOWNLOAD COMPLETE PDF REPORT
+    // ============================================================
+
+    const downloadReport = async () => {
+
+        if (!selectedReport) {
+            return;
+        }
+
+        setDownloading(true);
+
+        try {
+
+            const report =
+                selectedReport;
+
+            const pdf =
+                new jsPDF(
+                    "p",
+                    "mm",
+                    "a4"
+                );
+
+
+            const pageWidth = 210;
+            const pageHeight = 297;
+
+            const margin = 15;
+
+            const contentWidth =
+                pageWidth -
+                margin * 2;
+
+            let y = 18;
+
+
+            // ========================================================
+            // PDF HELPERS
+            // ========================================================
+
+            const pdfSafeValue = (
+                value,
+                fallback = "-"
+            ) => {
+
+                if (
+                    value === null ||
+                    value === undefined ||
+                    value === ""
+                ) {
+                    return fallback;
+                }
+
+                return String(value);
+
+            };
+
+
+            const pdfFormatDate = (value) => {
+
+                if (!value) {
+                    return "-";
+                }
+
+                try {
+
+                    const date =
+                        new Date(value);
+
+                    if (
+                        Number.isNaN(
+                            date.getTime()
+                        )
+                    ) {
+                        return String(value);
+                    }
+
+                    return date.toLocaleString();
+
+                }
+                catch {
+
+                    return String(value);
+
+                }
+
+            };
+
+
+            const pdfFormatNumber = (value) => {
+
+                if (
+                    value === null ||
+                    value === undefined ||
+                    value === ""
+                ) {
+                    return "-";
+                }
+
+                const number =
+                    Number(value);
+
+                if (
+                    Number.isNaN(number)
+                ) {
+                    return String(value);
+                }
+
+                return number.toFixed(2);
+
+            };
+
+
+            const checkPage = (
+                requiredHeight = 15
+            ) => {
+
+                if (
+                    y + requiredHeight >
+                    pageHeight - 20
+                ) {
+
+                    pdf.addPage();
+
+                    y = 18;
+
+                }
+
+            };
+
+
+            const addSectionTitle = (
+                title
+            ) => {
+
+                checkPage(18);
+
+                pdf.setFillColor(
+                    30,
+                    64,
+                    175
+                );
+
+                pdf.roundedRect(
+                    margin,
+                    y,
+                    contentWidth,
+                    9,
+                    2,
+                    2,
+                    "F"
+                );
+
+                pdf.setFont(
+                    "helvetica",
+                    "bold"
+                );
+
+                pdf.setFontSize(11);
+
+                pdf.setTextColor(
+                    255,
+                    255,
+                    255
+                );
+
+                pdf.text(
+                    title,
+                    margin + 5,
+                    y + 6
+                );
+
+                y += 14;
+
+            };
+
+
+            const addField = (
+                label,
+                value,
+                x,
+                width
+            ) => {
+
+                const text =
+                    pdfSafeValue(value);
+
+                pdf.setFont(
+                    "helvetica",
+                    "bold"
+                );
+
+                pdf.setFontSize(9);
+
+                pdf.setTextColor(
+                    80,
+                    90,
+                    105
+                );
+
+                pdf.text(
+                    label,
+                    x,
+                    y
+                );
+
+                pdf.setFont(
+                    "helvetica",
+                    "normal"
+                );
+
+                pdf.setFontSize(9);
+
+                pdf.setTextColor(
+                    25,
+                    30,
+                    40
+                );
+
+                const valueX =
+                    x + 38;
+
+                const lines =
+                    pdf.splitTextToSize(
+                        text,
+                        width - 38
+                    );
+
+                pdf.text(
+                    lines,
+                    valueX,
+                    y
+                );
+
+                return Math.max(
+                    5,
+                    lines.length * 4.5
+                );
+
+            };
+
+
+            const addSingleField = (
+                label,
+                value
+            ) => {
+
+                checkPage(10);
+
+                const height =
+                    addField(
+                        label,
+                        value,
+                        margin,
+                        contentWidth
+                    );
+
+                y +=
+                    height + 4;
+
+            };
+
+
+            const addTwoColumnFields = (
+                leftLabel,
+                leftValue,
+                rightLabel,
+                rightValue
+            ) => {
+
+                checkPage(10);
+
+                const gap = 8;
+
+                const columnWidth =
+                    (
+                        contentWidth -
+                        gap
+                    ) / 2;
+
+                const leftHeight =
+                    addField(
+                        leftLabel,
+                        leftValue,
+                        margin,
+                        columnWidth
+                    );
+
+                const rightHeight =
+                    addField(
+                        rightLabel,
+                        rightValue,
+                        margin +
+                            columnWidth +
+                            gap,
+                        columnWidth
+                    );
+
+                y +=
+                    Math.max(
+                        leftHeight,
+                        rightHeight
+                    ) + 4;
+
+            };
+
+
+            // ========================================================
+            // PDF HEADER
+            // ========================================================
+
+            pdf.setFillColor(
+                15,
+                23,
+                42
+            );
+
+            pdf.rect(
+                0,
+                0,
+                pageWidth,
+                32,
+                "F"
+            );
+
+            pdf.setFont(
+                "helvetica",
+                "bold"
+            );
+
+            pdf.setFontSize(19);
+
+            pdf.setTextColor(
+                255,
+                255,
+                255
+            );
+
+            pdf.text(
+                "VISIONINSPECTAI",
+                margin,
+                14
+            );
+
+
+            pdf.setFont(
+                "helvetica",
+                "normal"
+            );
+
+            pdf.setFontSize(10);
+
+            pdf.setTextColor(
+                190,
+                205,
+                225
+            );
+
+            pdf.text(
+                "Industrial Inspection Report",
+                margin,
+                22
+            );
+
+
+            pdf.setFont(
+                "helvetica",
+                "bold"
+            );
+
+            pdf.setFontSize(9);
+
+            pdf.text(
+                `Inspection #${pdfSafeValue(
+                    report.inspection_id
+                )}`,
+                pageWidth - margin,
+                14,
+                {
+                    align: "right"
+                }
+            );
+
+
+            pdf.text(
+                `Product ${pdfSafeValue(
+                    report.product_code
+                )}`,
+                pageWidth - margin,
+                22,
+                {
+                    align: "right"
+                }
+            );
+
+
+            y = 42;
+
+
+            // ========================================================
+            // REPORT TITLE
+            // ========================================================
+
+            pdf.setFont(
+                "helvetica",
+                "bold"
+            );
+
+            pdf.setFontSize(15);
+
+            pdf.setTextColor(
+                20,
+                30,
+                45
+            );
+
+            pdf.text(
+                "Inspection Report",
+                margin,
+                y
+            );
+
+            y += 8;
+
+
+            // ========================================================
+            // PASS / FAIL
+            // ========================================================
+
+            const passFail =
+                pdfSafeValue(
+                    report.pass_fail
+                ).toUpperCase();
+
+
+            if (
+                passFail === "PASS"
+            ) {
+
+                pdf.setFillColor(
+                    220,
+                    252,
+                    231
+                );
+
+                pdf.setTextColor(
+                    22,
+                    101,
+                    52
+                );
+
+            }
+            else {
+
+                pdf.setFillColor(
+                    254,
+                    226,
+                    226
+                );
+
+                pdf.setTextColor(
+                    153,
+                    27,
+                    27
+                );
+
+            }
+
+
+            pdf.roundedRect(
+                margin,
+                y,
+                32,
+                9,
+                2,
+                2,
+                "F"
+            );
+
+
+            pdf.setFont(
+                "helvetica",
+                "bold"
+            );
+
+            pdf.setFontSize(9);
+
+            pdf.text(
+                passFail,
+                margin + 16,
+                y + 6,
+                {
+                    align: "center"
+                }
+            );
+
+            y += 17;
+
+
+            // ========================================================
+            // PRODUCT INFORMATION
+            // ========================================================
+
+            addSectionTitle(
+                "Product Information"
+            );
+
+
+            addTwoColumnFields(
+                "Product ID",
+                report.product_id,
+                "Product Code",
+                report.product_code
+            );
+
+
+            addTwoColumnFields(
+                "Product Name",
+                report.product_name,
+                "Category",
+                report.category
+            );
+
+
+            addTwoColumnFields(
+                "Batch Number",
+                report.batch_number,
+                "Production Line",
+                report.production_line
+            );
+
+
+            addTwoColumnFields(
+                "Manufacturing Date",
+                pdfFormatDate(
+                    report.manufacturing_date
+                ),
+                "Inspection Date",
+                pdfFormatDate(
+                    report.inspection_date
+                )
+            );
+
+
+            // ========================================================
+            // INSPECTION INFORMATION
+            // ========================================================
+
+            addSectionTitle(
+                "Inspection Information"
+            );
+
+
+            addTwoColumnFields(
+                "Inspection ID",
+                report.inspection_id,
+                "Inspection Status",
+                report.inspection_status
+            );
+
+
+            addTwoColumnFields(
+                "PASS / FAIL",
+                report.pass_fail,
+                "Inspection Time",
+                report.inspection_time !==
+                null &&
+                report.inspection_time !==
+                undefined
+                    ? `${pdfFormatNumber(
+                        report.inspection_time
+                    )} s`
+                    : "-"
+            );
+
+
+            // ========================================================
+            // AI INSPECTION
+            // ========================================================
+
+            addSectionTitle(
+                "AI Inspection"
+            );
+
+
+            addTwoColumnFields(
+                "Defect Type",
+                report.defect_type ||
+                    "No defect detected",
+                "Detection Confidence",
+                `${pdfFormatNumber(
+                    report.detection_confidence
+                )}%`
+            );
+
+
+            addTwoColumnFields(
+                "Severity Score",
+                report.severity_score !==
+                null &&
+                report.severity_score !==
+                undefined
+                    ? `${pdfFormatNumber(
+                        report.severity_score
+                    )} / 100`
+                    : "-",
+                "Severity Level",
+                report.severity_level
+            );
+
+
+            addTwoColumnFields(
+                "Number of Defects",
+                report.number_of_defects ??
+                    0,
+                "AI Model",
+                report.model_name ||
+                    "ResNet18 + YOLOv8s"
+            );
+
+
+            // ========================================================
+            // DEFECT DETAILS
+            // ========================================================
+
+            addSectionTitle(
+                "Defect Details"
+            );
+
+
+            const pdfDefects =
+                getDefects(report);
+
+
+            if (
+                pdfDefects.length > 0
+            ) {
+
+                pdfDefects.forEach(
+                    (defect, index) => {
+
+                        checkPage(40);
+
+                        pdf.setFont(
+                            "helvetica",
+                            "bold"
+                        );
+
+                        pdf.setFontSize(10);
+
+                        pdf.setTextColor(
+                            30,
+                            64,
+                            175
+                        );
+
+                        pdf.text(
+                            `Defect ${index + 1}`,
+                            margin,
+                            y
+                        );
+
+                        y += 7;
+
+
+                        addTwoColumnFields(
+                            "Defect Type",
+                            defect.defect_type ||
+                                report.defect_type,
+                            "Confidence",
+                            `${pdfFormatNumber(
+                                defect.confidence
+                            )}%`
+                        );
+
+
+                        addTwoColumnFields(
+                            "Severity",
+                            defect.severity,
+                            "Defect Size",
+                            getDefectSize(
+                                defect
+                            )
+                        );
+
+
+                        addSingleField(
+                            "Bounding Box",
+                            getBoundingBox(
+                                defect
+                            )
+                        );
+
+
+                        addSingleField(
+                            "Defect Location",
+                            getDefectLocation(
+                                defect
+                            )
+                        );
+
+
+                        y += 3;
+
+                    }
+                );
+
+            }
+            else {
+
+                /*
+                 * Fallback for the existing
+                 * /quality-reports response.
+                 */
+
+                addTwoColumnFields(
+                    "Defect Type",
+                    report.defect_type ||
+                        "No defect detected",
+                    "Number of Defects",
+                    report.number_of_defects ??
+                        0
+                );
+
+
+                addTwoColumnFields(
+                    "Severity",
+                    report.severity_level,
+                    "Confidence",
+                    `${pdfFormatNumber(
+                        report.detection_confidence
+                    )}%`
+                );
+
+
+                if (
+                    report.defect_size !==
+                    undefined &&
+                    report.defect_size !==
+                    null
+                ) {
+
+                    addSingleField(
+                        "Defect Size",
+                        pdfFormatNumber(
+                            report.defect_size
+                        )
+                    );
+
+                }
+
+
+                if (
+                    report.defect_location !==
+                    undefined &&
+                    report.defect_location !==
+                    null
+                ) {
+
+                    addSingleField(
+                        "Defect Location",
+                        pdfFormatNumber(
+                            report.defect_location
+                        )
+                    );
+
+                }
+
+            }
+
+
+            // ========================================================
+            // AI ANNOTATED IMAGE
+            // ========================================================
+
+            if (
+                report.result_image_path
+            ) {
+
+                try {
+
+                    const filename =
+                        String(
+                            report.result_image_path
+                        )
+                            .split(/[\\/]/)
+                            .pop();
+
+
+                    const imageResponse =
+                        await api.get(
+                            `/inspection-image-data/${encodeURIComponent(
+                                filename
+                            )}`
+                        );
+
+
+                    const imageData =
+                        imageResponse
+                            .data
+                            .image;
+
+
+                    if (!imageData) {
+
+                        throw new Error(
+                            "Inspection image data was not returned."
+                        );
+
+                    }
+
+
+                    const dimensions =
+                        await new Promise(
+                            (
+                                resolve,
+                                reject
+                            ) => {
+
+                                const img =
+                                    new Image();
+
+
+                                img.onload =
+                                    () => {
+
+                                        resolve({
+                                            width:
+                                                img.naturalWidth,
+
+                                            height:
+                                                img.naturalHeight
+                                        });
+
+                                    };
+
+
+                                img.onerror =
+                                    () => {
+
+                                        reject(
+                                            new Error(
+                                                "Unable to read inspection image dimensions."
+                                            )
+                                        );
+
+                                    };
+
+
+                                img.src =
+                                    imageData;
+
+                            }
+                        );
+
+
+                    addSectionTitle(
+                        "AI Annotated Inspection Image"
+                    );
+
+
+                    checkPage(95);
+
+
+                    const maxWidth =
+                        contentWidth;
+
+                    const maxHeight =
+                        90;
+
+
+                    const ratio =
+                        dimensions.width /
+                        dimensions.height;
+
+
+                    let imageWidth =
+                        maxWidth;
+
+                    let imageHeight =
+                        imageWidth /
+                        ratio;
+
+
+                    if (
+                        imageHeight >
+                        maxHeight
+                    ) {
+
+                        imageHeight =
+                            maxHeight;
+
+                        imageWidth =
+                            imageHeight *
+                            ratio;
+
+                    }
+
+
+                    const imageX =
+                        margin +
+                        (
+                            contentWidth -
+                            imageWidth
+                        ) / 2;
+
+
+                    pdf.addImage(
+                        imageData,
+                        "PNG",
+                        imageX,
+                        y,
+                        imageWidth,
+                        imageHeight
+                    );
+
+
+                    y +=
+                        imageHeight + 10;
+
+                }
+                catch (imageError) {
+
+                    console.error(
+                        "Inspection image error:",
+                        imageError
+                    );
+
+
+                    addSingleField(
+                        "AI Annotated Image",
+                        "Image could not be loaded."
+                    );
+
+                }
+
+            }
+
+
+            // ========================================================
+            // RECOMMENDED ACTION
+            // ========================================================
+
+            addSectionTitle(
+                "Recommended Action"
+            );
+
+
+            addSingleField(
+                "Recommended Action",
+                report.recommended_action ||
+                    "No recommendation available."
+            );
+
+
+            // ========================================================
+            // MODEL INFORMATION
+            // ========================================================
+
+            addSectionTitle(
+                "Model Information"
+            );
+
+
+            addTwoColumnFields(
+                "Model",
+                report.model_name ||
+                    "ResNet18 + YOLOv8s",
+                "Processing Time",
+                report.inspection_time !==
+                null &&
+                report.inspection_time !==
+                undefined
+                    ? `${pdfFormatNumber(
+                        report.inspection_time
+                    )} s`
+                    : report.inspection_time !==
+                      null &&
+                      report.inspection_time !==
+                      undefined
+                        ? `${pdfFormatNumber(
+                            report.inspection_time
+                        )} s`
+                        : "-"
+            );
+
+
+            addTwoColumnFields(
+                "Inspection ID",
+                report.inspection_id,
+                "Analysis ID",
+                report.analysis_id
+            );
+
+
+            // ========================================================
+            // PDF FOOTER
+            // ========================================================
+
+            const totalPages =
+                pdf.internal
+                    .getNumberOfPages();
+
+
+            for (
+                let page = 1;
+                page <= totalPages;
+                page++
+            ) {
+
+                pdf.setPage(page);
+
+                pdf.setFont(
+                    "helvetica",
+                    "normal"
+                );
+
+                pdf.setFontSize(8);
+
+                pdf.setTextColor(
+                    120,
+                    130,
+                    145
+                );
+
+                pdf.text(
+                    "VisionInspectAI — Industrial Visual Inspection System",
+                    margin,
+                    pageHeight - 10
+                );
+
+                pdf.text(
+                    `Page ${page} of ${totalPages}`,
+                    pageWidth - margin,
+                    pageHeight - 10,
+                    {
+                        align: "right"
+                    }
+                );
+
+            }
+
+
+            // ========================================================
+            // SAVE PDF
+            // ========================================================
+
+            pdf.save(
+                `Inspection_Report_${safeValue(
+                    report.product_code,
+                    "Product"
+                )}_${safeValue(
+                    report.inspection_id,
+                    "Inspection"
+                )}.pdf`
+            );
+
+        }
+        catch (error) {
+
+            console.error(
+                "Error downloading inspection report:",
+                error
+            );
+
+            setError(
+                "Unable to generate the inspection report PDF."
+            );
+
+        }
+        finally {
+
+            setDownloading(false);
+
+        }
+
+    };
+
+
+    // ============================================================
+    // LOADING
+    // ============================================================
+
+    if (loading) {
+
+        return (
+
+            <div className="dashboard-container">
+
+                <SupervisorSidebar />
+
+                <div className="dashboard-main">
+
+                    <SupervisorHeader />
+
+                    <div className="quality-report-page">
+
+                        <div className="report-loading">
+
+                            Loading Inspection Reports...
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        );
+
+    }
+
+
+    // ============================================================
+    // PAGE
+    // ============================================================
 
     return (
 
@@ -579,821 +1474,1207 @@ function InspectionReportsSupervisor() {
 
             <SupervisorSidebar />
 
-
             <div className="dashboard-main">
 
                 <SupervisorHeader />
 
 
-                {/* ==================================================
-                    PAGE HEADER
-                ================================================== */}
-
-                <div className="inspection-report-header">
-
-                    <div>
-
-                        <h1>
-                            Inspection Report
-                        </h1>
-
-                        <p>
-                            AI-powered inspection performance
-                            and quality analytics
-                        </p>
-
-                    </div>
+                <div className="quality-report-page">
 
 
-                    <button
-                        className="download-report-button"
-                        onClick={downloadReport}
-                    >
+                    {/* =================================================
+                        PAGE HEADER
+                    ================================================= */}
 
-                        ↓
+                    <div className="quality-report-header">
 
-                        &nbsp;
+                        <div>
 
-                        Download Report
+                            <h1>
+                                Inspection Reports
+                            </h1>
 
-                    </button>
+                            <p>
+                                Select an inspection to view
+                                the complete inspection details,
+                                AI results, defects, and
+                                recommendation.
+                            </p>
 
-                </div>
-
-
-                {/* ==================================================
-                    EXISTING KPI SECTION
-                ================================================== */}
-
-                <div className="kpi-container">
-
-                    <div className="kpi-card">
-
-                        <h4>
-                            Completed
-                        </h4>
-
-                        <h2>
-                            {data.summary.completed || 0}
-                        </h2>
+                        </div>
 
                     </div>
 
 
-                    <div className="kpi-card">
+                    {/* =================================================
+                        INSPECTION SELECTOR
+                    ================================================= */}
 
-                        <h4>
-                            Pending
-                        </h4>
+                    <div className="report-selector-panel">
 
-                        <h2>
-                            {data.summary.pending || 0}
-                        </h2>
+                        <label htmlFor="inspection-select">
 
-                    </div>
+                            Select Inspection
 
-
-                    <div className="kpi-card">
-
-                        <h4>
-                            PASS
-                        </h4>
-
-                        <h2>
-                            {data.summary.passed || 0}
-                        </h2>
-
-                    </div>
+                        </label>
 
 
-                    <div className="kpi-card">
+                        <select
+                            id="inspection-select"
+                            value={selectedId}
+                            onChange={(e) =>
+                                setSelectedId(
+                                    e.target.value
+                                )
+                            }
+                        >
 
-                        <h4>
-                            DEFECT
-                        </h4>
+                            <option value="">
 
-                        <h2>
-                            {data.summary.defects || 0}
-                        </h2>
+                                -- Select Inspection --
 
-                    </div>
-
-                </div>
-
-
-                {/* ==================================================
-                    ADDITIONAL ANALYTICS KPI SECTION
-                ================================================== */}
-
-                <div className="kpi-container analytics-kpi-container">
-
-                    <div className="kpi-card analytics-card">
-
-                        <h4>
-                            Pass Rate
-                        </h4>
-
-                        <h2>
-                            {passRate}%
-                        </h2>
-
-                        <p>
-                            Successful inspections
-                        </p>
-
-                    </div>
+                            </option>
 
 
-                    <div className="kpi-card analytics-card">
+                            {reports.map(
+                                (item) => (
 
-                        <h4>
-                            Defect Rate
-                        </h4>
+                                    <option
+                                        key={
+                                            item.inspection_id
+                                        }
+                                        value={
+                                            item.inspection_id
+                                        }
+                                    >
 
-                        <h2>
-                            {defectRate}%
-                        </h2>
+                                        Inspection #
+                                        {
+                                            item.inspection_id
+                                        }
 
-                        <p>
-                            Inspections with defects
-                        </p>
+                                        {" — "}
+
+                                        {
+                                            item.product_name
+                                        }
+
+                                        {" — "}
+
+                                        {
+                                            item.product_code
+                                        }
+
+                                        {" — "}
+
+                                        {
+                                            item.pass_fail
+                                        }
+
+                                    </option>
+
+                                )
+                            )}
+
+                        </select>
 
                     </div>
 
 
-                    <div className="kpi-card analytics-card">
+                    {/* =================================================
+                        ERROR
+                    ================================================= */}
 
-                        <h4>
-                            Avg Confidence
-                        </h4>
+                    {error && (
 
-                        <h2>
-                            {averageConfidence}%
-                        </h2>
+                        <div className="report-error">
 
-                        <p>
-                            AI prediction confidence
-                        </p>
+                            {error}
 
-                    </div>
+                        </div>
+
+                    )}
 
 
-                    <div className="kpi-card analytics-card">
+                    {/* =================================================
+                        NO INSPECTION SELECTED
+                    ================================================= */}
 
-                        <h4>
-                            Avg Inspection Time
-                        </h4>
+                    {!selectedReport &&
+                        !error && (
 
-                        <h2>
-                            {averageInspectionTime}s
-                        </h2>
+                            <div className="report-empty">
 
-                        <p>
-                            Average processing time
-                        </p>
+                                <h2>
+                                    Select an inspection
+                                </h2>
 
-                    </div>
+                                <p>
+                                    Choose an inspection from
+                                    the dropdown above to view
+                                    its complete inspection
+                                    report.
+                                </p>
 
-                </div>
+                            </div>
 
-
-                {/* ==================================================
-                    EXISTING PIE CHART
-                ================================================== */}
-
-                <div className="panel">
-
-                    <h2>
-                        Inspection Result Distribution
-                    </h2>
+                        )}
 
 
-                    <div
-                        style={{
-                            height: "350px"
-                        }}
-                    >
+                    {/* =================================================
+                        SELECTED INSPECTION REPORT
+                    ================================================= */}
 
-                        <ResponsiveContainer>
+                    {selectedReport && (
 
-                            <PieChart>
+                        <div className="quality-report">
 
-                                <Pie
-                                    data={data.chart}
-                                    dataKey="value"
-                                    nameKey="pass_fail"
-                                    outerRadius={120}
-                                    label
-                                >
 
-                                    {
+                            {/* =================================================
+                                REPORT TITLE
+                            ================================================= */}
 
-                                        data.chart.map(
-                                            (entry, index) => (
+                            <div className="report-title">
 
-                                                <Cell
-                                                    key={index}
-                                                    fill={
-                                                        entry.pass_fail ===
-                                                        "NO DATA"
+                                <div>
 
-                                                            ? "#ff4d4f"
+                                    <span>
+                                        INSPECTION REPORT
+                                    </span>
 
-                                                            :
+                                    <h2>
+                                        {
+                                            selectedReport
+                                                .product_name
+                                        }
+                                    </h2>
 
-                                                            COLORS[
-                                                                index %
-                                                                COLORS.length
-                                                            ]
+                                    <p>
+                                        Inspection ID:
+                                        {" "}
+                                        {
+                                            selectedReport
+                                                .inspection_id
+                                        }
+                                    </p>
+
+                                </div>
+
+
+                                <div className="report-title-actions">
+
+                                    <button
+                                        className="download-report-button"
+                                        onClick={
+                                            downloadReport
+                                        }
+                                        disabled={
+                                            downloading
+                                        }
+                                    >
+
+                                        {
+                                            downloading
+                                                ? "Generating..."
+                                                : "Download PDF"
+                                        }
+
+                                    </button>
+
+
+                                    <div
+                                        className={
+                                            `report-status ${
+                                                getStatusClass(
+                                                    selectedReport
+                                                        .pass_fail
+                                                )
+                                            }`
+                                        }
+                                    >
+
+                                        {
+                                            selectedReport
+                                                .pass_fail
+                                        }
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            {/* =================================================
+                                PRODUCT INFORMATION
+                            ================================================= */}
+
+                            <div className="report-section">
+
+                                <h3>
+                                    Product Information
+                                </h3>
+
+
+                                <div className="report-grid">
+
+
+                                    <div className="report-field">
+
+                                        <span>
+                                            Product ID
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                selectedReport
+                                                    .product_id
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div className="report-field">
+
+                                        <span>
+                                            Product Code
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                selectedReport
+                                                    .product_code
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div className="report-field">
+
+                                        <span>
+                                            Product Name
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                selectedReport
+                                                    .product_name
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div className="report-field">
+
+                                        <span>
+                                            Category
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                selectedReport
+                                                    .category
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div className="report-field">
+
+                                        <span>
+                                            Batch Number
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                selectedReport
+                                                    .batch_number
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div className="report-field">
+
+                                        <span>
+                                            Production Line
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                selectedReport
+                                                    .production_line
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div className="report-field">
+
+                                        <span>
+                                            Manufacturing Date
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                formatDate(
+                                                    selectedReport
+                                                        .manufacturing_date
+                                                )
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div className="report-field">
+
+                                        <span>
+                                            Inspection Date
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                formatDate(
+                                                    selectedReport
+                                                        .inspection_date
+                                                )
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+
+                            {/* =================================================
+                                INSPECTION INFORMATION
+                            ================================================= */}
+
+                            <div className="report-section">
+
+                                <h3>
+                                    Inspection Information
+                                </h3>
+
+
+                                <div className="report-metrics">
+
+
+                                    <div className="report-metric">
+
+                                        <span>
+                                            Inspection ID
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                selectedReport
+                                                    .inspection_id
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div className="report-metric">
+
+                                        <span>
+                                            Inspection Status
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                selectedReport
+                                                    .inspection_status
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div className="report-metric">
+
+                                        <span>
+                                            PASS / FAIL
+                                        </span>
+
+                                        <strong
+                                            className={
+                                                getStatusClass(
+                                                    selectedReport
+                                                        .pass_fail
+                                                )
+                                            }
+                                        >
+                                            {
+                                                selectedReport
+                                                    .pass_fail
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div className="report-metric">
+
+                                        <span>
+                                            Inspection Time
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                formatNumber(
+                                                    selectedReport
+                                                        .inspection_time
+                                                )
+                                            }
+                                            {" "}
+                                            s
+                                        </strong>
+
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+
+                            {/* =================================================
+                                AI INSPECTION
+                            ================================================= */}
+
+                            <div className="report-section">
+
+                                <h3>
+                                    AI Inspection
+                                </h3>
+
+
+                                <div className="report-metrics">
+
+
+                                    <div className="report-metric">
+
+                                        <span>
+                                            Defect Type
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                selectedReport
+                                                    .defect_type ||
+                                                "No defect detected"
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div className="report-metric">
+
+                                        <span>
+                                            Detection Confidence
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                formatNumber(
+                                                    selectedReport
+                                                        .detection_confidence
+                                                )
+                                            }
+                                            %
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div className="report-metric">
+
+                                        <span>
+                                            Severity Score
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                formatNumber(
+                                                    selectedReport
+                                                        .severity_score
+                                                )
+                                            }
+                                            {" "}
+                                            / 100
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div className="report-metric">
+
+                                        <span>
+                                            Severity Level
+                                        </span>
+
+                                        <strong
+                                            className={
+                                                getSeverityClass(
+                                                    selectedReport
+                                                        .severity_level
+                                                )
+                                            }
+                                        >
+                                            {
+                                                selectedReport
+                                                    .severity_level ||
+                                                "-"
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div className="report-metric">
+
+                                        <span>
+                                            Number of Defects
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                selectedReport
+                                                    .number_of_defects ??
+                                                0
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div className="report-metric">
+
+                                        <span>
+                                            AI Model
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                selectedReport
+                                                    .model_name ||
+                                                "ResNet18 + YOLOv8s"
+                                            }
+                                        </strong>
+
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+
+                            {/* =================================================
+                                SEVERITY ASSESSMENT
+                            ================================================= */}
+
+                            <div className="report-section">
+
+                                <h3>
+                                    Severity Assessment
+                                </h3>
+
+
+                                <div className="severity-report-grid">
+
+
+                                    <div className="severity-card">
+
+                                        <span>
+                                            Defect Size
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                formatNumber(
+                                                    selectedReport
+                                                        .defect_size
+                                                )
+                                            }
+                                        </strong>
+
+                                        <small>
+                                            Weight: 30%
+                                        </small>
+
+                                    </div>
+
+
+                                    <div className="severity-card">
+
+                                        <span>
+                                            Defect Location
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                formatNumber(
+                                                    selectedReport
+                                                        .defect_location
+                                                )
+                                            }
+                                        </strong>
+
+                                        <small>
+                                            Weight: 25%
+                                        </small>
+
+                                    </div>
+
+
+                                    <div className="severity-card">
+
+                                        <span>
+                                            Defect Type
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                selectedReport
+                                                    .defect_type ||
+                                                "None"
+                                            }
+                                        </strong>
+
+                                        <small>
+                                            Weight: 25%
+                                        </small>
+
+                                    </div>
+
+
+                                    <div className="severity-card">
+
+                                        <span>
+                                            Detection Confidence
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                formatNumber(
+                                                    selectedReport
+                                                        .detection_confidence
+                                                )
+                                            }
+                                            %
+                                        </strong>
+
+                                        <small>
+                                            Weight: 20%
+                                        </small>
+
+                                    </div>
+
+
+                                </div>
+
+
+                                {/* =================================================
+                                    OVERALL SEVERITY
+                                ================================================= */}
+
+                                <div className="overall-severity">
+
+                                    <div>
+
+                                        <span>
+                                            Overall Severity Score
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                formatNumber(
+                                                    selectedReport
+                                                        .severity_score
+                                                )
+                                            }
+                                            {" "}
+                                            / 100
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div
+                                        className={
+                                            `severity-level ${
+                                                String(
+                                                    selectedReport
+                                                        .severity_level ||
+                                                    ""
+                                                ).toLowerCase()
+                                            }`
+                                        }
+                                    >
+
+                                        {
+                                            selectedReport
+                                                .severity_level ||
+                                            "-"
+                                        }
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            {/* =================================================
+                                DEFECT DETAILS
+                            ================================================= */}
+
+                            <div className="report-section">
+
+                                <h3>
+                                    Defect Details
+                                </h3>
+
+
+                                {
+                                    getDefects(
+                                        selectedReport
+                                    ).length > 0
+                                        ? (
+
+                                            <div className="defect-details-list">
+
+                                                {
+                                                    getDefects(
+                                                        selectedReport
+                                                    ).map(
+                                                        (
+                                                            defect,
+                                                            index
+                                                        ) => (
+
+                                                            <div
+                                                                className="defect-detail-card"
+                                                                key={
+                                                                    defect.defect_id ||
+                                                                    index
+                                                                }
+                                                            >
+
+                                                                <div className="defect-detail-header">
+
+                                                                    <strong>
+                                                                        Defect #
+                                                                        {
+                                                                            index + 1
+                                                                        }
+                                                                    </strong>
+
+                                                                    <span
+                                                                        className={
+                                                                            getStatusClass(
+                                                                                defect.severity
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            defect.severity ||
+                                                                            "-"
+                                                                        }
+                                                                    </span>
+
+                                                                </div>
+
+
+                                                                <div className="report-grid">
+
+
+                                                                    <div className="report-field">
+
+                                                                        <span>
+                                                                            Defect Type
+                                                                        </span>
+
+                                                                        <strong>
+                                                                            {
+                                                                                defect.defect_type ||
+                                                                                "-"
+                                                                            }
+                                                                        </strong>
+
+                                                                    </div>
+
+
+                                                                    <div className="report-field">
+
+                                                                        <span>
+                                                                            Confidence
+                                                                        </span>
+
+                                                                        <strong>
+                                                                            {
+                                                                                formatNumber(
+                                                                                    defect.confidence
+                                                                                )
+                                                                            }
+                                                                            %
+                                                                        </strong>
+
+                                                                    </div>
+
+
+                                                                    <div className="report-field">
+
+                                                                        <span>
+                                                                            Severity
+                                                                        </span>
+
+                                                                        <strong>
+                                                                            {
+                                                                                defect.severity ||
+                                                                                "-"
+                                                                            }
+                                                                        </strong>
+
+                                                                    </div>
+
+
+                                                                    <div className="report-field">
+
+                                                                        <span>
+                                                                            Defect Size
+                                                                        </span>
+
+                                                                        <strong>
+                                                                            {
+                                                                                getDefectSize(
+                                                                                    defect
+                                                                                )
+                                                                            }
+                                                                        </strong>
+
+                                                                    </div>
+
+
+                                                                    <div className="report-field">
+
+                                                                        <span>
+                                                                            Bounding Box
+                                                                        </span>
+
+                                                                        <strong>
+                                                                            {
+                                                                                getBoundingBox(
+                                                                                    defect
+                                                                                )
+                                                                            }
+                                                                        </strong>
+
+                                                                    </div>
+
+
+                                                                    <div className="report-field">
+
+                                                                        <span>
+                                                                            Defect Location
+                                                                        </span>
+
+                                                                        <strong>
+                                                                            {
+                                                                                getDefectLocation(
+                                                                                    defect
+                                                                                )
+                                                                            }
+                                                                        </strong>
+
+                                                                    </div>
+
+
+                                                                </div>
+
+                                                            </div>
+
+                                                        )
+                                                    )
+                                                }
+
+                                            </div>
+
+                                        )
+                                        : (
+
+                                            <div className="defect-details-grid">
+
+                                                <div>
+
+                                                    <span>
+                                                        Defect Type
+                                                    </span>
+
+                                                    <strong>
+                                                        {
+                                                            selectedReport
+                                                                .defect_type ||
+                                                            "No defect detected"
+                                                        }
+                                                    </strong>
+
+                                                </div>
+
+
+                                                <div>
+
+                                                    <span>
+                                                        Number of Defects
+                                                    </span>
+
+                                                    <strong>
+                                                        {
+                                                            selectedReport
+                                                                .number_of_defects ??
+                                                            0
+                                                        }
+                                                    </strong>
+
+                                                </div>
+
+
+                                                <div>
+
+                                                    <span>
+                                                        Detection Confidence
+                                                    </span>
+
+                                                    <strong>
+                                                        {
+                                                            formatNumber(
+                                                                selectedReport
+                                                                    .detection_confidence
+                                                            )
+                                                        }
+                                                        %
+                                                    </strong>
+
+                                                </div>
+
+
+                                                <div>
+
+                                                    <span>
+                                                        Pass / Fail
+                                                    </span>
+
+                                                    <strong
+                                                        className={
+                                                            getStatusClass(
+                                                                selectedReport
+                                                                    .pass_fail
+                                                            )
+                                                        }
+                                                    >
+                                                        {
+                                                            selectedReport
+                                                                .pass_fail
+                                                        }
+                                                    </strong>
+
+                                                </div>
+
+                                            </div>
+
+                                        )
+                                }
+
+                            </div>
+
+
+                            {/* =================================================
+                                AI ANNOTATED IMAGE
+                            ================================================= */}
+
+                            <div className="report-section">
+
+                                <h3>
+                                    AI Inspection Image
+                                </h3>
+
+                                <p className="section-description">
+
+                                    Annotated image generated after
+                                    AI defect detection.
+
+                                </p>
+
+
+                                {
+                                    selectedReport
+                                        .result_image_path
+                                        ? (
+
+                                            <div className="inspection-image-container">
+
+                                                <img
+                                                    src={
+                                                        `http://localhost:8000/inspection-image/${
+                                                            selectedReport
+                                                                .result_image_path
+                                                                .split(/[\\/]/)
+                                                                .pop()
+                                                        }`
                                                     }
+                                                    alt="AI inspection with bounding boxes"
                                                 />
 
-                                            )
-                                        )
+                                            </div>
 
+                                        )
+                                        : (
+
+                                            <div className="image-unavailable">
+
+                                                Annotated inspection image
+                                                unavailable.
+
+                                            </div>
+
+                                        )
+                                }
+
+                            </div>
+
+
+                            {/* =================================================
+                                RECOMMENDED ACTION
+                            ================================================= */}
+
+                            <div className="report-section">
+
+                                <h3>
+                                    Recommended Action
+                                </h3>
+
+
+                                <div className="recommendation-box">
+
+                                    {
+                                        selectedReport
+                                            .recommended_action ||
+                                        "No recommendation available."
                                     }
 
-                                </Pie>
+                                </div>
 
+                            </div>
 
-                                <Legend />
 
-                                <Tooltip />
+                            {/* =================================================
+                                MODEL INFORMATION
+                            ================================================= */}
 
-                            </PieChart>
+                            <div className="report-section">
 
-                        </ResponsiveContainer>
+                                <h3>
+                                    Model Information
+                                </h3>
 
-                    </div>
 
-                </div>
+                                <div className="report-grid">
 
 
-                {/* ==================================================
-                    INSPECTION STATUS ANALYTICS
-                ================================================== */}
+                                    <div className="report-field">
 
-                <div className="panel analytics-panel">
+                                        <span>
+                                            AI Model
+                                        </span>
 
-                    <h2>
-                        Inspection Status Analytics
-                    </h2>
+                                        <strong>
+                                            {
+                                                selectedReport
+                                                    .model_name ||
+                                                "ResNet18 + YOLOv8s"
+                                            }
+                                        </strong>
 
+                                    </div>
 
-                    <p className="analytics-description">
 
-                        Comparison of PASS, DEFECT and
-                        NO DATA inspection results.
+                                    <div className="report-field">
 
-                    </p>
+                                        <span>
+                                            Processing Time
+                                        </span>
 
+                                        <strong>
+                                            {
+                                                selectedReport
+                                                    .inspection_time ??
+                                                selectedReport
+                                                    .inspection_time ??
+                                                "-"
+                                            }
+                                            {" "}
+                                            s
+                                        </strong>
 
-                    <div
-                        className="analytics-chart"
-                        style={{
-                            height: "320px"
-                        }}
-                    >
+                                    </div>
 
-                        <ResponsiveContainer>
 
-                            <BarChart
-                                data={statusAnalytics}
-                            >
+                                    <div className="report-field">
 
-                                <CartesianGrid
-                                    strokeDasharray="3 3"
-                                    stroke="#303744"
-                                />
+                                        <span>
+                                            Inspection ID
+                                        </span>
 
+                                        <strong>
+                                            {
+                                                selectedReport
+                                                    .inspection_id
+                                            }
+                                        </strong>
 
-                                <XAxis
-                                    dataKey="status"
-                                    stroke="#aeb8c8"
-                                />
+                                    </div>
 
 
-                                <YAxis
-                                    allowDecimals={false}
-                                    stroke="#aeb8c8"
-                                />
+                                    <div className="report-field">
 
+                                        <span>
+                                            Analysis ID
+                                        </span>
 
-                                <Tooltip />
+                                        <strong>
+                                            {
+                                                selectedReport
+                                                    .analysis_id
+                                            }
+                                        </strong>
 
+                                    </div>
 
-                                <Bar
-                                    dataKey="count"
-                                    name="Inspections"
-                                    fill="#4fa7ff"
-                                    radius={[
-                                        6,
-                                        6,
-                                        0,
-                                        0
-                                    ]}
-                                />
 
-                            </BarChart>
+                                </div>
 
-                        </ResponsiveContainer>
+                            </div>
 
-                    </div>
-
-                </div>
-
-
-                {/* ==================================================
-                    AI CONFIDENCE ANALYTICS
-                ================================================== */}
-
-                <div className="panel analytics-panel">
-
-                    <h2>
-                        AI Confidence Distribution
-                    </h2>
-
-
-                    <p className="analytics-description">
-
-                        Distribution of inspection predictions
-                        according to AI confidence.
-
-                    </p>
-
-
-                    <div
-                        className="analytics-chart"
-                        style={{
-                            height: "320px"
-                        }}
-                    >
-
-                        <ResponsiveContainer>
-
-                            <BarChart
-                                data={
-                                    confidenceAnalytics
-                                }
-                            >
-
-                                <CartesianGrid
-                                    strokeDasharray="3 3"
-                                    stroke="#303744"
-                                />
-
-
-                                <XAxis
-                                    dataKey="range"
-                                    stroke="#aeb8c8"
-                                />
-
-
-                                <YAxis
-                                    allowDecimals={false}
-                                    stroke="#aeb8c8"
-                                />
-
-
-                                <Tooltip />
-
-
-                                <Bar
-                                    dataKey="count"
-                                    name="Inspections"
-                                    fill="#8884D8"
-                                    radius={[
-                                        6,
-                                        6,
-                                        0,
-                                        0
-                                    ]}
-                                />
-
-                            </BarChart>
-
-                        </ResponsiveContainer>
-
-                    </div>
-
-                </div>
-
-
-                {/* ==================================================
-                    PRODUCTION LINE ANALYTICS
-                ================================================== */}
-
-                <div className="panel analytics-panel">
-
-                    <h2>
-                        Production Line Performance
-                    </h2>
-
-
-                    <p className="analytics-description">
-
-                        Inspection volume and defective
-                        inspections across production lines.
-
-                    </p>
-
-
-                    <div
-                        className="analytics-chart"
-                        style={{
-                            height: "350px"
-                        }}
-                    >
-
-                        <ResponsiveContainer>
-
-                            <BarChart
-                                data={
-                                    productionLineAnalytics
-                                }
-                            >
-
-                                <CartesianGrid
-                                    strokeDasharray="3 3"
-                                    stroke="#303744"
-                                />
-
-
-                                <XAxis
-                                    dataKey="line"
-                                    stroke="#aeb8c8"
-                                />
-
-
-                                <YAxis
-                                    allowDecimals={false}
-                                    stroke="#aeb8c8"
-                                />
-
-
-                                <Tooltip />
-
-                                <Legend />
-
-
-                                <Bar
-                                    dataKey="inspections"
-                                    name="Inspections"
-                                    fill="#4fa7ff"
-                                    radius={[
-                                        6,
-                                        6,
-                                        0,
-                                        0
-                                    ]}
-                                />
-
-
-                                <Bar
-                                    dataKey="defects"
-                                    name="Defects"
-                                    fill="#ff4d4f"
-                                    radius={[
-                                        6,
-                                        6,
-                                        0,
-                                        0
-                                    ]}
-                                />
-
-                            </BarChart>
-
-                        </ResponsiveContainer>
-
-                    </div>
-
-                </div>
-
-
-                {/* ==================================================
-                    INSPECTION PROCESSING TIME
-                ================================================== */}
-
-                <div className="panel analytics-panel">
-
-                    <h2>
-                        Inspection Processing Time
-                    </h2>
-
-
-                    <p className="analytics-description">
-
-                        Processing time recorded for each
-                        inspection.
-
-                    </p>
-
-
-                    <div
-                        className="analytics-chart"
-                        style={{
-                            height: "320px"
-                        }}
-                    >
-
-                        <ResponsiveContainer>
-
-                            <LineChart
-                                data={
-                                    inspectionTimeAnalytics
-                                }
-                            >
-
-                                <CartesianGrid
-                                    strokeDasharray="3 3"
-                                    stroke="#303744"
-                                />
-
-
-                                <XAxis
-                                    dataKey="inspection"
-                                    stroke="#aeb8c8"
-                                />
-
-
-                                <YAxis
-                                    stroke="#aeb8c8"
-                                />
-
-
-                                <Tooltip />
-
-
-                                <Line
-                                    type="monotone"
-                                    dataKey="time"
-                                    name="Inspection Time"
-                                    stroke="#4fa7ff"
-                                    strokeWidth={3}
-                                    dot={{
-                                        r: 4
-                                    }}
-                                />
-
-                            </LineChart>
-
-                        </ResponsiveContainer>
-
-                    </div>
-
-                </div>
-
-
-                {/* ==================================================
-                    ANALYTICS SUMMARY
-                ================================================== */}
-
-                <div className="panel analytics-summary-panel">
-
-                    <h2>
-                        Inspection Analytics Summary
-                    </h2>
-
-
-                    <div className="analytics-summary-grid">
-
-
-                        <div className="analytics-summary-item">
-
-                            <span>
-                                Total Inspections
-                            </span>
-
-                            <strong>
-                                {reports.length}
-                            </strong>
 
                         </div>
 
-
-                        <div className="analytics-summary-item">
-
-                            <span>
-                                Passed Inspections
-                            </span>
-
-                            <strong>
-                                {passedReports.length}
-                            </strong>
-
-                        </div>
-
-
-                        <div className="analytics-summary-item">
-
-                            <span>
-                                Defective Inspections
-                            </span>
-
-                            <strong>
-                                {defectReports.length}
-                            </strong>
-
-                        </div>
-
-
-                        <div className="analytics-summary-item">
-
-                            <span>
-                                Average AI Confidence
-                            </span>
-
-                            <strong>
-                                {averageConfidence}%
-                            </strong>
-
-                        </div>
-
-
-                        <div className="analytics-summary-item">
-
-                            <span>
-                                Average Processing Time
-                            </span>
-
-                            <strong>
-                                {averageInspectionTime}s
-                            </strong>
-
-                        </div>
-
-
-                        <div className="analytics-summary-item">
-
-                            <span>
-                                High Confidence ≥95%
-                            </span>
-
-                            <strong>
-                                {highConfidence}
-                            </strong>
-
-                        </div>
-
-
-                        <div className="analytics-summary-item">
-
-                            <span>
-                                Requires Review &lt;70%
-                            </span>
-
-                            <strong>
-                                {lowConfidence}
-                            </strong>
-
-                        </div>
-
-                    </div>
+                    )}
 
                 </div>
-
-
-                {/* ==================================================
-                    EXISTING INSPECTION REPORT TABLE
-                ================================================== */}
-
-                <div className="panel">
-
-                    <h2>
-                        Inspection Report
-                    </h2>
-
-
-                    <table>
-
-                        <thead>
-
-                            <tr>
-
-                                <th>
-                                    Code
-                                </th>
-
-                                <th>
-                                    Product
-                                </th>
-
-                                <th>
-                                    Line
-                                </th>
-
-                                <th>
-                                    Status
-                                </th>
-
-                                <th>
-                                    Result
-                                </th>
-
-                                <th>
-                                    Confidence
-                                </th>
-
-                                <th>
-                                    Time
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody>
-
-                            {
-
-                                data.reports.length === 0
-
-                                    ?
-
-                                    (
-
-                                        <tr>
-
-                                            <td
-                                                colSpan="7"
-                                            >
-
-                                                No inspections
-                                                available.
-
-                                            </td>
-
-                                        </tr>
-
-                                    )
-
-                                    :
-
-                                    data.reports.map(
-                                        (report) => (
-
-                                            <tr
-                                                key={
-                                                    report.id
-                                                }
-                                            >
-
-                                                <td>
-                                                    {
-                                                        report.product_code
-                                                    }
-                                                </td>
-
-                                                <td>
-                                                    {
-                                                        report.product_name
-                                                    }
-                                                </td>
-
-                                                <td>
-                                                    {
-                                                        report.production_line
-                                                    }
-                                                </td>
-
-                                                <td>
-                                                    {
-                                                        report.inspection_status
-                                                    }
-                                                </td>
-
-                                                <td>
-                                                    {
-                                                        report.pass_fail
-                                                    }
-                                                </td>
-
-                                                <td>
-                                                    {
-                                                        report.confidence_score
-                                                    }%
-                                                </td>
-
-                                                <td>
-                                                    {
-                                                        report.inspection_time
-                                                    } sec
-                                                </td>
-
-                                            </tr>
-
-                                        )
-                                    )
-
-                            }
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
 
             </div>
 
@@ -1404,4 +2685,4 @@ function InspectionReportsSupervisor() {
 }
 
 
-export default InspectionReportsSupervisor;
+export default InspectionsReports;

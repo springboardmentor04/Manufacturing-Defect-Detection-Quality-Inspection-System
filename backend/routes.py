@@ -3,8 +3,12 @@ import shutil
 import uuid
 import os
 import hashlib
+from datetime import date, datetime, timedelta
+
+
 from fastapi import (
     Form,
+    Query,
     APIRouter,
     HTTPException,
     UploadFile,
@@ -2860,168 +2864,521 @@ def inspection_reports():
 # SUPERVISOR DEFECT TRENDS
 # ============================================================
 
-@router.get(
-    "/supervisor/defect-trends"
-)
-def defect_trends():
-
+@router.get("/supervisor/defect-trends")
+def get_defect_trends(
+    period: str = Query("this_month"),
+    start_date: str | None = Query(None),
+    end_date: str | None = Query(None),
+    production_line: str | None = Query(None),
+    category: str | None = Query(None),
+    defect_type: str | None = Query(None)
+):
     conn = get_connection()
     cursor = conn.cursor()
 
     try:
 
-        # ----------------------------------------------------
-        # Defects by actual defect type
-        # ----------------------------------------------------
+        # ============================================================
+        # DATE FILTER
+        # ============================================================
+
+        today = date.today()
+
+        if period == "today":
+            filter_start = today
+            filter_end = today
+
+        elif period == "this_week":
+            filter_start = today - timedelta(days=today.weekday())
+            filter_end = today
+
+        elif period == "this_month":
+            filter_start = today.replace(day=1)
+            filter_end = today
+
+        elif period == "custom" and start_date and end_date:
+            filter_start = datetime.strptime(
+                start_date, "%Y-%m-%d"
+            ).date()
+
+            filter_end = datetime.strptime(
+                end_date, "%Y-%m-%d"
+            ).date()
+
+        else:
+            filter_start = today.replace(day=1)
+            filter_end = today
+
+
+        # ============================================================
+        # COMMON FILTERS
+        # ============================================================
+
+        conditions = [
+            "i.inspection_date::date BETWEEN %s AND %s"
+        ]
+
+        params = [
+            filter_start,
+            filter_end
+        ]
+
+        if production_line:
+            conditions.append(
+                "TRIM(p.production_line) = TRIM(%s)"
+            )
+            params.append(production_line)
+
+        if category:
+            conditions.append(
+                "TRIM(p.category) = TRIM(%s)"
+            )
+            params.append(category)
+
+        if defect_type:
+            conditions.append(
+                "d.defect_type = %s"
+            )
+            params.append(defect_type)
+
+        where_clause = " AND ".join(conditions)
+
+
+        # ============================================================
+        # TOTAL DEFECTS
+        # ============================================================
 
         cursor.execute(
-            """
-            SELECT
+            f"""
+            SELECT COUNT(*) AS total_defects
+            FROM defects d
+            JOIN inspections i
+                ON i.id = d.inspection_id
+            JOIN products p
+                ON p.id = i.product_id
+            WHERE {where_clause}
+            """,
+            params
+        )
 
+        total_defects = cursor.fetchone()["total_defects"]
+
+
+        # ============================================================
+        # TOTAL INSPECTIONS
+        # ============================================================
+
+        cursor.execute(
+            f"""
+            SELECT COUNT(DISTINCT i.id) AS total_inspections
+            FROM inspections i
+            JOIN products p
+                ON p.id = i.product_id
+            LEFT JOIN defects d
+                ON d.inspection_id = i.id
+            WHERE {where_clause}
+            """,
+            params
+        )
+
+        total_inspections = cursor.fetchone()["total_inspections"]
+
+
+        # ============================================================
+        # DEFECT RATE
+        # Defective inspections / total inspections
+        # ============================================================
+
+        cursor.execute(
+            f"""
+            SELECT
+                COUNT(DISTINCT CASE
+                    WHEN d.defect_id IS NOT NULL
+                    THEN i.id
+                END) AS defective_inspections,
+                COUNT(DISTINCT i.id) AS total_inspections
+            FROM inspections i
+            JOIN products p
+                ON p.id = i.product_id
+            LEFT JOIN defects d
+                ON d.inspection_id = i.id
+            WHERE {where_clause}
+            """,
+            params
+        )
+
+        rate_row = cursor.fetchone()
+
+        defective_inspections = (
+            rate_row["defective_inspections"] or 0
+        )
+
+        inspection_count = (
+            rate_row["total_inspections"] or 0
+        )
+
+        defect_rate = (
+            defective_inspections / inspection_count * 100
+            if inspection_count > 0
+            else 0
+        )
+
+
+        # ============================================================
+        # DEFECTS PER INSPECTION
+        # ============================================================
+
+        defects_per_inspection = (
+            total_defects / total_inspections
+            if total_inspections > 0
+            else 0
+        )
+
+
+        # ============================================================
+        # MOST COMMON DEFECT
+        # ============================================================
+
+        cursor.execute(
+            f"""
+            SELECT
                 d.defect_type,
-
-                COUNT(*) AS value
-
+                COUNT(*) AS defect_count
             FROM defects d
-
             JOIN inspections i
-                ON d.inspection_id = i.id
-
-            WHERE i.pass_fail='FAIL'
-
+                ON i.id = d.inspection_id
+            JOIN products p
+                ON p.id = i.product_id
+            WHERE {where_clause}
             GROUP BY d.defect_type
+            ORDER BY defect_count DESC
+            LIMIT 1
+            """,
+            params
+        )
 
-            ORDER BY value DESC
-            """
+        common_defect = cursor.fetchone()
+
+        most_common_defect = (
+            common_defect["defect_type"]
+            if common_defect
+            else "No Data"
         )
 
 
-        defect_types = (
-            cursor.fetchall()
-        )
-
-
-        if len(defect_types) == 0:
-
-            defect_types = [
-                {
-                    "defect_type":
-                        "No Data",
-
-                    "value":
-                        1
-                }
-            ]
-
-
-        # ----------------------------------------------------
-        # Daily defect trend
-        # ----------------------------------------------------
+        # ============================================================
+        # DAILY DEFECT TREND
+        # ============================================================
 
         cursor.execute(
-            """
+            f"""
             SELECT
+                i.inspection_date::date AS defect_date,
+                COUNT(d.defect_id) AS defect_count
+            FROM defects d
+            JOIN inspections i
+                ON i.id = d.inspection_id
+            JOIN products p
+                ON p.id = i.product_id
+            WHERE {where_clause}
+            GROUP BY i.inspection_date::date
+            ORDER BY defect_date
+            """,
+            params
+        )
 
-                DATE(i.created_at)
-                    AS day,
+        daily_rows = cursor.fetchall()
 
-                COUNT(*) AS defects
+        daily_trend = [
+            {
+                "date": str(row["defect_date"]),
+                "defects": int(row["defect_count"])
+            }
+            for row in daily_rows
+        ]
+
+
+        # ============================================================
+        # WEEKLY DEFECT TREND
+        # ============================================================
+
+        cursor.execute(
+            f"""
+            SELECT
+                DATE_TRUNC(
+                    'week',
+                    i.inspection_date
+                )::date AS week_start,
+
+                COUNT(d.defect_id) AS defect_count
 
             FROM defects d
 
             JOIN inspections i
-                ON d.inspection_id = i.id
-
-            WHERE i.pass_fail='FAIL'
-
-            GROUP BY
-                DATE(i.created_at)
-
-            ORDER BY day
-            """
-        )
-
-
-        trend = cursor.fetchall()
-
-
-        if len(trend) == 0:
-
-            trend = [
-                {
-                    "day":
-                        "No Data",
-
-                    "defects":
-                        0
-                }
-            ]
-
-
-        # ----------------------------------------------------
-        # Production line defects
-        # ----------------------------------------------------
-
-        cursor.execute(
-            """
-            SELECT
-
-                p.production_line,
-
-                COUNT(*) AS defects
-
-            FROM defects d
-
-            JOIN inspections i
-                ON d.inspection_id = i.id
+                ON i.id = d.inspection_id
 
             JOIN products p
-                ON i.product_id = p.id
+                ON p.id = i.product_id
 
-            WHERE i.pass_fail='FAIL'
+            WHERE {where_clause}
+
+            GROUP BY week_start
+
+            ORDER BY week_start
+            """,
+            params
+        )
+
+        weekly_rows = cursor.fetchall()
+
+        weekly_trend = [
+            {
+                "week": str(row["week_start"]),
+                "defects": int(row["defect_count"])
+            }
+            for row in weekly_rows
+        ]
+
+
+        # ============================================================
+        # MONTHLY DEFECT TREND
+        # ============================================================
+
+        cursor.execute(
+            f"""
+            SELECT
+                DATE_TRUNC(
+                    'month',
+                    i.inspection_date
+                )::date AS month_start,
+
+                COUNT(d.defect_id) AS defect_count
+
+            FROM defects d
+
+            JOIN inspections i
+                ON i.id = d.inspection_id
+
+            JOIN products p
+                ON p.id = i.product_id
+
+            WHERE {where_clause}
+
+            GROUP BY month_start
+
+            ORDER BY month_start
+            """,
+            params
+        )
+
+        monthly_rows = cursor.fetchall()
+
+        monthly_trend = [
+            {
+                "month": str(row["month_start"]),
+                "defects": int(row["defect_count"])
+            }
+            for row in monthly_rows
+        ]
+
+
+        # ============================================================
+        # DEFECT TYPE TRENDS
+        # ============================================================
+
+        cursor.execute(
+            f"""
+            SELECT
+                i.inspection_date::date AS defect_date,
+                d.defect_type,
+                COUNT(*) AS defect_count
+
+            FROM defects d
+
+            JOIN inspections i
+                ON i.id = d.inspection_id
+
+            JOIN products p
+                ON p.id = i.product_id
+
+            WHERE {where_clause}
 
             GROUP BY
-                p.production_line
+                i.inspection_date::date,
+                d.defect_type
 
-            ORDER BY defects DESC
-            """
+            ORDER BY
+                defect_date,
+                d.defect_type
+            """,
+            params
         )
 
+        type_rows = cursor.fetchall()
 
-        production_lines = (
-            cursor.fetchall()
-        )
+        type_trend_map = {}
 
+        for row in type_rows:
 
-        if len(production_lines) == 0:
+            defect_date = str(row["defect_date"])
+            defect_name = row["defect_type"]
 
-            production_lines = [
-                {
-                    "production_line":
-                        "No Data",
-
-                    "defects":
-                        0
+            if defect_date not in type_trend_map:
+                type_trend_map[defect_date] = {
+                    "date": defect_date
                 }
-            ]
+
+            type_trend_map[defect_date][defect_name] = int(
+                row["defect_count"]
+            )
+
+        defect_type_trends = list(
+            type_trend_map.values()
+        )
+
+
+        # ============================================================
+        # PRODUCTION LINE TRENDS
+        # ============================================================
+
+        cursor.execute(
+            f"""
+            SELECT
+                i.inspection_date::date AS defect_date,
+                TRIM(p.production_line) AS production_line,
+                COUNT(*) AS defect_count
+
+            FROM defects d
+
+            JOIN inspections i
+                ON i.id = d.inspection_id
+
+            JOIN products p
+                ON p.id = i.product_id
+
+            WHERE {where_clause}
+
+            GROUP BY
+                i.inspection_date::date,
+                TRIM(p.production_line)
+
+            ORDER BY
+                defect_date,
+                production_line
+            """,
+            params
+        )
+
+        line_rows = cursor.fetchall()
+
+        line_trend_map = {}
+
+        for row in line_rows:
+
+            defect_date = str(row["defect_date"])
+            line = row["production_line"]
+
+            if defect_date not in line_trend_map:
+                line_trend_map[defect_date] = {
+                    "date": defect_date
+                }
+
+            line_trend_map[defect_date][line] = int(
+                row["defect_count"]
+            )
+
+        production_line_trends = list(
+            line_trend_map.values()
+        )
+
+
+        # ============================================================
+        # AVAILABLE FILTER VALUES
+        # ============================================================
+
+        cursor.execute("""
+            SELECT DISTINCT TRIM(production_line)
+            FROM products
+            WHERE production_line IS NOT NULL
+            AND TRIM(production_line) <> ''
+            ORDER BY TRIM(production_line)
+        """)
+
+        production_lines = [
+            row["btrim"]
+            for row in cursor.fetchall()
+        ]
+
+
+        cursor.execute("""
+            SELECT DISTINCT TRIM(category)
+            FROM products
+            WHERE category IS NOT NULL
+            AND TRIM(category) <> ''
+            ORDER BY TRIM(category)
+        """)
+
+        categories = [
+            row["btrim"]
+            for row in cursor.fetchall()
+        ]
+
+
+        cursor.execute("""
+            SELECT DISTINCT defect_type
+            FROM defects
+            WHERE defect_type IS NOT NULL
+            ORDER BY defect_type
+        """)
+
+        defect_types = [
+            row["defect_type"]
+            for row in cursor.fetchall()
+        ]
 
 
         return {
+            "summary": {
+                "total_defects": int(total_defects or 0),
+                "total_inspections": int(
+                    total_inspections or 0
+                ),
+                "defect_rate": round(
+                    defect_rate,
+                    2
+                ),
+                "defects_per_inspection": round(
+                    defects_per_inspection,
+                    2
+                ),
+                "most_common_defect": most_common_defect
+            },
 
-            "defect_types":
-                defect_types,
+            "daily_trend": daily_trend,
 
-            "trend":
-                trend,
+            "weekly_trend": weekly_trend,
 
-            "production_lines":
-                production_lines
+            "monthly_trend": monthly_trend,
 
+            "defect_type_trends":
+                defect_type_trends,
+
+            "production_line_trends":
+                production_line_trends,
+
+            "filters": {
+                "production_lines":
+                    production_lines,
+
+                "categories":
+                    categories,
+
+                "defect_types":
+                    defect_types
+            }
         }
 
-
     finally:
-
         cursor.close()
         conn.close()
 
