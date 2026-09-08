@@ -58,7 +58,7 @@ function ReportDetailRow({ date }) {
 
   return (
     <tr>
-      <td colSpan={8} style={{ padding: 0 }}>
+      <td colSpan={9} style={{ padding: 0 }}>
         <div style={{ padding: '14px 4px' }}>
           {error ? (
             <ErrorBanner message={error} />
@@ -125,6 +125,93 @@ function ReportDetailRow({ date }) {
   );
 }
 
+const dropdownItemStyle = {
+  display: 'block',
+  width: '100%',
+  textAlign: 'left',
+  padding: '8px 12px',
+  fontSize: 12.5,
+  background: 'transparent',
+  border: 'none',
+  color: 'var(--text-default, #e6e9ef)',
+  cursor: 'pointer',
+};
+
+function ReportRowActions({ date, onViewDetail }) {
+  const [open, setOpen] = useState(false);
+
+  function handleExportCsv(e) {
+    e.stopPropagation();
+    setOpen(false);
+    Api.reportDetail(date).then((r) => {
+      const rows = r.inspections.map((i) => [
+        i.product_name,
+        i.production_line || '',
+        i.defect_type,
+        i.status,
+        i.severity_level,
+      ]);
+      const csv = [['Product', 'Line', 'Defect', 'Status', 'Severity'], ...rows]
+        .map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(','))
+        .join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `report-${date}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  return (
+    <div style={{ position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+      <button
+        type="button"
+        className="btn-ghost"
+        style={{ fontSize: 11.5, padding: '5px 10px' }}
+        onClick={() => setOpen((o) => !o)}
+      >
+        ⋯
+      </button>
+      {open && (
+        <>
+          <div style={{ position: 'fixed', inset: 0, zIndex: 10 }} onClick={() => setOpen(false)} />
+          <div
+            style={{
+              position: 'absolute',
+              right: 0,
+              top: '110%',
+              background: 'var(--bg-card, #101826)',
+              border: '1px solid var(--border-subtle, #223)',
+              borderRadius: 8,
+              boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+              minWidth: 160,
+              zIndex: 20,
+              overflow: 'hidden',
+            }}
+          >
+            <button
+              type="button"
+              className="dropdown-item"
+              style={dropdownItemStyle}
+              onClick={() => {
+                setOpen(false);
+                onViewDetail();
+              }}
+            >
+              👁 View Detail
+            </button>
+            <button type="button" className="dropdown-item" style={dropdownItemStyle} onClick={handleExportCsv}>
+              ⬇ Export CSV
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function Reports() {
   useSetPageHeader('Quality Reports', "Daily inspection summaries — click a row to see that day's detail.");
 
@@ -169,6 +256,7 @@ export default function Reports() {
             <th>High</th>
             <th>Yield</th>
             <th>Avg Confidence</th>
+            <th style={{ textAlign: 'right' }}>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -187,6 +275,12 @@ export default function Reports() {
                 <td>{r.high_defects}</td>
                 <td className="font-mono">{r.yield_percent}%</td>
                 <td className="font-mono">{r.avg_confidence}%</td>
+                <td style={{ textAlign: 'right' }}>
+                  <ReportRowActions
+                    date={r.report_date}
+                    onViewDetail={() => setOpenDate(openDate === r.report_date ? null : r.report_date)}
+                  />
+                </td>
               </tr>
               {openDate === r.report_date && <ReportDetailRow date={r.report_date} />}
             </Fragment>
