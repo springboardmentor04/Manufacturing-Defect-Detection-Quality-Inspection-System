@@ -1,0 +1,111 @@
+services:
+  # ==========================================
+  # Database Service (PostgreSQL 16)
+  # ==========================================
+  db:
+    image: postgres:16-alpine
+    container_name: visioninspect-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-visioninspect}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-visioninspect}
+      POSTGRES_DB: ${POSTGRES_DB:-visioninspect}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-visioninspect} -d ${POSTGRES_DB:-visioninspect}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - app_network
+
+  # ==========================================
+  # Backend API Service (FastAPI + PyTorch)
+  # ==========================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: visioninspect-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_NAME: ${APP_NAME:-VisionInspect AI}
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-visioninspect}:${POSTGRES_PASSWORD:-visioninspect}@db:5432/${POSTGRES_DB:-visioninspect}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-change-this-jwt-secret-in-production}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-60}
+      STORAGE_ROOT: /app/data/storage
+      MAX_IMAGE_SIZE_MB: ${MAX_IMAGE_SIZE_MB:-10}
+      CORS_ORIGINS: ${CORS_ORIGINS:-["*"]}
+    volumes:
+      - backend_storage:/app/data/storage
+      - backend_temp:/app/temp_uploads
+    ports:
+      - "${API_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    networks:
+      - app_network
+
+  # ==========================================
+  # Frontend Service (Next.js 16 Standalone)
+  # ==========================================
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    container_name: visioninspect-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    networks:
+      - app_network
+
+  # ==========================================
+  # Nginx Gateway (Unified Reverse Proxy)
+  # ==========================================
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: visioninspect-gateway
+    restart: unless-stopped
+    ports:
+      - "${GATEWAY_PORT:-80}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app_network
+
+volumes:
+  postgres_data:
+    name: visioninspect_postgres_data
+  backend_storage:
+    name: visioninspect_backend_storage
+  backend_temp:
+    name: visioninspect_backend_temp
+
+networks:
+  app_network:
+    name: visioninspect_network
+    driver: bridge

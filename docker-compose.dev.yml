@@ -1,0 +1,67 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: visioninspect-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-visioninspect}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-visioninspect}
+      POSTGRES_DB: ${POSTGRES_DB:-visioninspect}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-visioninspect} -d ${POSTGRES_DB:-visioninspect}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: visioninspect-backend-dev
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_NAME: ${APP_NAME:-VisionInspect AI (Dev)}
+      ENVIRONMENT: development
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-visioninspect}:${POSTGRES_PASSWORD:-visioninspect}@db:5432/${POSTGRES_DB:-visioninspect}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-dev-secret-key-1234567890}
+      JWT_ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 120
+      STORAGE_ROOT: /app/data/storage
+      MAX_IMAGE_SIZE_MB: 15
+      CORS_ORIGINS: '["*"]'
+    volumes:
+      - ./backend/app:/app/app
+      - ./backend/model:/app/model
+      - ./backend/data:/app/data
+      - ./backend/temp_uploads:/app/temp_uploads
+    ports:
+      - "${API_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    container_name: visioninspect-frontend-dev
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+
+volumes:
+  postgres_data_dev:

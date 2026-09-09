@@ -1,0 +1,11 @@
+{
+    "category": "synthetic",
+    "layers": [
+        "layer2",
+        "layer3"
+    ],
+    "coreset_sampling_ratio": 0.1,
+    "num_neighbors": 9,
+    "image_size": 224,
+    "memory_bank_path": "model/checkpoints/memory_bank_synthetic.pt"
+}
