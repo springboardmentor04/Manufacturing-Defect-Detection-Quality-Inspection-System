@@ -19,7 +19,7 @@ services:
   # ---------------------------------------------------------------------------
   - type: web
     name: visioninspect-backend
-    env: docker
+    runtime: docker
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
     plan: free
@@ -46,7 +46,7 @@ services:
   # ---------------------------------------------------------------------------
   - type: web
     name: visioninspect-frontend
-    env: docker
+    runtime: docker
     dockerfilePath: ./frontend/Dockerfile
     dockerContext: ./frontend
     plan: free
