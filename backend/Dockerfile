@@ -16,16 +16,11 @@ RUN python -m pip install --no-cache-dir --upgrade pip \
     && python -m pip install --no-cache-dir -r requirements.txt
 
 COPY backend/app ./app
-COPY backend/main.py ./main.py
-
-# AI code
 COPY ai ./ai
-
-# Trained YOLO model
-COPY backend/app/main.py ./main.py
+COPY backend/models ./models
 
 RUN mkdir -p /app/runs/detect /app/uploads
 
-EXPOSE 8000
+EXPOSE 10000
 
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-10000}"]
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-10000}"]
