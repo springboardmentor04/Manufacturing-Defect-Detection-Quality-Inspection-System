@@ -18,8 +18,11 @@ RUN python -m pip install --no-cache-dir --upgrade pip \
 COPY backend/app ./app
 COPY backend/main.py ./main.py
 
-# AI code/model directory
+# AI code
 COPY ai ./ai
+
+# Trained YOLO model
+COPY backend/models ./models
 
 RUN mkdir -p /app/runs/detect /app/uploads
 
