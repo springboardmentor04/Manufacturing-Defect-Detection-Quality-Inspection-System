@@ -2,7 +2,7 @@ import { api } from './api';
 
 export const reportsService = {
   getRecent: async (limit: number = 20) => {
-    const response = await api.get(`/reports/?limit=${limit}`);
+    const response = await api.get(`/api/reports/?limit=${limit}`);
     return response.data;
   },
   

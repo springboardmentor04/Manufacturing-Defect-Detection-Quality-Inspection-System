@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { api, getAssetUrl } from '@/services/api';
+import { analyticsService } from '@/services/analytics';
 import { productsService } from '@/services/products';
 import { reportsService } from '@/services/reports';
 import { inspectionsService } from '@/services/inspections';
@@ -37,7 +38,7 @@ export default function DashboardPage() {
       setLoading(true);
       setError('');
       const [dashboardData, inspectionResponse, reportResponse, productResponse] = await Promise.all([
-        analyticsService.getOverview().catch(() => api.get('/analytics/dashboard').then(r => r.data).catch(() => null)),
+        analyticsService.getOverview().catch(() => api.get('/api/analytics/dashboard').then(r => r.data).catch(() => null)),
         inspectionsService.getAll(0, 20).catch(() => []),
         reportsService.getRecent(5).catch(() => []),
         productsService.getAll(0, 50).catch(() => []),
