@@ -1,4 +1,5 @@
 import os
+import certifi
 from dotenv import load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
 
@@ -18,7 +19,13 @@ db_instance = Database()
 
 async def connect_to_mongo():
     try:
-        db_instance.client = AsyncIOMotorClient(MONGODB_URL, serverSelectionTimeoutMS=5000)
+        kwargs = {"serverSelectionTimeoutMS": 5000}
+        if "mongodb+srv://" in MONGODB_URL:
+            kwargs["tls"] = True
+            kwargs["tlsCAFile"] = certifi.where()
+            kwargs["tlsAllowInvalidCertificates"] = True
+        
+        db_instance.client = AsyncIOMotorClient(MONGODB_URL, **kwargs)
         db_instance.db = db_instance.client[DATABASE_NAME]
         # Test connection & create index on users collection
         await db_instance.db["users"].create_index("email", unique=True)
