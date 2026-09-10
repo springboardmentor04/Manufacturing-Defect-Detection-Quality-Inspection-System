@@ -134,5 +134,19 @@ def create_tables_on_startup():
                 db.commit()
         finally:
             db.close()
+
+        # Warmup model inference at startup to eliminate cold-start latency on first user request
+        try:
+            import numpy as np
+            from ml.inference.pipeline import pipeline
+            if pipeline.model is not None:
+                print("[Startup] Warming up YOLO detection model on CPU kernels...")
+                dummy_img = np.full((320, 320, 3), 128, dtype=np.uint8)
+                infer_ctx = torch.inference_mode() if "torch" in globals() and torch is not None else nullcontext()
+                with infer_ctx:
+                    pipeline.model(dummy_img, imgsz=640, verbose=False)
+                print("[Startup] YOLO model warmup complete!")
+        except Exception as warmup_err:
+            print(f"[Startup] Warmup note: {warmup_err}")
     except Exception as e:
         print(f"Startup initialization notice: {e}")
