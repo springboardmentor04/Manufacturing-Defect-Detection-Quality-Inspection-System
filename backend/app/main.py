@@ -23,6 +23,25 @@ try:
             torch.set_num_interop_threads(1)
         except Exception:
             pass
+    
+    try:
+        import ultralytics.nn.tasks
+        if hasattr(torch.serialization, "add_safe_globals"):
+            torch.serialization.add_safe_globals([
+                ultralytics.nn.tasks.DetectionModel,
+                ultralytics.nn.tasks.ClassificationModel,
+                ultralytics.nn.tasks.SegmentationModel,
+                ultralytics.nn.tasks.PoseModel,
+            ])
+    except Exception:
+        pass
+
+    _orig_torch_load = torch.load
+    def _safe_torch_load(*args, **kwargs):
+        if "weights_only" not in kwargs:
+            kwargs["weights_only"] = False
+        return _orig_torch_load(*args, **kwargs)
+    torch.load = _safe_torch_load
 except Exception:
     pass
 
