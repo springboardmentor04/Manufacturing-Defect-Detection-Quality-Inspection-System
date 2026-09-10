@@ -22,7 +22,7 @@ COPY backend/main.py ./main.py
 COPY ai ./ai
 
 # Trained YOLO model
-COPY backend/models ./models
+COPY backend/app/main.py ./main.py
 
 RUN mkdir -p /app/runs/detect /app/uploads
 
