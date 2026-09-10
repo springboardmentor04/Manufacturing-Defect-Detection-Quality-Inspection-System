@@ -152,6 +152,15 @@ When the backend is running, navigate to `http://localhost:8000/docs` to:
 * View request/response schemas.
 * Authenticate and test API calls directly from the browser.
 
+## 📊 Project Milestones & Presentations
+
+| Milestone | Focus Area | Deliverable / Presentation |
+| :--- | :--- | :--- |
+| **Milestone 1** | System Architecture & Database Models | [`presentations/Milestone_1_Presentation.md`](presentations/Milestone_1_Presentation.md) |
+| **Milestone 2** | YOLOv8 Defect Detection & Severity Engine | [`presentations/Milestone_2_Presentation.md`](presentations/Milestone_2_Presentation.md) |
+| **Milestone 3** | MVTec AD 73-Class Resolution & UI Visualizer | [`presentations/Milestone_3_Presentation.pptx`](presentations/Milestone_3_Presentation.pptx) |
+| **Milestone 4** | Testing, Docker, Render Cloud & Documentation | [`presentations/Milestone_4_Presentation.pptx`](presentations/Milestone_4_Presentation.pptx) / [`Milestone_4_Presentation.md`](presentations/Milestone_4_Presentation.md) |
+
 ## 🛠 Troubleshooting
 
 * **Database Connection Refused (Docker):** Ensure your backend `.env` file uses the Docker service name for the host (e.g., `postgresql://user:password@db:5432/visioninspect`).

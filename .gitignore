@@ -149,6 +149,9 @@ ehthumbs_vista.db
 *_backup/
 *backup*.py
 scratch/
+scratch_pdf_assets/
+report_assets/
+exact15_assets/
 log_head.txt
 prepare_mvtec.log
 test_defect.png
