@@ -35,7 +35,7 @@ services:
       - key: JWT_EXPIRE_MINUTES
         value: 60
       - key: CORS_ORIGINS
-        value: https://visioninspect-frontend-7a2q.onrender.com,http://localhost:3000
+        value: https://visioninspect-frontend-7a2g.onrender.com,http://localhost:3000
       - key: DETECTION_CONFIDENCE_THRESHOLD
         value: 0.25
       - key: PYTHONUNBUFFERED
