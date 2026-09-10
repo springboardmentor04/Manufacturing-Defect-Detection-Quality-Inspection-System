@@ -26,8 +26,9 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173"
-    ],
+    "http://localhost:3000",
+    "http://localhost:5173",],
+    
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -41,6 +42,12 @@ app.include_router(qe_reports.router)
 app.include_router(qe_analytics.router)
 app.include_router(production_reports.router)
 app.include_router(supervisor_users.router)
+
+from pathlib import Path
+
+# Create required directories
+Path("uploads").mkdir(parents=True, exist_ok=True)
+Path("runs/detect").mkdir(parents=True, exist_ok=True)
 
 # Uploaded Images
 app.mount(

@@ -242,3 +242,7 @@ node_modules/
 # VisionInspect AI generated files
 backend/runs/
 backend/uploads/
+
+# Local Docker environment
+.env.*
+!.env.example
