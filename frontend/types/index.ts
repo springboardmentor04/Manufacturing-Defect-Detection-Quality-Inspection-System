@@ -12,12 +12,12 @@ export interface User {
 export interface Product {
   id: number;
   name: string;
-  product_code: string;
-  description?: string;
-  production_line: string;
-  critical_regions: any;
-  created_at: string;
-  updated_at: string;
+  product_code?: string | null;
+  description?: string | null;
+  production_line?: string | null;
+  critical_regions?: any;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface Batch {
