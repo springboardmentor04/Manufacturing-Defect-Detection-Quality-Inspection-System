@@ -13,6 +13,7 @@ from app.api import qe_reports
 from app.api import qe_analytics
 from app.api import production_reports
 from app.api import supervisor_users
+from app.core.config import settings
 
 # Create all database tables
 Base.metadata.create_all(bind=engine)
@@ -25,14 +26,12 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-    "http://localhost:3000",
-    "http://localhost:5173",],
-    
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(dashboard_router)
