@@ -59,20 +59,22 @@ def register(
     db: Session = Depends(get_db)
 ):
 
-    new_user = register_user(
-    db,
-    user,
-    role="quality_engineer"
-    )
+    allowed_roles = {
+        "quality_engineer",
+        "supervisor",
+    }
 
-    if not new_user:
-
+    if user.role not in allowed_roles:
         raise HTTPException(
             status_code=400,
-            detail="Email already registered"
+            detail="Invalid role"
         )
 
-    return new_user
+    new_user = register_user(
+        db,
+        user,
+        role=user.role
+    )
 
 
 # ============================================================
