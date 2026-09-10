@@ -59,22 +59,64 @@ def register(
     db: Session = Depends(get_db)
 ):
 
+    # --------------------------------------------------------
+    # Validate role
+    # --------------------------------------------------------
+
     allowed_roles = {
         "quality_engineer",
         "supervisor",
     }
 
     if user.role not in allowed_roles:
+
         raise HTTPException(
-            status_code=400,
-            detail="Invalid role"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid role. Allowed roles are quality_engineer and supervisor."
         )
+
+
+    # --------------------------------------------------------
+    # Check if email already exists
+    # --------------------------------------------------------
+
+    existing_user = (
+        db.query(User)
+        .filter(User.email == user.email)
+        .first()
+    )
+
+    if existing_user:
+
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
+        )
+
+
+    # --------------------------------------------------------
+    # Create new user
+    # --------------------------------------------------------
 
     new_user = register_user(
         db,
         user,
         role=user.role
     )
+
+    if not new_user:
+
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
+        )
+
+
+    # --------------------------------------------------------
+    # Return created user
+    # --------------------------------------------------------
+
+    return new_user
 
 
 # ============================================================
@@ -99,7 +141,7 @@ def login(
     if not result:
 
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password"
         )
 
