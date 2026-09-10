@@ -5,14 +5,20 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { productsService, CreateProductInput } from '@/services/products';
 import { Product } from '@/types';
 import { Plus, RotateCw, AlertCircle, CheckCircle2, Package, X, Loader2 } from 'lucide-react';
-import { useForm } from 'react-hook-form';
 
 interface ProductFormData {
   name: string;
-  product_code?: string;
-  production_line?: string;
-  description?: string;
+  product_code: string;
+  production_line: string;
+  description: string;
 }
+
+const initialFormData: ProductFormData = {
+  name: '',
+  product_code: '',
+  production_line: '',
+  description: '',
+};
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -22,13 +28,7 @@ export default function ProductsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors }
-  } = useForm<ProductFormData>();
+  const [formData, setFormData] = useState<ProductFormData>(initialFormData);
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -61,7 +61,7 @@ export default function ProductsPage() {
   }, [fetchProducts]);
 
   const handleOpenModal = () => {
-    reset();
+    setFormData(initialFormData);
     setSaveError(null);
     setSaveSuccess(null);
     setIsModalOpen(true);
@@ -71,22 +71,39 @@ export default function ProductsPage() {
     if (isSaving) return;
     setIsModalOpen(false);
     setSaveError(null);
-    reset();
+    setFormData(initialFormData);
   };
 
-  const onSubmit = async (data: ProductFormData) => {
+  const handleSave = async (e?: React.FormEvent | React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    if (isSaving) return;
+
+    console.log('[ProductsPage] handleSave triggered with formData:', formData);
+
+    if (!formData.name || !formData.name.trim()) {
+      console.warn('[ProductsPage] Validation failed: Product name is required');
+      setSaveError('Product Name is required.');
+      return;
+    }
+
     try {
       setIsSaving(true);
       setSaveError(null);
 
       const payload: CreateProductInput = {
-        name: data.name,
-        product_code: data.product_code,
-        production_line: data.production_line,
-        description: data.description,
+        name: formData.name.trim(),
+        product_code: formData.product_code?.trim() || undefined,
+        production_line: formData.production_line?.trim() || undefined,
+        description: formData.description?.trim() || undefined,
       };
 
+      console.log('[ProductsPage] Sending POST request to backend with payload:', payload);
       const createdProduct = await productsService.create(payload);
+      console.log('[ProductsPage] Product created successfully:', createdProduct);
 
       // Optimistically update list immediately
       if (createdProduct && createdProduct.id) {
@@ -100,12 +117,12 @@ export default function ProductsPage() {
       setTimeout(() => setSaveSuccess(null), 4000);
 
       setIsModalOpen(false);
-      reset();
+      setFormData(initialFormData);
 
-      // Refresh to ensure synchronization with backend database
+      // Refresh list to synchronize with backend database
       await fetchProducts();
     } catch (error: any) {
-      console.error('Failed to create product:', error);
+      console.error('[ProductsPage] Failed to create product:', error);
       let errorMsg = 'Failed to save product. Please check the details and try again.';
       if (error.response?.data?.detail) {
         if (typeof error.response.data.detail === 'string') {
@@ -141,17 +158,20 @@ export default function ProductsPage() {
 
         <div className="flex items-center gap-3">
           <button
+            type="button"
             onClick={() => fetchProducts()}
             disabled={loading}
-            className="p-2 border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-lg transition-colors flex items-center gap-1.5 text-sm font-medium"
+            className="p-2 border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-lg transition-colors flex items-center gap-1.5 text-sm font-medium cursor-pointer"
             title="Refresh product list"
           >
             <RotateCw size={16} className={loading ? 'animate-spin text-blue-600' : ''} />
             Refresh
           </button>
           <button
+            type="button"
+            id="add-product-btn"
             onClick={handleOpenModal}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-colors"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-colors cursor-pointer"
           >
             <Plus size={20} />
             Add Product
@@ -173,8 +193,9 @@ export default function ProductsPage() {
             <span className="text-sm font-medium">{fetchError}</span>
           </div>
           <button
+            type="button"
             onClick={() => fetchProducts()}
-            className="text-xs font-semibold text-rose-700 underline hover:text-rose-900"
+            className="text-xs font-semibold text-rose-700 underline hover:text-rose-900 cursor-pointer"
           >
             Retry
           </button>
@@ -275,13 +296,13 @@ export default function ProductsPage() {
                 type="button"
                 onClick={handleCloseModal}
                 disabled={isSaving}
-                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors disabled:opacity-50"
+                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors disabled:opacity-50 cursor-pointer"
               >
                 <X size={18} />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
+            <form onSubmit={handleSave} className="p-6 space-y-4">
               {saveError && (
                 <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs flex items-start gap-2.5">
                   <AlertCircle size={16} className="text-rose-600 shrink-0 mt-0.5" />
@@ -297,14 +318,18 @@ export default function ProductsPage() {
                   Product Name <span className="text-rose-500">*</span>
                 </label>
                 <input
-                  {...register('name', { required: 'Product name is required' })}
+                  id="product-name"
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, name: e.target.value }));
+                    if (saveError) setSaveError(null);
+                  }}
                   disabled={isSaving}
+                  required
                   className="w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all disabled:bg-slate-50 disabled:text-slate-400"
                   placeholder="e.g. Logic Board X1"
                 />
-                {errors.name && (
-                  <p className="text-xs text-rose-600 mt-1">{errors.name.message}</p>
-                )}
               </div>
 
               <div>
@@ -312,7 +337,10 @@ export default function ProductsPage() {
                   Product Code / SKU
                 </label>
                 <input
-                  {...register('product_code')}
+                  id="product-code"
+                  type="text"
+                  value={formData.product_code}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, product_code: e.target.value }))}
                   disabled={isSaving}
                   className="w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all disabled:bg-slate-50 disabled:text-slate-400 font-mono text-xs"
                   placeholder="e.g. PCB-X1-001"
@@ -324,7 +352,10 @@ export default function ProductsPage() {
                   Production Line
                 </label>
                 <input
-                  {...register('production_line')}
+                  id="production-line"
+                  type="text"
+                  value={formData.production_line}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, production_line: e.target.value }))}
                   disabled={isSaving}
                   className="w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all disabled:bg-slate-50 disabled:text-slate-400"
                   placeholder="e.g. Line 1 - SMT Assembly"
@@ -336,7 +367,9 @@ export default function ProductsPage() {
                   Description
                 </label>
                 <textarea
-                  {...register('description')}
+                  id="product-description"
+                  value={formData.description}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
                   disabled={isSaving}
                   rows={3}
                   className="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all disabled:bg-slate-50 disabled:text-slate-400 resize-none"
@@ -347,16 +380,18 @@ export default function ProductsPage() {
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
                 <button
                   type="button"
+                  id="cancel-product-btn"
                   onClick={handleCloseModal}
                   disabled={isSaving}
-                  className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50"
+                  className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
+                  id="save-product-btn"
                   disabled={isSaving}
-                  className="px-5 py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 flex items-center gap-2"
+                  className="px-5 py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 flex items-center gap-2 cursor-pointer"
                 >
                   {isSaving ? (
                     <>
