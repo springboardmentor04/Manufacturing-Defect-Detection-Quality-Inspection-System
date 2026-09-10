@@ -1,15 +1,28 @@
 import axios from 'axios';
 
-export const API_URL = 
+// Resolve Backend and API URLs from environment or production Render default
+const rawEnvUrl = 
   process.env.NEXT_PUBLIC_API_URL || 
-  (typeof window !== 'undefined' && window.location.origin ? `${window.location.origin}/api` : 'http://localhost:8000/api');
+  process.env.VITE_API_URL || 
+  process.env.NEXT_PUBLIC_BACKEND_URL || 
+  (typeof window !== 'undefined' && (window as any).__ENV?.VITE_API_URL) ||
+  'https://vision-ai-inspect.onrender.com';
+
+const sanitizedBase = rawEnvUrl.replace(/\/+$/, '');
+
+// Clean API Base URL (ending in /api)
+export const API_URL = sanitizedBase.endsWith('/api') 
+  ? sanitizedBase 
+  : `${sanitizedBase}/api`;
+
+// Clean Base URL for uploaded static assets (without /api)
+export const BACKEND_URL = API_URL.replace(/\/api\/?$/, '');
 
 export const getAssetUrl = (path: string | null | undefined): string => {
   if (!path) return '';
   if (path.startsWith('http://') || path.startsWith('https://')) return path;
-  const baseUrl = API_URL.replace(/\/api\/?$/, '');
   const cleanPath = path.replace(/^\//, '');
-  return `${baseUrl}/${cleanPath}`;
+  return `${BACKEND_URL}/${cleanPath}`;
 };
 
 export const api = axios.create({
@@ -17,12 +30,12 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 30000,
 });
 
 // Add a request interceptor to attach the JWT token
 api.interceptors.request.use(
   (config) => {
-    // We can only access localStorage in the browser
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('token');
       if (token) {

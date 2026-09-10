@@ -36,14 +36,14 @@ export default function DashboardPage() {
     try {
       setLoading(true);
       setError('');
-      const [dashboardResponse, inspectionResponse, reportResponse, productResponse] = await Promise.all([
-        api.get('/analytics/dashboard'),
-        inspectionsService.getAll(0, 20),
-        reportsService.getRecent(5),
-        productsService.getAll(0, 50),
+      const [dashboardData, inspectionResponse, reportResponse, productResponse] = await Promise.all([
+        analyticsService.getOverview().catch(() => api.get('/analytics/dashboard').then(r => r.data).catch(() => null)),
+        inspectionsService.getAll(0, 20).catch(() => []),
+        reportsService.getRecent(5).catch(() => []),
+        productsService.getAll(0, 50).catch(() => []),
       ]);
 
-      setSummary(dashboardResponse.data);
+      setSummary(dashboardData || {});
       setInspections(inspectionResponse || []);
       setReports(reportResponse || []);
       setProducts(productResponse || []);

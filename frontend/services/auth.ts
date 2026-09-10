@@ -2,10 +2,11 @@ import { api } from './api';
 import { User } from '@/types';
 
 export const authService = {
-  login: async (email: string, password: string) => {
-    // Backend uses a JSON LoginRequest schema, not OAuth2PasswordRequestForm
+  login: async (credential: string, password: string) => {
+    // Send both email and username so both UserLogin and LoginRequest schemas succeed
     const response = await api.post('/auth/login', {
-      username: email,
+      email: credential,
+      username: credential,
       password: password
     });
     return response.data; // { access_token, token_type }

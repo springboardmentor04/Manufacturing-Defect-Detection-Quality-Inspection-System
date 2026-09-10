@@ -1,7 +1,26 @@
 import { api } from './api';
 
 export const analyticsService = {
-  getSummary: async (period: string) => (await api.get(`/analytics/summary?period=${period}`)).data,
-  getTrends: async (period: string) => (await api.get(`/analytics/trends?period=${period}`)).data,
-  getQualityReport: async (period: string) => (await api.get(`/analytics/quality-report?period=${period}`)).data,
+  getOverview: async (period?: string) => {
+    const url = period ? `/analytics/overview?period=${period}` : '/analytics/overview';
+    const response = await api.get(url);
+    return response.data;
+  },
+  getSummary: async (period: string = 'TODAY') => {
+    try {
+      const response = await api.get(`/analytics/overview?period=${period}`);
+      return response.data;
+    } catch {
+      const fallback = await api.get('/analytics/overview');
+      return fallback.data;
+    }
+  },
+  getTrends: async (period: string = 'TODAY') => {
+    const response = await api.get(`/analytics/overview?period=${period}`);
+    return response.data;
+  },
+  getQualityReport: async (period: string = 'TODAY') => {
+    const response = await api.get(`/analytics/overview?period=${period}`);
+    return response.data;
+  },
 };
