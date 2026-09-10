@@ -178,7 +178,7 @@ class InferencePipeline:
             try:
                 try:
                     with infer_ctx:
-                        results = self.model(image_path, conf=self.confidence_threshold, imgsz=min(max(image_dims), 640), verbose=False)[0]
+                        results = self.model(image_path, conf=self.confidence_threshold, imgsz=640, verbose=False)[0]
                 except TypeError:
                     with infer_ctx:
                         results = self.model(image_path, conf=self.confidence_threshold, verbose=False)[0]
