@@ -152,14 +152,20 @@ class InferencePipeline:
         # 3. Defect Detection & Classification
         raw_defects = []
         infer_ctx = torch.inference_mode() if torch is not None else nullcontext()
+        boxes = []
         if self.model is not None:
             try:
-                with infer_ctx:
-                    results = self.model(image_path, conf=self.confidence_threshold, imgsz=min(max(image_dims), 640), verbose=False)[0]
-            except TypeError:
-                with infer_ctx:
-                    results = self.model(image_path, conf=self.confidence_threshold, verbose=False)[0]
-            boxes = results.boxes if results.boxes is not None else []
+                try:
+                    with infer_ctx:
+                        results = self.model(image_path, conf=self.confidence_threshold, imgsz=min(max(image_dims), 640), verbose=False)[0]
+                except TypeError:
+                    with infer_ctx:
+                        results = self.model(image_path, conf=self.confidence_threshold, verbose=False)[0]
+                boxes = results.boxes if (results is not None and getattr(results, "boxes", None) is not None) else []
+            except Exception as model_err:
+                print(f"[InferencePipeline] Warning during model inference: {model_err}")
+                self.model_error = f"Model inference warning: {model_err}"
+                boxes = []
             
             orig_img = None
             if len(boxes) > 0 and self.classifier_model is not None:

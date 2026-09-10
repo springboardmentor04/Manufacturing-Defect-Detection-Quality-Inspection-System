@@ -333,8 +333,12 @@ def run_prediction(inspection_id: int, db: Session = Depends(get_db), current_us
     if not img:
         raise HTTPException(status_code=400, detail="No image uploaded for this inspection")
         
+    product_name = inspection.batch.product.name.strip() if (inspection.batch and inspection.batch.product) else None
     # Run pipeline
-    results = pipeline.inspect_image(img.file_path)
+    try:
+        results = pipeline.inspect_image(img.file_path, product_name=product_name)
+    except Exception as err:
+        raise HTTPException(status_code=500, detail=f"Inference error: {err}")
     
     _store_prediction_results(db, inspection, results)
     
