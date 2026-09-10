@@ -3,13 +3,18 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
+from datetime import datetime, timezone
+from sqlalchemy import text
+
 from app.config import settings
+from app.database import engine
+from app.services.defect_detection import MODEL_PATH, _model_instance
 from app.routers import auth, images, inspections, reports, analytics
 
 app = FastAPI(
     title="VisionInspect AI Backend API",
-    description="Manufacturing Defect Detection & Quality Inspection Platform - Milestone 3",
-    version="3.0.0"
+    description="Manufacturing Defect Detection & Quality Inspection Platform - Milestone 4",
+    version="4.0.0"
 )
 
 # CORS setup
@@ -42,5 +47,30 @@ def root():
     return {
         "status": "online",
         "service": "VisionInspect AI API",
-        "milestone": 3
+        "milestone": 4
+    }
+
+@app.get("/health")
+def health_check():
+    """
+    Health check endpoint for Docker container healthchecks and deployment monitoring.
+    Checks database connection and model availability.
+    """
+    db_status = "disconnected"
+    try:
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+            db_status = "connected"
+    except Exception:
+        db_status = "disconnected"
+
+    model_exists = os.path.exists(MODEL_PATH)
+    model_loaded = (_model_instance is not None) or model_exists
+
+    return {
+        "status": "ok",
+        "database": db_status,
+        "model_loaded": model_loaded,
+        "model_path": MODEL_PATH,
+        "timestamp": datetime.now(timezone.utc).isoformat()
     }

@@ -1,0 +1,56 @@
+# Render Blueprint Specification for VisionInspect AI Platform
+# Multi-service architecture: PostgreSQL Database, FastAPI Backend, and Next.js Frontend.
+#
+# NOTE ON EPHEMERAL STORAGE (RENDER FREE TIER):
+# On Render free tier web services, the local container filesystem (e.g. /app/uploads) is ephemeral.
+# Files written locally persist during container uptime, but are reset whenever the instance restarts
+# or redeploys. For permanent production image storage, attach an S3/Cloudflare R2 bucket or Render Persistent Disk.
+
+databases:
+  - name: visioninspect-db
+    databaseName: visioninspect_db
+    user: visioninspect_user
+    plan: free
+    region: oregon
+
+services:
+  # ---------------------------------------------------------------------------
+  # Backend Web Service (FastAPI + YOLO ML Inference + OpenCV)
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: visioninspect-backend
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: visioninspect-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRE_MINUTES
+        value: 60
+      - key: CORS_ORIGINS
+        value: https://visioninspect-frontend.onrender.com,http://localhost:3000
+      - key: DETECTION_CONFIDENCE_THRESHOLD
+        value: 0.25
+      - key: PYTHONUNBUFFERED
+        value: 1
+
+  # ---------------------------------------------------------------------------
+  # Frontend Web Service (Next.js 14 App Router)
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: visioninspect-frontend
+    env: docker
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    plan: free
+    region: oregon
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://visioninspect-backend.onrender.com

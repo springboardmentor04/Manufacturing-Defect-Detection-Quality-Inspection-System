@@ -1,0 +1,29 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://postgres:ishika@host.docker.internal:5432/visioninspect_db
+      JWT_SECRET: super_secret_visioninspect_jwt_key_change_in_production_12345
+      JWT_EXPIRE_MINUTES: 60
+      CORS_ORIGINS: http://localhost:3000
+      DETECTION_CONFIDENCE_THRESHOLD: 0.25
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import requests; requests.get('http://localhost:8000/health')\" || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    volumes:
+      - ./backend/uploads:/app/uploads
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    depends_on:
+      backend:
+        condition: service_healthy
