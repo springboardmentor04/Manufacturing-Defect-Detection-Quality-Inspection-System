@@ -33,9 +33,18 @@ export const api = axios.create({
   timeout: 30000,
 });
 
-// Add a request interceptor to attach the JWT token
+// Add a request interceptor to attach the JWT token and normalize URLs
 api.interceptors.request.use(
   (config) => {
+    // Prevent duplicate /api/api prefixes if URL already has /api
+    if (config.url) {
+      if (config.url.startsWith('/api/')) {
+        config.url = config.url.replace(/^\/api/, '');
+      } else if (config.url === '/api') {
+        config.url = '/';
+      }
+    }
+
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('token');
       if (token) {

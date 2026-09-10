@@ -38,7 +38,7 @@ export default function DashboardPage() {
       setLoading(true);
       setError('');
       const [dashboardData, inspectionResponse, reportResponse, productResponse] = await Promise.all([
-        analyticsService.getOverview().catch(() => api.get('/api/analytics/dashboard').then(r => r.data).catch(() => null)),
+        analyticsService.getOverview().catch(() => api.get('/analytics/dashboard').then(r => r.data).catch(() => null)),
         inspectionsService.getAll(0, 20).catch(() => []),
         reportsService.getRecent(5).catch(() => []),
         productsService.getAll(0, 50).catch(() => []),
