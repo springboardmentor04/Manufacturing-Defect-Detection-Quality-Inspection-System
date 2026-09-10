@@ -159,7 +159,7 @@ When the backend is running, navigate to `http://localhost:8000/docs` to:
 | **Milestone 1** | System Architecture & Database Models | [`presentations/Milestone_1_Presentation.md`](presentations/Milestone_1_Presentation.md) |
 | **Milestone 2** | YOLOv8 Defect Detection & Severity Engine | [`presentations/Milestone_2_Presentation.md`](presentations/Milestone_2_Presentation.md) |
 | **Milestone 3** | MVTec AD 73-Class Resolution & UI Visualizer | [`presentations/Milestone_3_Presentation.pptx`](presentations/Milestone_3_Presentation.pptx) |
-| **Milestone 4** | Testing, Docker, Render Cloud & Documentation | [`presentations/Milestone_4_Presentation.pptx`](presentations/Milestone_4_Presentation.pptx) / [`Milestone_4_Presentation.md`](presentations/Milestone_4_Presentation.md) |
+| **Milestone 4** | Testing, Docker, Render Cloud & Documentation | [`presentations/Milestone_4_Presentation.pptx`](presentations/Milestone_4_Presentation.pptx) |
 
 ## 🛠 Troubleshooting
 

@@ -240,13 +240,13 @@ def run_e2e_verification():
     # 11. Verify Technical Documentation
     doc_files = ["architecture.md", "api.md", "database.md", "datasets.md", "ml_pipeline.md", "deployment.md", "development.md"]
     all_docs_exist = all((PROJECT_ROOT / "docs" / f).exists() and (PROJECT_ROOT / "docs" / f).stat().st_size > 500 for f in doc_files)
-    pres_exists = (PROJECT_ROOT / "presentations" / "Milestone_4_Presentation.md").exists()
+    pres_exists = (PROJECT_ROOT / "presentations" / "Milestone_4_Presentation.pptx").exists()
 
     if all_docs_exist and pres_exists:
         record_result(
-            "Complete Technical Documentation (7 docs + Presentation)",
+            "Complete Technical Documentation (7 docs + Presentation PPTX)",
             "MET",
-            f"All 7 markdown docs in docs/ and Milestone_4_Presentation.md populated with comprehensive technical specs"
+            f"All 7 markdown docs in docs/ and Milestone_4_Presentation.pptx populated with comprehensive technical specs"
         )
     else:
         record_result("Complete Technical Documentation", "NOT MET", "One or more documentation files missing or incomplete")
