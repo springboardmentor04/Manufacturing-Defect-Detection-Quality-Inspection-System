@@ -233,7 +233,7 @@ export default function InspectionResultPage() {
 
               {inspection.override_reason && (
                 <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900 italic">
-                  <strong>Override Justification:</strong> "{inspection.override_reason}"
+                  <strong>Override Justification:</strong> &quot;{inspection.override_reason}&quot;
                 </div>
               )}
             </div>
@@ -363,7 +363,7 @@ export default function InspectionResultPage() {
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg">
             <h2 className="text-xl font-bold text-slate-800 mb-4">Manual Override</h2>
-            <p className="text-slate-600 mb-6">Override the AI's decision for this inspection. This action will be logged in the audit trail.</p>
+            <p className="text-slate-600 mb-6">Override the AI&apos;s decision for this inspection. This action will be logged in the audit trail.</p>
             
             <form onSubmit={handleSubmit(onOverrideSubmit)} className="space-y-4">
               <div>
