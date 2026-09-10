@@ -1,11 +1,11 @@
-export type Role = 'ADMIN' | 'QUALITY_ENGINEER' | 'SUPERVISOR' | 'OPERATOR';
+export type Role = 'ADMIN' | 'QUALITY_ENGINEER' | 'SUPERVISOR' | 'FACTORY_SUPERVISOR' | 'OPERATOR';
 
 export interface User {
   id: number;
   username: string;
   email: string;
-  full_name: string;
-  role: Role;
+  full_name?: string;
+  role: Role | string;
   is_active: boolean;
 }
 
@@ -24,22 +24,40 @@ export interface Batch {
   id: number;
   batch_number: string;
   product_id: number;
-  quantity: number;
-  production_line: string;
-  status: string;
+  quantity?: number;
+  production_line?: string;
+  status?: string;
   created_at: string;
   product?: Product;
 }
 
 export type QualityDecisionType = 'PASS' | 'FAIL' | 'REVIEW' | 'REWORK';
 
+export interface DetectionSchema {
+  defect_type: string;
+  confidence: number;
+  bbox_x1: number;
+  bbox_y1: number;
+  bbox_x2: number;
+  bbox_y2: number;
+  area: number;
+}
+
+export interface QualityDecisionSchema {
+  ai_decision: string;
+  human_decision?: string | null;
+  final_decision: string;
+}
+
 export interface Inspection {
   id: number;
-  product_id: number;
-  batch_id?: number;
-  image_path: string;
+  product_id?: number;
+  batch_id?: number | null;
+  operator_id?: number;
+  model_version_id?: number | null;
+  image_path?: string;
   processed_image_path?: string | null;
-  ai_status: string;
+  ai_status?: string;
   defect_type?: string;
   confidence?: number;
   severity_score?: number;
@@ -53,6 +71,8 @@ export interface Inspection {
   model_message?: string | null;
   processing_time_ms?: number;
   created_at: string;
+  detections?: DetectionSchema[];
+  quality_decision?: QualityDecisionSchema | null;
   bounding_boxes?: DefectDetection[];
   severity_components?: SeverityComponents;
   quality_assessment?: QualityAssessment;
@@ -94,7 +114,6 @@ export interface DefectAssessment {
 
 export interface DefectDetection {
   box: [number, number, number, number];
-  /** Actual defect type (e.g. broken_large) resolved via class_mapping.json. */
   label: string;
   defect_type?: string;
   suggested_defect_type?: string | null;
@@ -104,7 +123,6 @@ export interface DefectDetection {
   area: number;
   assessment?: DefectAssessment;
   class_id?: number;
-  /** Raw YOLO class name from model metadata (e.g. bottle_broken_large). */
   class_name?: string;
   product_category?: string | null;
   defect_present?: boolean;
@@ -124,14 +142,38 @@ export interface QualityAssessment {
 
 export interface ModelVersion {
   id: number;
+  name?: string;
   version: string;
+  dataset?: string;
+  dataset_version?: string;
   description?: string;
-  dataset_version: string;
-  map_score: number;
-  precision_score: number;
-  recall_score: number;
-  f1_score: number;
-  is_active: boolean;
-  training_date: string;
+  precision?: number | null;
+  recall?: number | null;
+  f1_score?: number | null;
+  map_score?: number | null;
+  precision_score?: number | null;
+  recall_score?: number | null;
+  status?: string;
+  is_active?: boolean;
+  training_date?: string;
+  created_at?: string;
+}
+
+export interface Report {
+  id: number;
+  report_type: string;
+  date_range: string;
+  generated_by: number;
+  file_path: string;
   created_at: string;
+}
+
+export interface AnalyticsOverview {
+  total_inspections: number;
+  total_defects: number;
+  defect_rate: number;
+  pass_rate: number;
+  reject_rate: number;
+  average_severity: number;
+  critical_defects: number;
 }

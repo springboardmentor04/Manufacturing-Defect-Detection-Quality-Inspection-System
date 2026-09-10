@@ -7,7 +7,7 @@ import { productsService } from '@/services/products';
 import { batchesService } from '@/services/batches';
 import { inspectionsService } from '@/services/inspections';
 import { Product, Batch } from '@/types';
-import { Camera as CameraIcon, UploadCloud, X, RefreshCw, Cpu } from 'lucide-react';
+import { Camera as CameraIcon, UploadCloud, X, RefreshCw, Cpu, AlertCircle, Loader2 } from 'lucide-react';
 import Webcam from 'react-webcam';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -18,17 +18,19 @@ export default function NewInspectionPage() {
   const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [batches, setBatches] = useState<Batch[]>([]);
-  
+  const [loadingContext, setLoadingContext] = useState(true);
+
   const [selectedProduct, setSelectedProduct] = useState<string>('');
   const [selectedBatch, setSelectedBatch] = useState<string>('');
-  
+
   const [mode, setMode] = useState<'upload' | 'camera'>('upload');
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusText, setStatusText] = useState('');
-  
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const webcamRef = useRef<Webcam>(null);
 
   useEffect(() => {
@@ -40,14 +42,20 @@ export default function NewInspectionPage() {
 
     const fetchData = async () => {
       try {
+        setLoadingContext(true);
         const [p, b] = await Promise.all([
           productsService.getAll(),
-          batchesService.getAll()
+          batchesService.getAll().catch(() => []),
         ]);
-        setProducts(p);
-        setBatches(b);
+        setProducts(Array.isArray(p) ? p : []);
+        setBatches(Array.isArray(b) ? b : []);
+        if (p.length > 0 && !selectedProduct) {
+          setSelectedProduct(p[0].id.toString());
+        }
       } catch (error) {
-        console.error("Failed to load products/batches", error);
+        console.error('[NewInspectionPage] Failed to load products/batches:', error);
+      } finally {
+        setLoadingContext(false);
       }
     };
     fetchData();
@@ -59,6 +67,7 @@ export default function NewInspectionPage() {
     if (droppedFile && droppedFile.type.startsWith('image/')) {
       setFile(droppedFile);
       setPreview(URL.createObjectURL(droppedFile));
+      setErrorMessage(null);
     }
   };
 
@@ -67,6 +76,7 @@ export default function NewInspectionPage() {
       const selectedFile = e.target.files[0];
       setFile(selectedFile);
       setPreview(URL.createObjectURL(selectedFile));
+      setErrorMessage(null);
     }
   };
 
@@ -74,13 +84,12 @@ export default function NewInspectionPage() {
     const imageSrc = webcamRef.current?.getScreenshot();
     if (imageSrc) {
       setPreview(imageSrc);
-      
-      // Convert base64 to file
       fetch(imageSrc)
-        .then(res => res.blob())
-        .then(blob => {
+        .then((res) => res.blob())
+        .then((blob) => {
           const newFile = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' });
           setFile(newFile);
+          setErrorMessage(null);
         });
     }
   }, [webcamRef]);
@@ -88,87 +97,144 @@ export default function NewInspectionPage() {
   const clearSelection = () => {
     setFile(null);
     setPreview(null);
+    setErrorMessage(null);
   };
 
   const runInspection = async () => {
-    if (!file || !selectedProduct) return;
-    
+    if (!selectedProduct) {
+      setErrorMessage('Please select a product before submitting.');
+      return;
+    }
+    if (!file) {
+      setErrorMessage('Please upload or capture a product inspection image.');
+      return;
+    }
+
     try {
       setIsProcessing(true);
-      
-      setStatusText('Uploading...');
-      await new Promise(r => setTimeout(r, 500)); // Simulating stages for UI feel
-      
-      setStatusText('Running AI...');
+      setErrorMessage(null);
+      setStatusText('Uploading high-resolution image to AI pipeline...');
+
       const inspection = await inspectionsService.createAndRun(
-        parseInt(selectedProduct), 
-        selectedBatch ? parseInt(selectedBatch) : null, 
+        parseInt(selectedProduct, 10),
+        selectedBatch ? parseInt(selectedBatch, 10) : null,
         file
       );
-      
-      setStatusText('Saving results...');
-      
-      // Redirect to the results page
+
+      setStatusText('Inference complete! Loading inspection results...');
       router.push(`/inspections/${inspection.id}`);
-      
     } catch (error: any) {
-      console.error(error);
-      const detail = error.response?.data?.detail || error.message || 'Inspection failed. Please check backend connection.';
-      alert(`Inspection failed: ${typeof detail === 'string' ? detail : JSON.stringify(detail)}`);
+      console.error('[NewInspectionPage] Inspection run error:', error);
+      let detail = 'Inspection failed. Please verify the backend connection and image format.';
+      if (error.response?.data?.detail) {
+        if (typeof error.response.data.detail === 'string') {
+          detail = error.response.data.detail;
+        } else if (Array.isArray(error.response.data.detail)) {
+          detail = error.response.data.detail.map((d: any) => d.msg || JSON.stringify(d)).join('; ');
+        }
+      } else if (error.message) {
+        detail = error.message;
+      }
+      setErrorMessage(detail);
       setIsProcessing(false);
     }
   };
 
   return (
     <DashboardLayout>
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold text-slate-800 mb-6">New AI Inspection</h1>
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+            <Cpu className="text-blue-600" size={26} />
+            New AI Quality Inspection
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Run automated YOLO defect detection and multi-attribute severity assessment
+          </p>
+        </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
-          <h2 className="text-lg font-bold text-slate-800 mb-4">Inspection Context</h2>
+        {errorMessage && (
+          <div className="p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl flex items-start gap-3 shadow-sm animate-fadeIn">
+            <AlertCircle size={20} className="text-rose-600 shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-semibold text-sm">Inspection Error</p>
+              <p className="text-xs mt-0.5">{errorMessage}</p>
+            </div>
+          </div>
+        )}
+
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <h2 className="text-base font-bold text-slate-800 mb-4">1. Inspection Context</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold mb-1">Product <span className="text-red-500">*</span></label>
-              <select 
-                value={selectedProduct} 
-                onChange={e => setSelectedProduct(e.target.value)}
-                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                Product <span className="text-rose-500">*</span>
+              </label>
+              <select
+                id="select-product-inspection"
+                value={selectedProduct}
+                onChange={(e) => {
+                  setSelectedProduct(e.target.value);
+                  setErrorMessage(null);
+                }}
+                disabled={isProcessing || loadingContext}
+                className="w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all bg-white"
               >
-                <option value="">Select a product...</option>
-                {products.map(p => (
-                  <option key={p.id} value={p.id}>{p.name} ({p.product_code})</option>
-                ))}
+                {products.length === 0 ? (
+                  <option value="">No products available</option>
+                ) : (
+                  products.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} {p.product_code ? `(${p.product_code})` : ''}
+                    </option>
+                  ))
+                )}
               </select>
             </div>
+
             <div>
-              <label className="block text-sm font-semibold mb-1">Batch (Optional)</label>
-              <select 
-                value={selectedBatch} 
-                onChange={e => setSelectedBatch(e.target.value)}
-                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                Production Batch (Optional)
+              </label>
+              <select
+                id="select-batch-inspection"
+                value={selectedBatch}
+                onChange={(e) => setSelectedBatch(e.target.value)}
+                disabled={isProcessing || loadingContext}
+                className="w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all bg-white"
               >
-                <option value="">No Batch</option>
-                {batches.filter(b => !selectedProduct || b.product_id.toString() === selectedProduct).map(b => (
-                  <option key={b.id} value={b.id}>{b.batch_number}</option>
+                <option value="">No Batch Assigned</option>
+                {batches.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.batch_number}
+                  </option>
                 ))}
               </select>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold text-slate-800">Image Source</h2>
-            <div className="flex bg-slate-100 rounded-lg p-1">
-              <button 
-                onClick={() => { setMode('upload'); clearSelection(); }}
-                className={`px-4 py-1 text-sm font-semibold rounded-md ${mode === 'upload' ? 'bg-white shadow text-blue-600' : 'text-slate-500'}`}
+            <h2 className="text-base font-bold text-slate-800">2. Optical Image Source</h2>
+            <div className="flex bg-slate-100 p-1 rounded-lg">
+              <button
+                type="button"
+                onClick={() => setMode('upload')}
+                disabled={isProcessing}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${
+                  mode === 'upload' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
               >
-                Upload File
+                File Upload
               </button>
-              <button 
-                onClick={() => { setMode('camera'); clearSelection(); }}
-                className={`px-4 py-1 text-sm font-semibold rounded-md ${mode === 'camera' ? 'bg-white shadow text-blue-600' : 'text-slate-500'}`}
+              <button
+                type="button"
+                onClick={() => setMode('camera')}
+                disabled={isProcessing}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${
+                  mode === 'camera' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
               >
                 Live Camera
               </button>
@@ -176,72 +242,97 @@ export default function NewInspectionPage() {
           </div>
 
           {!preview ? (
-            mode === 'upload' ? (
-              <div 
-                className="border-2 border-dashed border-slate-300 rounded-xl h-64 flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer relative"
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={handleDrop}
-              >
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  onChange={handleFileChange}
-                />
-                <UploadCloud size={48} className="text-slate-400 mb-4" />
-                <p className="font-semibold text-slate-600 text-lg">Drag & Drop Image Here</p>
-                <p className="text-slate-400 text-sm">or click to browse</p>
-              </div>
-            ) : (
-              <div className="relative rounded-xl overflow-hidden h-[400px] bg-black flex items-center justify-center">
-                <Webcam
-                  audio={false}
-                  ref={webcamRef}
-                  screenshotFormat="image/jpeg"
-                  className="w-full h-full object-cover"
-                />
-                <button 
-                  onClick={captureCamera}
-                  className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white text-blue-600 rounded-full p-4 shadow-xl hover:scale-105 transition-transform"
+            <div>
+              {mode === 'upload' ? (
+                <div
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={handleDrop}
+                  className="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-xl p-8 text-center transition-colors bg-slate-50/50 cursor-pointer flex flex-col items-center justify-center min-h-[220px]"
                 >
-                  <CameraIcon size={32} />
-                </button>
-              </div>
-            )
-          ) : (
-            <div className="relative rounded-xl overflow-hidden bg-slate-100 border border-slate-200 flex flex-col items-center p-4">
-              <div className="relative w-full max-w-2xl">
-                <img src={preview} alt="Preview" className="w-full h-auto rounded-lg shadow" />
-                <button 
-                  onClick={clearSelection}
-                  className="absolute top-2 right-2 bg-white/80 backdrop-blur text-slate-700 p-2 rounded-full hover:bg-white hover:text-red-500 shadow-sm transition-colors"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-              
-              <div className="mt-8">
-                {isProcessing ? (
-                  <div className="flex flex-col items-center gap-4">
-                    <RefreshCw size={32} className="text-blue-500 animate-spin" />
-                    <p className="font-bold text-slate-600">{statusText}</p>
-                  </div>
-                ) : (
-                  <button 
-                    onClick={runInspection}
-                    disabled={!selectedProduct}
-                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-lg px-8 py-3 rounded-xl shadow-md flex items-center gap-2 transition-colors"
+                  <UploadCloud size={40} className="text-slate-400 mb-3" />
+                  <p className="text-sm font-semibold text-slate-700 mb-1">
+                    Drag and drop optical inspection image here, or{' '}
+                    <label className="text-blue-600 hover:underline cursor-pointer">
+                      browse
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        disabled={isProcessing}
+                        className="hidden"
+                      />
+                    </label>
+                  </p>
+                  <p className="text-xs text-slate-400">Supports JPEG, PNG, WebP up to 25MB</p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center p-4 bg-slate-900 rounded-xl overflow-hidden min-h-[300px]">
+                  <Webcam
+                    ref={webcamRef}
+                    screenshotFormat="image/jpeg"
+                    className="w-full max-w-md rounded-lg mb-4"
+                  />
+                  <button
+                    type="button"
+                    onClick={captureCamera}
+                    disabled={isProcessing}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-semibold flex items-center gap-2 text-sm shadow-md transition-colors cursor-pointer"
                   >
-                    <Cpu size={24} />
-                    RUN AI INSPECTION
+                    <CameraIcon size={18} />
+                    Capture Photo
                   </button>
-                )}
-                {!selectedProduct && !isProcessing && (
-                  <p className="text-red-500 text-sm font-semibold mt-2 text-center">Please select a product first</p>
-                )}
-              </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="relative border border-slate-200 rounded-xl overflow-hidden bg-slate-900 flex flex-col items-center justify-center p-2 min-h-[300px]">
+              <img
+                src={preview}
+                alt="Selected preview"
+                className="max-h-[420px] object-contain rounded"
+              />
+              {!isProcessing && (
+                <button
+                  type="button"
+                  onClick={clearSelection}
+                  className="absolute top-4 right-4 bg-slate-900/80 hover:bg-slate-900 text-white p-2 rounded-full shadow-lg transition-colors cursor-pointer"
+                  title="Remove image"
+                >
+                  <X size={18} />
+                </button>
+              )}
             </div>
           )}
+        </div>
+
+        <div className="flex justify-end gap-3 pt-2">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            disabled={isProcessing}
+            className="px-5 py-2.5 text-sm font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            id="run-inspection-btn"
+            onClick={runInspection}
+            disabled={!file || !selectedProduct || isProcessing}
+            className="px-6 py-2.5 text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition-all disabled:opacity-50 flex items-center gap-2.5 cursor-pointer"
+          >
+            {isProcessing ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                <span>{statusText || 'Processing AI Inspection...'}</span>
+              </>
+            ) : (
+              <>
+                <Cpu size={18} />
+                <span>Run Inspection</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
     </DashboardLayout>

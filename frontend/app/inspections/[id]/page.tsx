@@ -1,434 +1,536 @@
 "use client";
 
-import { useEffect, useState, useRef } from 'react';
-import { useParams } from 'next/navigation';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { inspectionsService } from '@/services/inspections';
 import { getAssetUrl } from '@/services/api';
 import { Inspection } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
-import { AlertTriangle, CheckCircle, ShieldAlert, Zap, Layers, RefreshCcw, ClipboardList } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { 
+  AlertTriangle, 
+  CheckCircle2, 
+  XCircle, 
+  ShieldAlert, 
+  Cpu, 
+  RotateCcw, 
+  ArrowLeft, 
+  X, 
+  Loader2, 
+  Clock, 
+  Layers, 
+  User as UserIcon,
+  Tag
+} from 'lucide-react';
 import { formatDefectType } from '@/utils/formatters';
 
 export default function InspectionResultPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const router = useRouter();
+  const id = params?.id as string;
   const { user } = useAuth();
+
   const [inspection, setInspection] = useState<Inspection | null>(null);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
   const [imgDims, setImgDims] = useState({ w: 0, h: 0 });
   const imgRef = useRef<HTMLImageElement>(null);
+
   const [showOverride, setShowOverride] = useState(false);
-  const { register, handleSubmit } = useForm();
-  const [submitting, setSubmitting] = useState(false);
+  const [overrideDecision, setOverrideDecision] = useState('PASS');
+  const [overrideReason, setOverrideReason] = useState('');
+  const [submittingOverride, setSubmittingOverride] = useState(false);
+  const [overrideError, setOverrideError] = useState<string | null>(null);
+
   const [activeDefect, setActiveDefect] = useState<any>(null);
 
-  const fetchInspection = async () => {
+  const fetchInspection = useCallback(async () => {
+    if (!id) return;
     try {
+      setLoading(true);
+      setFetchError(null);
       const data = await inspectionsService.getOne(Number(id));
       setInspection(data);
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error('[InspectionDetailPage] Failed to load inspection:', error);
+      let errorMsg = 'Failed to load inspection record.';
+      if (error.response?.data?.detail) {
+        if (typeof error.response.data.detail === 'string') {
+          errorMsg = error.response.data.detail;
+        } else if (Array.isArray(error.response.data.detail)) {
+          errorMsg = error.response.data.detail.map((d: any) => d.msg || JSON.stringify(d)).join(', ');
+        }
+      } else if (error.message) {
+        errorMsg = error.message;
+      }
+      setFetchError(errorMsg);
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchInspection();
-  }, [id]);
+  }, [fetchInspection]);
 
   const onImageLoad = () => {
     if (imgRef.current) {
       setImgDims({
         w: imgRef.current.naturalWidth,
-        h: imgRef.current.naturalHeight
+        h: imgRef.current.naturalHeight,
       });
     }
   };
 
-  const onOverrideSubmit = async (data: any) => {
+  const handleOverrideSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!overrideReason.trim()) {
+      setOverrideError('Please provide an override rationale.');
+      return;
+    }
+
     try {
-      setSubmitting(true);
-      await inspectionsService.overrideDecision(Number(id), data.final_decision, data.override_reason);
+      setSubmittingOverride(true);
+      setOverrideError(null);
+      await inspectionsService.overrideDecision(
+        Number(id),
+        overrideDecision,
+        overrideReason.trim()
+      );
       setShowOverride(false);
-      fetchInspection();
-    } catch (error) {
-      console.error(error);
+      setOverrideReason('');
+      await fetchInspection();
+    } catch (error: any) {
+      console.error('[InspectionDetailPage] Override failed:', error);
+      let errorMsg = 'Failed to submit override.';
+      if (error.response?.data?.detail) {
+        if (typeof error.response.data.detail === 'string') {
+          errorMsg = error.response.data.detail;
+        } else if (Array.isArray(error.response.data.detail)) {
+          errorMsg = error.response.data.detail.map((d: any) => d.msg || JSON.stringify(d)).join('; ');
+        }
+      } else if (error.message) {
+        errorMsg = error.message;
+      }
+      setOverrideError(errorMsg);
     } finally {
-      setSubmitting(false);
+      setSubmittingOverride(false);
     }
   };
 
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="flex flex-col justify-center items-center h-80 gap-3">
+          <Loader2 className="animate-spin text-blue-600" size={36} />
+          <p className="text-sm font-medium text-slate-600">Loading inspection details...</p>
         </div>
       </DashboardLayout>
     );
   }
 
-  if (!inspection) return <DashboardLayout>Not found</DashboardLayout>;
+  if (fetchError || !inspection) {
+    return (
+      <DashboardLayout>
+        <div className="max-w-2xl mx-auto mt-12 bg-white p-8 rounded-2xl border border-slate-200 shadow-sm text-center">
+          <AlertTriangle className="text-rose-500 mx-auto mb-3" size={40} />
+          <h2 className="text-xl font-bold text-slate-900 mb-1">Inspection Not Found</h2>
+          <p className="text-sm text-slate-500 mb-6">{fetchError || 'The requested inspection record does not exist.'}</p>
+          <Link
+            href="/inspections"
+            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-semibold text-sm transition-colors"
+          >
+            <ArrowLeft size={16} />
+            Back to Inspections
+          </Link>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
-  // Convert image path to full URL
-  const imageUrl = getAssetUrl(inspection.image_path);
+  // Normalize decisions and detections
+  const aiDecision =
+    inspection.quality_decision?.ai_decision ||
+    inspection.ai_decision ||
+    (inspection.detections && inspection.detections.length > 0 ? 'FAIL' : 'PASS');
+  const finalDecision =
+    inspection.quality_decision?.final_decision ||
+    inspection.final_decision ||
+    aiDecision;
+  const humanDecision =
+    inspection.quality_decision?.human_decision ||
+    inspection.human_decision;
+
+  const normalizedDetections = (inspection.detections || inspection.bounding_boxes || []).map((d: any) => {
+    const x1 = d.bbox_x1 ?? d.box?.[0] ?? 0;
+    const y1 = d.bbox_y1 ?? d.box?.[1] ?? 0;
+    const x2 = d.bbox_x2 ?? d.box?.[2] ?? 0;
+    const y2 = d.bbox_y2 ?? d.box?.[3] ?? 0;
+    const rawConf = d.confidence ?? d.conf ?? 0;
+    const conf = rawConf <= 1.0 ? rawConf * 100 : rawConf;
+    const type = d.defect_type ?? d.label ?? 'Defect';
+    return { ...d, x1, y1, x2, y2, conf, type };
+  });
+
+  const imageUrl = getAssetUrl(inspection.image_path || `/api/inspections/${inspection.id}/image`);
   const processedImageUrl = inspection.processed_image_path ? getAssetUrl(inspection.processed_image_path) : null;
+
+  const isEngineerOrAdmin = user && ['ADMIN', 'QUALITY_ENGINEER'].includes(
+    (user.role || '').toString().trim().replace(/\s+/g, '_').toUpperCase()
+  );
 
   return (
     <DashboardLayout>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-800">Inspection #{inspection.id}</h1>
-          <p className="text-slate-500">Product: {inspection.product?.name || inspection.product_id}</p>
-        </div>
-        <div className="flex gap-2">
-          {(!inspection.human_decision) && user && ['ADMIN', 'QUALITY_ENGINEER'].includes(user.role) && (
-            <button 
-              onClick={() => setShowOverride(true)}
-              className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition-colors"
+      <div className="space-y-6">
+        {/* Header bar */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/inspections"
+              className="p-2 border border-slate-200 hover:bg-slate-100 rounded-lg text-slate-600 transition-colors"
+              title="Back to inspections"
             >
-              Manual Override
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Image Viewer */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden p-4">
-            <h2 className="font-bold text-slate-800 mb-4">Inspection Image (Model: {inspection.model_version})</h2>
-            <p className={`mb-3 text-sm font-medium ${inspection.model_status === 'AVAILABLE' ? 'text-emerald-700' : 'text-amber-700'}`}>
-              Model status: {inspection.model_status || 'UNKNOWN'}{inspection.model_message ? ` — ${inspection.model_message}` : ''}
-            </p>
-            {processedImageUrl && (
-              <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <span>Processed preview</span>
-                <span className="rounded-full bg-slate-100 px-2 py-1 text-slate-700">{inspection.model_status === 'AVAILABLE' ? 'AI pipeline' : 'Fallback/manual review'}</span>
-              </div>
-            )}
-            <div className="relative w-full bg-slate-900 rounded-lg overflow-hidden flex items-center justify-center">
-              <img 
-                ref={imgRef}
-                src={processedImageUrl || imageUrl} 
-                alt="Inspection" 
-                className="max-h-[600px] object-contain"
-                onLoad={onImageLoad}
-              />
-              {/* Bounding Boxes */}
-              {imgDims.w > 0 && inspection.bounding_boxes?.map((box: any, idx: number) => {
-                // Determine absolute coordinates. YOLO typically gives [x1, y1, x2, y2]
-                const [x1, y1, x2, y2] = box.box;
-                const left = (x1 / imgDims.w) * 100;
-                const top = (y1 / imgDims.h) * 100;
-                const width = ((x2 - x1) / imgDims.w) * 100;
-                const height = ((y2 - y1) / imgDims.h) * 100;
-
-                return (
-                  <div 
-                    key={idx}
-                    onClick={() => setActiveDefect(box)}
-                    className="absolute border-2 border-red-500 bg-red-500/20 cursor-pointer hover:bg-red-500/40 transition-colors"
-                    style={{
-                      left: `${left}%`,
-                      top: `${top}%`,
-                      width: `${width}%`,
-                      height: `${height}%`
-                    }}
-                  >
-                    <span className="absolute -top-6 left-0 bg-red-500 text-white text-xs font-bold px-1 whitespace-nowrap z-10">
-                      {box.defect_display_name || formatDefectType(box.defect_type || box.label)} {box.classification_confidence ? box.classification_confidence.toFixed(1) : box.conf.toFixed(1)}%
-                    </span>
-                  </div>
-                );
-              })}
+              <ArrowLeft size={18} />
+            </Link>
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                Inspection #{inspection.id}
+              </h1>
+              <p className="text-xs text-slate-500">
+                Logged on {new Date(inspection.created_at).toLocaleString()}
+              </p>
             </div>
-            
-            {activeDefect && (
-              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-bold text-red-800 text-lg">{(activeDefect.defect_display_name || formatDefectType(activeDefect.defect_type || activeDefect.label)).toUpperCase()}</h3>
-                    {activeDefect.product_category && (
-                      <p className="text-xs text-slate-500 mb-1">Product category: {activeDefect.product_category}</p>
-                    )}
-                    <p className="text-sm text-red-600 font-medium">Detection Confidence: {(activeDefect.detection_confidence || activeDefect.conf).toFixed(2)}%</p>
-                    {activeDefect.classification_confidence && (
-                      <p className="text-sm text-red-600 font-medium">Classification Confidence: {activeDefect.classification_confidence.toFixed(2)}%</p>
-                    )}
-                    {activeDefect.assessment && (
-                      <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-red-900">
-                        <span>Severity: {activeDefect.assessment.severity_score.toFixed(1)} ({activeDefect.assessment.severity_level})</span>
-                        <span>Risk: {activeDefect.assessment.quality_risk}</span>
-                        <span>Decision: {activeDefect.assessment.quality_decision}</span>
-                        <span>Size: {activeDefect.area.toFixed(0)} px2</span>
-                        <p className="col-span-2">{activeDefect.assessment.recommended_action}</p>
-                      </div>
-                    )}
-                  </div>
-                  <button onClick={() => setActiveDefect(null)} className="text-slate-400 hover:text-slate-600">×</button>
-                </div>
-              </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {isEngineerOrAdmin && (
+              <button
+                type="button"
+                onClick={() => {
+                  setOverrideDecision(finalDecision === 'PASS' ? 'FAIL' : 'PASS');
+                  setShowOverride(true);
+                }}
+                className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-semibold text-sm shadow-sm transition-colors flex items-center gap-2 cursor-pointer"
+              >
+                <RotateCcw size={16} />
+                Override Decision
+              </button>
             )}
           </div>
         </div>
 
-        {/* Sidebar details */}
-        <div className="space-y-6">
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-            <h2 className="font-bold text-slate-800 text-lg mb-4 border-b pb-2">Quality Decision Summary</h2>
-            
-            <div className="space-y-4">
-              <div>
-                <p className="text-xs text-slate-500 font-bold uppercase tracking-wide">AI DECISION</p>
-                <div className="mt-1">
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${
-                    inspection.ai_decision === 'PASS' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
-                    inspection.ai_decision === 'FAIL' ? 'bg-red-100 text-red-800 border-red-200' :
-                    inspection.ai_decision === 'REVIEW' ? 'bg-amber-100 text-amber-800 border-amber-200' :
-                    inspection.ai_decision === 'REWORK' ? 'bg-blue-100 text-blue-800 border-blue-200' :
-                    'bg-slate-100 text-slate-800 border-slate-200'
-                  }`}>
-                    {inspection.ai_decision === 'PASS' ? <CheckCircle size={14} className="mr-1"/> : <AlertTriangle size={14} className="mr-1"/>}
-                    {inspection.ai_decision || 'N/A'}
+        {/* Quality status overview bar */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">AI Assessment</p>
+              <p className="text-lg font-bold mt-0.5 text-slate-900">{aiDecision}</p>
+            </div>
+            {aiDecision === 'PASS' ? (
+              <CheckCircle2 className="text-emerald-500" size={28} />
+            ) : (
+              <XCircle className="text-rose-500" size={28} />
+            )}
+          </div>
+
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Final Decision</p>
+              <p className="text-lg font-bold mt-0.5 text-slate-900">{finalDecision}</p>
+            </div>
+            {finalDecision === 'PASS' ? (
+              <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 font-bold text-xs rounded-full border border-emerald-200">
+                ACCEPTED
+              </span>
+            ) : (
+              <span className="px-2.5 py-1 bg-rose-50 text-rose-700 font-bold text-xs rounded-full border border-rose-200">
+                REJECTED
+              </span>
+            )}
+          </div>
+
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Defects Detected</p>
+              <p className="text-lg font-bold mt-0.5 text-slate-900">{normalizedDetections.length}</p>
+            </div>
+            <Tag className="text-blue-500" size={24} />
+          </div>
+
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Inference Time</p>
+              <p className="text-lg font-bold mt-0.5 text-slate-900 font-mono">
+                {inspection.processing_time_ms ? `${Number(inspection.processing_time_ms).toFixed(1)} ms` : '-'}
+              </p>
+            </div>
+            <Clock className="text-slate-400" size={24} />
+          </div>
+        </div>
+
+        {/* Override Note banner if overridden */}
+        {humanDecision && (
+          <div className="p-4 bg-amber-50 border border-amber-200 text-amber-900 rounded-xl text-sm flex items-start gap-3 shadow-xs">
+            <RotateCcw className="text-amber-600 shrink-0 mt-0.5" size={18} />
+            <div>
+              <p className="font-bold">Manual Decision Override Applied: {humanDecision}</p>
+              <p className="text-xs mt-0.5 text-amber-800">
+                Reason: {inspection.override_reason || 'Quality Engineer verified defect parameters.'}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Main Grid: Image Viewer & Details */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Optical Image Viewer */}
+          <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-bold text-slate-800 flex items-center gap-2">
+                <Cpu size={18} className="text-blue-600" />
+                Optical Image & Bounding Boxes
+              </h2>
+              <span className="text-xs font-medium text-slate-500">
+                Model: {inspection.model_version || 'YOLOv8'}
+              </span>
+            </div>
+
+            <div className="relative w-full bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center min-h-[380px]">
+              <img
+                ref={imgRef}
+                src={processedImageUrl || imageUrl}
+                alt={`Inspection #${inspection.id}`}
+                className="max-h-[540px] w-auto object-contain rounded"
+                onLoad={onImageLoad}
+              />
+
+              {/* Dynamic Bounding Box Highlights */}
+              {imgDims.w > 0 &&
+                normalizedDetections.map((defect: any, idx: number) => {
+                  const left = (defect.x1 / imgDims.w) * 100;
+                  const top = (defect.y1 / imgDims.h) * 100;
+                  const width = ((defect.x2 - defect.x1) / imgDims.w) * 100;
+                  const height = ((defect.y2 - defect.y1) / imgDims.h) * 100;
+
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => setActiveDefect(defect)}
+                      className="absolute border-2 border-rose-500 bg-rose-500/25 cursor-pointer hover:bg-rose-500/40 transition-all group"
+                      style={{
+                        left: `${left}%`,
+                        top: `${top}%`,
+                        width: `${width}%`,
+                        height: `${height}%`,
+                      }}
+                      title={`${defect.type} (${defect.conf.toFixed(1)}%)`}
+                    >
+                      <span className="absolute -top-6 left-0 bg-rose-600 text-white text-xs font-bold px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap z-10">
+                        {formatDefectType(defect.type)} {defect.conf.toFixed(1)}%
+                      </span>
+                    </div>
+                  );
+                })}
+            </div>
+
+            {/* Selected defect popover info */}
+            {activeDefect && (
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs flex justify-between items-center">
+                <div>
+                  <p className="font-bold text-slate-800 text-sm">{formatDefectType(activeDefect.type)}</p>
+                  <p className="text-slate-500 mt-0.5">
+                    Confidence: <span className="font-semibold text-slate-800">{activeDefect.conf.toFixed(1)}%</span> | Bounding Box: [{activeDefect.x1.toFixed(0)}, {activeDefect.y1.toFixed(0)}, {activeDefect.x2.toFixed(0)}, {activeDefect.y2.toFixed(0)}]
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveDefect(null)}
+                  className="text-slate-400 hover:text-slate-600 p-1"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Inspection Metadata and Defects Sidebar */}
+          <div className="space-y-6">
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+              <h2 className="text-base font-bold text-slate-800 mb-4">Inspection Specifications</h2>
+              <div className="divide-y divide-slate-100 text-sm">
+                <div className="py-2.5 flex justify-between">
+                  <span className="text-slate-500">Inspection ID:</span>
+                  <span className="font-mono font-bold text-slate-800">#{inspection.id}</span>
+                </div>
+                <div className="py-2.5 flex justify-between">
+                  <span className="text-slate-500">Product:</span>
+                  <span className="font-semibold text-slate-900">{inspection.product?.name || `Product #${inspection.product_id}`}</span>
+                </div>
+                {inspection.batch_id && (
+                  <div className="py-2.5 flex justify-between">
+                    <span className="text-slate-500">Batch ID:</span>
+                    <span className="font-mono text-slate-800">Batch #{inspection.batch_id}</span>
+                  </div>
+                )}
+                <div className="py-2.5 flex justify-between">
+                  <span className="text-slate-500">Operator ID:</span>
+                  <span className="font-mono text-slate-800">User #{inspection.operator_id || 1}</span>
+                </div>
+                <div className="py-2.5 flex justify-between">
+                  <span className="text-slate-500">Quality Decision:</span>
+                  <span className={`font-bold ${finalDecision === 'PASS' ? 'text-emerald-600' : 'text-rose-600'}`}>
+                    {finalDecision}
                   </span>
                 </div>
               </div>
-              
-              <div>
-                <p className="text-xs text-slate-500 font-bold uppercase tracking-wide">HUMAN REVIEW DECISION</p>
-                <div className="mt-1">
-                  {inspection.human_decision ? (
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${
-                      inspection.human_decision === 'PASS' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
-                      inspection.human_decision === 'FAIL' ? 'bg-red-100 text-red-800 border-red-200' :
-                      inspection.human_decision === 'REVIEW' ? 'bg-amber-100 text-amber-800 border-amber-200' :
-                      inspection.human_decision === 'REWORK' ? 'bg-blue-100 text-blue-800 border-blue-200' :
-                      'bg-slate-100 text-slate-800 border-slate-200'
-                    }`}>
-                      {inspection.human_decision}
-                    </span>
-                  ) : (
-                    <span className="text-sm font-semibold text-slate-400">Not manually overridden</span>
-                  )}
-                </div>
-              </div>
+            </div>
 
-              <div>
-                <p className="text-xs text-slate-500 font-bold uppercase tracking-wide">FINAL QUALITY DECISION</p>
-                <div className="mt-1">
-                  <span className={`inline-flex px-3 py-1.5 rounded-full text-sm font-black border ${
-                    inspection.final_decision === 'PASS' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' :
-                    inspection.final_decision === 'FAIL' ? 'bg-red-100 text-red-800 border-red-300' :
-                    inspection.final_decision === 'REVIEW' ? 'bg-amber-100 text-amber-800 border-amber-300' :
-                    inspection.final_decision === 'REWORK' ? 'bg-blue-100 text-blue-800 border-blue-300' :
-                    'bg-slate-100 text-slate-800 border-slate-300'
-                  }`}>
-                    {inspection.final_decision || 'N/A'}
-                  </span>
-                </div>
-              </div>
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+              <h2 className="text-base font-bold text-slate-800 mb-4 flex items-center justify-between">
+                <span>Defect Breakdown</span>
+                <span className="text-xs font-semibold px-2 py-0.5 bg-slate-100 rounded-full text-slate-700">
+                  {normalizedDetections.length} Total
+                </span>
+              </h2>
 
-              {inspection.override_reason && (
-                <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900 italic">
-                  <strong>Override Justification:</strong> &quot;{inspection.override_reason}&quot;
+              {normalizedDetections.length === 0 ? (
+                <div className="text-center py-6 text-slate-500">
+                  <CheckCircle2 size={32} className="text-emerald-500 mx-auto mb-2" />
+                  <p className="font-semibold text-sm text-slate-700">Clean Part (No Defects)</p>
+                  <p className="text-xs text-slate-400">Surface verified defect-free by optical inspection.</p>
+                </div>
+              ) : (
+                <div className="space-y-2.5 max-h-[320px] overflow-y-auto">
+                  {normalizedDetections.map((defect: any, idx: number) => (
+                    <div
+                      key={idx}
+                      onClick={() => setActiveDefect(defect)}
+                      className={`p-3 rounded-lg border transition-all cursor-pointer ${
+                        activeDefect === defect
+                          ? 'border-blue-500 bg-blue-50/50'
+                          : 'border-slate-200 hover:border-slate-300 bg-white'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start">
+                        <p className="font-bold text-slate-800 text-sm">{formatDefectType(defect.type)}</p>
+                        <span className="text-xs font-mono font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-100">
+                          {defect.conf.toFixed(1)}% conf
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-400 mt-1 font-mono">
+                        Box: [{defect.x1.toFixed(0)}, {defect.y1.toFixed(0)}, {defect.x2.toFixed(0)}, {defect.y2.toFixed(0)}]
+                      </p>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
           </div>
+        </div>
 
-          {inspection.quality_assessment && (
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-              <h2 className="font-bold text-slate-800 text-lg mb-4 border-b pb-2">Quality Assessment</h2>
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between"><span className="text-slate-500">Overall result</span><span className="font-bold">{inspection.quality_assessment.overall_result}</span></div>
-                <div className="flex justify-between"><span className="text-slate-500">Quality risk</span><span className="font-bold">{inspection.quality_assessment.quality_risk}</span></div>
-                <div className="flex justify-between"><span className="text-slate-500">Highest severity</span><span className="font-bold">{inspection.quality_assessment.highest_severity}</span></div>
-                <div className="flex justify-between"><span className="text-slate-500">Detected defects</span><span className="font-bold">{inspection.quality_assessment.defect_count}</span></div>
-                <p className="border-t pt-3 text-slate-700">{inspection.quality_assessment.recommended_action}</p>
-                {inspection.quality_assessment.manual_review_required && (
-                  <p className="flex gap-2 rounded-lg bg-amber-50 p-2 font-medium text-amber-800"><AlertTriangle size={16} />Manual review required: one or more detections are below 70% confidence.</p>
-                )}
+        {/* Manual Override Modal */}
+        {showOverride && (
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fadeIn">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-md border border-slate-100 overflow-hidden transform transition-all">
+              <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50/50">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+                    <RotateCcw size={20} />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-slate-900">Manual Quality Override</h2>
+                    <p className="text-xs text-slate-500">Record supervisory decision override</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowOverride(false)}
+                  disabled={submittingOverride}
+                  className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors disabled:opacity-50 cursor-pointer"
+                >
+                  <X size={18} />
+                </button>
               </div>
-            </div>
-          )}
 
-          {inspection.bounding_boxes && inspection.bounding_boxes.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-              <h2 className="font-bold text-slate-800 text-lg mb-4 border-b pb-2">Defect Classification</h2>
-              <div className="space-y-3 text-sm">
-                {inspection.bounding_boxes.map((box, index) => (
-                  <div key={`${box.label}-${index}`} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex flex-col">
-                        <span className="font-bold text-slate-800">{box.defect_display_name || formatDefectType(box.defect_type || box.label)}</span>
-                        {box.product_category && (
-                          <span className="text-xs text-slate-500">Product: {box.product_category}</span>
-                        )}
-                      </div>
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${
-                        box.assessment?.severity_level === 'CRITICAL' ? 'bg-red-100 text-red-700' :
-                        box.assessment?.severity_level === 'HIGH' ? 'bg-orange-100 text-orange-700' :
-                        box.assessment?.severity_level === 'MEDIUM' ? 'bg-amber-100 text-amber-700' :
-                        'bg-emerald-100 text-emerald-700'
-                      }`}>
-                        {box.assessment?.severity_level || 'LOW'}
-                      </span>
-                    </div>
-                    <div className="mt-2 grid grid-cols-2 gap-2 text-slate-600">
-                      <span>Det. Conf: {(box.detection_confidence || box.conf).toFixed(1)}%</span>
-                      <span>Cls. Conf: {box.classification_confidence ? box.classification_confidence.toFixed(1) + '%' : 'N/A'}</span>
-                      <span>Risk: {box.assessment?.quality_risk || 'Low risk'}</span>
-                      <span>Decision: {box.assessment?.quality_decision || 'REVIEW'}</span>
-                      <span>Area: {box.area.toFixed(0)} px²</span>
+              <form onSubmit={handleOverrideSubmit} className="p-6 space-y-4">
+                {overrideError && (
+                  <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs flex items-start gap-2.5">
+                    <AlertTriangle size={16} className="text-rose-600 shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="font-semibold">Override Failed</p>
+                      <p className="mt-0.5">{overrideError}</p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
+                )}
 
-          {inspection.image_quality && (
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-              <h2 className="font-bold text-slate-800 text-lg mb-4 border-b pb-2">Image Quality</h2>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between"><span className="text-slate-500">Status</span><span className="font-bold">{inspection.image_quality.status}</span></div>
-                <div className="flex justify-between"><span className="text-slate-500">Dimensions</span><span>{inspection.image_quality.width} × {inspection.image_quality.height}</span></div>
-                <div className="flex justify-between"><span className="text-slate-500">Brightness</span><span>{inspection.image_quality.brightness.toFixed(1)}</span></div>
-                <div className="flex justify-between"><span className="text-slate-500">Contrast</span><span>{inspection.image_quality.contrast.toFixed(1)}</span></div>
-                <div className="flex justify-between"><span className="text-slate-500">Sharpness</span><span>{inspection.image_quality.sharpness.toFixed(1)}</span></div>
-                {inspection.image_quality.warning && <p className="mt-3 rounded-lg bg-amber-50 p-2 text-amber-800">{inspection.image_quality.warning}</p>}
-              </div>
-            </div>
-          )}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    New Decision <span className="text-rose-500">*</span>
+                  </label>
+                  <select
+                    id="override-decision-select"
+                    value={overrideDecision}
+                    onChange={(e) => setOverrideDecision(e.target.value)}
+                    disabled={submittingOverride}
+                    className="w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 transition-all bg-white"
+                  >
+                    <option value="PASS">PASS (Accept Component)</option>
+                    <option value="FAIL">FAIL (Reject Component)</option>
+                    <option value="REVIEW">REVIEW (Pending Senior Inspection)</option>
+                    <option value="REWORK">REWORK (Send to Rework Station)</option>
+                  </select>
+                </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-            <h2 className="font-bold text-slate-800 text-lg mb-4 border-b pb-2">Severity Analysis</h2>
-            
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <p className="text-3xl font-black text-slate-800">
-                  {inspection.severity_score?.toFixed(1) || '0.0'}
-                </p>
-                <p className="text-sm text-slate-500 font-semibold uppercase">{inspection.severity_level || 'UNKNOWN'}</p>
-              </div>
-              <div className={`p-4 rounded-full ${
-                inspection.severity_score && inspection.severity_score > 70 ? 'bg-red-100 text-red-600' : 
-                inspection.severity_score && inspection.severity_score > 30 ? 'bg-amber-100 text-amber-600' : 
-                'bg-emerald-100 text-emerald-600'
-              }`}>
-                <ShieldAlert size={32} />
-              </div>
-            </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Override Justification <span className="text-rose-500">*</span>
+                  </label>
+                  <textarea
+                    id="override-reason-input"
+                    value={overrideReason}
+                    onChange={(e) => {
+                      setOverrideReason(e.target.value);
+                      if (overrideError) setOverrideError(null);
+                    }}
+                    disabled={submittingOverride}
+                    rows={3}
+                    required
+                    placeholder="Describe engineering rationale or secondary measurement..."
+                    className="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 transition-all resize-none"
+                  />
+                </div>
 
-            {inspection.severity_components && (
-              <div className="space-y-3">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="font-medium text-slate-600 flex items-center gap-2"><Layers size={16}/> Size</span>
-                  <span className="font-bold">{inspection.severity_components.size.toFixed(1)}</span>
+                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={() => setShowOverride(false)}
+                    disabled={submittingOverride}
+                    className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submittingOverride}
+                    className="px-5 py-2 text-sm font-semibold bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors shadow-sm disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                  >
+                    {submittingOverride ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        Saving Override...
+                      </>
+                    ) : (
+                      'Save Override'
+                    )}
+                  </button>
                 </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="font-medium text-slate-600 flex items-center gap-2"><Zap size={16}/> Confidence</span>
-                  <span className="font-bold">{inspection.severity_components.confidence.toFixed(1)}</span>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="font-medium text-slate-600 flex items-center gap-2"><AlertTriangle size={16}/> Type</span>
-                  <span className="font-bold">{inspection.severity_components.type.toFixed(1)}</span>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="font-medium text-slate-600 flex items-center gap-2"><RefreshCcw size={16}/> Location</span>
-                  <span className="font-bold">{inspection.severity_components.location.toFixed(1)}</span>
-                </div>
-              </div>
-            )}
+              </form>
+            </div>
           </div>
-        </div>
+        )}
       </div>
-
-      <div className="mt-6 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <h2 className="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2"><ClipboardList size={20} />Detected Defects</h2>
-        {inspection.bounding_boxes?.length ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="border-b text-slate-500"><tr><th className="pb-2">Defect Type</th><th className="pb-2">Product</th><th className="pb-2">Confidence</th><th className="pb-2">Size</th><th className="pb-2">Severity</th><th className="pb-2">Risk</th><th className="pb-2">Decision</th><th className="pb-2">Recommended Action</th></tr></thead>
-              <tbody>{inspection.bounding_boxes.map((defect, index) => <tr key={index} className="border-b last:border-0"><td className="py-3 font-semibold">{defect.defect_display_name || formatDefectType(defect.defect_type || defect.label)}</td><td className="py-3">{defect.product_category || 'N/A'}</td><td className="py-3">{defect.classification_confidence ? defect.classification_confidence.toFixed(1) : defect.conf.toFixed(1)}%</td><td className="py-3">{defect.area.toFixed(0)} px2</td><td className="py-3">{defect.assessment ? `${defect.assessment.severity_score.toFixed(1)} ${defect.assessment.severity_level}` : 'N/A'}</td><td className="py-3">{defect.assessment?.quality_risk || 'N/A'}</td><td className="py-3">{defect.assessment?.quality_decision || 'N/A'}</td><td className="py-3 text-slate-600">{defect.assessment?.recommended_action || 'N/A'}</td></tr>)}</tbody>
-            </table>
-          </div>
-        ) : <p className="text-slate-500">No defects detected. Product is acceptable.</p>}
-      </div>
-
-      {showOverride && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg">
-            <h2 className="text-xl font-bold text-slate-800 mb-4">Manual Override</h2>
-            <p className="text-slate-600 mb-6">Override the AI&apos;s decision for this inspection. This action will be logged in the audit trail.</p>
-            
-            <form onSubmit={handleSubmit(onOverrideSubmit)} className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold mb-2">Final Quality Decision</label>
-                <div className="grid grid-cols-2 gap-3">
-                  <label className="border border-emerald-200 bg-emerald-50/50 rounded-lg p-3 cursor-pointer hover:bg-emerald-50 flex items-center gap-2">
-                    <input type="radio" value="PASS" {...register("final_decision", { required: true })} className="w-4 h-4 text-emerald-600" />
-                    <div>
-                      <span className="font-bold text-emerald-700 block text-sm">PASS</span>
-                      <span className="text-[11px] text-emerald-600">Meets acceptance</span>
-                    </div>
-                  </label>
-                  <label className="border border-red-200 bg-red-50/50 rounded-lg p-3 cursor-pointer hover:bg-red-50 flex items-center gap-2">
-                    <input type="radio" value="FAIL" {...register("final_decision", { required: true })} className="w-4 h-4 text-red-600" />
-                    <div>
-                      <span className="font-bold text-red-700 block text-sm">FAIL</span>
-                      <span className="text-[11px] text-red-600">Reject product</span>
-                    </div>
-                  </label>
-                  <label className="border border-amber-200 bg-amber-50/50 rounded-lg p-3 cursor-pointer hover:bg-amber-50 flex items-center gap-2">
-                    <input type="radio" value="REVIEW" {...register("final_decision", { required: true })} className="w-4 h-4 text-amber-600" />
-                    <div>
-                      <span className="font-bold text-amber-700 block text-sm">REVIEW</span>
-                      <span className="text-[11px] text-amber-600">Secondary check</span>
-                    </div>
-                  </label>
-                  <label className="border border-blue-200 bg-blue-50/50 rounded-lg p-3 cursor-pointer hover:bg-blue-50 flex items-center gap-2">
-                    <input type="radio" value="REWORK" {...register("final_decision", { required: true })} className="w-4 h-4 text-blue-600" />
-                    <div>
-                      <span className="font-bold text-blue-700 block text-sm">REWORK</span>
-                      <span className="text-[11px] text-blue-600">Repair & re-inspect</span>
-                    </div>
-                  </label>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold mb-2">Override Reason (Required)</label>
-                <textarea 
-                  {...register("override_reason", { required: true, minLength: 5 })}
-                  className="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none min-h-[100px]"
-                  placeholder="e.g. Defect is within acceptable tolerance threshold..."
-                ></textarea>
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-                <button 
-                  type="button" 
-                  onClick={() => setShowOverride(false)}
-                  className="px-4 py-2 font-semibold text-slate-600 hover:bg-slate-100 rounded-lg"
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  disabled={submitting}
-                  className="px-6 py-2 font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-70"
-                >
-                  {submitting ? 'Saving...' : 'Confirm Override'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </DashboardLayout>
   );
 }

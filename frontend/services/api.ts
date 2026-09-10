@@ -30,7 +30,7 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 60000,
+  timeout: 120000,
 });
 
 // Add a request interceptor to attach the JWT token, normalize URLs, and handle FormData
