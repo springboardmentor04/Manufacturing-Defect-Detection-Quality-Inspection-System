@@ -33,7 +33,7 @@ export const api = axios.create({
   timeout: 30000,
 });
 
-// Add a request interceptor to attach the JWT token and normalize URLs
+// Add a request interceptor to attach the JWT token, normalize URLs, and handle FormData
 api.interceptors.request.use(
   (config) => {
     // Prevent duplicate /api/api prefixes if URL already has /api
@@ -43,6 +43,11 @@ api.interceptors.request.use(
       } else if (config.url === '/api') {
         config.url = '/';
       }
+    }
+
+    // When sending FormData (e.g. image uploads), delete Content-Type so the browser adds boundary
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
     }
 
     if (typeof window !== 'undefined') {
@@ -58,15 +63,19 @@ api.interceptors.request.use(
   }
 );
 
-// Add a response interceptor to handle 401s
+// Add a response interceptor to handle 401s without disrupting auth pages
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
+        // Only redirect to login if not already on /login or /register
+        const pathname = window.location.pathname;
+        if (!pathname.startsWith('/login') && !pathname.startsWith('/register')) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
+        }
       }
     }
     return Promise.reject(error);

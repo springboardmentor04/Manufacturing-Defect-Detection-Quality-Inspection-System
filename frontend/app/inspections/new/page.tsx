@@ -111,9 +111,10 @@ export default function NewInspectionPage() {
       // Redirect to the results page
       router.push(`/inspections/${inspection.id}`);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert('Inspection failed. See console for details.');
+      const detail = error.response?.data?.detail || error.message || 'Inspection failed. Please check backend connection.';
+      alert(`Inspection failed: ${typeof detail === 'string' ? detail : JSON.stringify(detail)}`);
       setIsProcessing(false);
     }
   };

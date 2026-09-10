@@ -20,11 +20,7 @@ export const inspectionsService = {
     }
     formData.append('file', file);
 
-    const response = await api.post('/inspections/run', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await api.post('/inspections/run', formData);
     return response.data as Inspection;
   },
 

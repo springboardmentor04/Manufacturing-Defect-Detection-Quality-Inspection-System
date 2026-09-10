@@ -97,9 +97,9 @@ export default function AnalyticsPage() {
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
           <ChartCard title="Quality Decisions Breakdown Over Time">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={stats.trends}>
+              <BarChart data={stats.trends || []}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false}/>
-                <XAxis dataKey="date" tickFormatter={(v) => v.slice(5)}/>
+                <XAxis dataKey="date" tickFormatter={(v) => v ? v.slice(5) : ''}/>
                 <YAxis allowDecimals={false}/>
                 <Tooltip/>
                 <Legend/>
@@ -112,9 +112,9 @@ export default function AnalyticsPage() {
           </ChartCard>
           <ChartCard title="Inspection Volume and Defect Rate">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={stats.trends}>
+              <LineChart data={stats.trends || []}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false}/>
-                <XAxis dataKey="date" tickFormatter={(v) => v.slice(5)}/>
+                <XAxis dataKey="date" tickFormatter={(v) => v ? v.slice(5) : ''}/>
                 <YAxis yAxisId="left" allowDecimals={false}/>
                 <YAxis yAxisId="right" orientation="right" unit="%"/>
                 <Tooltip/>
@@ -126,7 +126,7 @@ export default function AnalyticsPage() {
           </ChartCard>
           <ChartCard title="Defects by Category">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={stats.defects_by_category.map(item => ({ ...item, displayName: formatDefectType(item.name) }))} layout="vertical" margin={{ left: 30 }}>
+              <BarChart data={(stats.defects_by_category || []).map(item => ({ ...item, displayName: formatDefectType(item.name) }))} layout="vertical" margin={{ left: 30 }}>
                 <CartesianGrid strokeDasharray="3 3" horizontal={false}/>
                 <XAxis type="number" allowDecimals={false}/>
                 <YAxis type="category" dataKey="displayName" width={110}/>
@@ -138,8 +138,8 @@ export default function AnalyticsPage() {
           <ChartCard title="Defects by Severity">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={stats.defects_by_severity} dataKey="value" nameKey="name" outerRadius={90} label>
-                  {stats.defects_by_severity.map((entry: ChartItem, index: number) => <Cell key={entry.name} fill={COLORS[index % COLORS.length]}/>)}
+                <Pie data={stats.defects_by_severity || []} dataKey="value" nameKey="name" outerRadius={90} label>
+                  {(stats.defects_by_severity || []).map((entry: ChartItem, index: number) => <Cell key={entry.name} fill={COLORS[index % COLORS.length]}/>)}
                 </Pie>
                 <Tooltip/>
                 <Legend/>
@@ -151,21 +151,21 @@ export default function AnalyticsPage() {
           <div className="border border-slate-200 bg-white p-5 shadow-sm rounded-lg">
             <h2 className="mb-3 flex items-center gap-2 font-bold text-slate-800"><BarChart3 size={20}/>Operational Quality Insights</h2>
             <div className="space-y-3 text-sm">
-              <p><span className="font-semibold">Defect trend direction:</span> <span className="capitalize font-bold text-slate-900">{stats.trend_direction}</span></p>
+              <p><span className="font-semibold">Defect trend direction:</span> <span className="capitalize font-bold text-slate-900">{stats.trend_direction || 'stable'}</span></p>
               <p><span className="font-semibold">Average severity score:</span> <span className="font-bold text-slate-900">{Number(stats.average_severity || 0).toFixed(1)} / 100</span></p>
               <p><span className="font-semibold">PASS Rate:</span> <span className="font-bold text-emerald-700">{Number(stats.pass_rate || 0).toFixed(1)}%</span></p>
               <p><span className="font-semibold">FAIL Rate:</span> <span className="font-bold text-red-700">{Number(stats.fail_rate || 0).toFixed(1)}%</span></p>
               <p><span className="font-semibold">REVIEW Rate:</span> <span className="font-bold text-amber-700">{Number(stats.review_rate || 0).toFixed(1)}%</span></p>
               <p><span className="font-semibold">REWORK Rate:</span> <span className="font-bold text-blue-700">{Number(stats.rework_rate || 0).toFixed(1)}%</span></p>
-              <p><span className="font-semibold">Top recurring defect:</span> <span className="font-bold text-slate-900">{stats.defects_by_category[0]?.name ? formatDefectType(stats.defects_by_category[0].name) : 'None'}</span></p>
+              <p><span className="font-semibold">Top recurring defect:</span> <span className="font-bold text-slate-900">{stats.defects_by_category?.[0]?.name ? formatDefectType(stats.defects_by_category[0].name) : 'None'}</span></p>
             </div>
           </div>
           <div className="border border-slate-200 bg-white p-5 shadow-sm rounded-lg">
             <h2 className="mb-3 flex items-center gap-2 font-bold text-slate-800"><ShieldAlert size={20}/>Recommended Quality Actions</h2>
             <ul className="space-y-2 text-sm text-slate-700">
-              {stats.recommended_actions.map((action: string) => <li key={action} className="border-l-2 border-blue-500 pl-3">{action}</li>)}
+              {(stats.recommended_actions || []).map((action: string) => <li key={action} className="border-l-2 border-blue-500 pl-3">{action}</li>)}
             </ul>
-            {stats.major_quality_issues.length > 0 && <div className="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-800">{stats.major_quality_issues.join(' ')}</div>}
+            {stats.major_quality_issues && stats.major_quality_issues.length > 0 && <div className="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-800">{stats.major_quality_issues.join(' ')}</div>}
           </div>
         </div>
       </div>}

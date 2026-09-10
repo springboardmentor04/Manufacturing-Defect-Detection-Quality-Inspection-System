@@ -89,9 +89,10 @@ export default function DashboardPage() {
       const inspection = await inspectionsService.createAndRun(selectedProduct, null, selectedFile);
       setUploadMessage(`Inspection #${inspection.id} completed with ${inspection.final_decision || inspection.ai_decision || 'status'} .`);
       await loadData();
-    } catch (uploadError) {
+    } catch (uploadError: any) {
       console.error('Inspection run failed', uploadError);
-      setUploadMessage('Inspection failed. Check backend logs and the uploaded image.');
+      const detail = uploadError.response?.data?.detail || uploadError.message || 'Inspection failed. Check backend connection.';
+      setUploadMessage(`Inspection failed: ${typeof detail === 'string' ? detail : JSON.stringify(detail)}`);
     } finally {
       setIsUploading(false);
     }
