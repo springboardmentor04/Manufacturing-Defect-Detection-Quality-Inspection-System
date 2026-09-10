@@ -1,3 +1,31 @@
+import os
+
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+os.environ["YOLO_VERBOSE"] = "False"
+os.environ["ULTRALYTICS_AUTOINSTALL"] = "0"
+
+import cv2
+try:
+    cv2.setNumThreads(1)
+    cv2.ocl.setUseOpenCL(False)
+except Exception:
+    pass
+
+try:
+    import torch
+    torch.set_num_threads(1)
+    if hasattr(torch, "set_num_interop_threads"):
+        try:
+            torch.set_num_interop_threads(1)
+        except Exception:
+            pass
+except Exception:
+    pass
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api import auth, products, batches, inspections, analytics, models, reports
@@ -6,7 +34,6 @@ from app.models.all_models import Base
 
 from fastapi.staticfiles import StaticFiles
 
-import os
 from app.core.config import settings
 
 app = FastAPI(title="VISIONINSPECT AI", version="1.0.0")
