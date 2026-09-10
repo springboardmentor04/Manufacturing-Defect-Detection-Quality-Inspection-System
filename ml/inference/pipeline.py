@@ -1,9 +1,22 @@
 import time
 import os
+import gc
+from contextlib import nullcontext
 import cv2
 from ml.quality.assessment_engine import assess_defect, assess_inspection
 from ml.inference.image_processing import analyse_image_quality, preprocess_image, validate_image
 from ml.inference.class_resolution import describe_model_classes, resolve_detection_class, resolve_class_name
+
+try:
+    import torch
+    torch.set_num_threads(1)
+    if hasattr(torch, "set_num_interop_threads"):
+        try:
+            torch.set_num_interop_threads(1)
+        except Exception:
+            pass
+except Exception:
+    torch = None
 
 
 def resolve_model_path(explicit_path: str | None = None) -> str | None:
@@ -138,8 +151,14 @@ class InferencePipeline:
         
         # 3. Defect Detection & Classification
         raw_defects = []
+        infer_ctx = torch.inference_mode() if torch is not None else nullcontext()
         if self.model is not None:
-            results = self.model(image_path, conf=self.confidence_threshold, verbose=False)[0]
+            try:
+                with infer_ctx:
+                    results = self.model(image_path, conf=self.confidence_threshold, imgsz=min(max(image_dims), 640), verbose=False)[0]
+            except TypeError:
+                with infer_ctx:
+                    results = self.model(image_path, conf=self.confidence_threshold, verbose=False)[0]
             boxes = results.boxes if results.boxes is not None else []
             
             orig_img = None
@@ -186,7 +205,8 @@ class InferencePipeline:
                     
                     if cx2 > cx1 and cy2 > cy1:
                         crop = orig_img[cy1:cy2, cx1:cx2]
-                        cls_results = self.classifier_model(crop, verbose=False)[0]
+                        with infer_ctx:
+                            cls_results = self.classifier_model(crop, verbose=False)[0]
                         clean_product = product_name.strip().lower() if product_name else None
                         
                         top1_idx = cls_results.probs.top1
@@ -285,6 +305,7 @@ class InferencePipeline:
                 )
                 message = f"{message} {note}" if message else note
 
+        gc.collect()
         return {
             "status": "defective" if len(final_defects) > 0 else "normal",
             "defects": final_defects,

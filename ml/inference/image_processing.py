@@ -64,11 +64,14 @@ def preprocess_image(image: np.ndarray, output_path: str) -> str:
     scale = min(1.0, max_side / max(width, height))
     if scale < 1.0:
         image = cv2.resize(image, (round(width * scale), round(height * scale)), interpolation=cv2.INTER_AREA)
-    denoised = cv2.fastNlMeansDenoisingColored(image, None, 3, 3, 7, 21)
+    # Lightweight bilateral filter for efficient edge-preserving denoising in production
+    denoised = cv2.bilateralFilter(image, d=5, sigmaColor=50, sigmaSpace=50)
     lab = cv2.cvtColor(denoised, cv2.COLOR_BGR2LAB)
     l, a, b = cv2.split(lab)
     enhanced = cv2.cvtColor(cv2.merge((cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8)).apply(l), a, b)), cv2.COLOR_LAB2BGR)
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    out_dir = os.path.dirname(os.path.abspath(output_path))
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
     if not cv2.imwrite(output_path, enhanced):
         raise RuntimeError("Unable to create the processed inspection image.")
     return output_path
