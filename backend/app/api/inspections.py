@@ -20,6 +20,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../.
 from ml.inference.pipeline import pipeline
 from ml.inference.image_processing import ImageValidationError
 from ml.quality.assessment_engine import category_label
+from starlette.concurrency import run_in_threadpool
 
 router = APIRouter()
 
@@ -262,10 +263,16 @@ async def create_and_run_inspection(
     db.add(img)
     db.commit()
     
-    # 3. Run prediction
+    # 3. Run prediction in threadpool so asyncio event loop remains responsive
     processed_path = os.path.join(settings.UPLOAD_DIR, f"{os.path.splitext(filename)[0]}_processed.jpg")
     try:
-        results = pipeline.inspect_image(filepath, processed_path, product_name=product_name, filename=file.filename)
+        results = await run_in_threadpool(
+            pipeline.inspect_image,
+            filepath,
+            processed_image_path=processed_path,
+            product_name=product_name,
+            filename=file.filename
+        )
     except ImageValidationError as error:
         os.remove(filepath)
         db.delete(img)
@@ -274,7 +281,12 @@ async def create_and_run_inspection(
         raise HTTPException(status_code=400, detail=str(error))
     except Exception:
         try:
-            results = pipeline.inspect_image(filepath, processed_path, product_name=product_name)
+            results = await run_in_threadpool(
+                pipeline.inspect_image,
+                filepath,
+                processed_image_path=processed_path,
+                product_name=product_name
+            )
         except Exception as error:
             # A failed inference must not persist as a (fake) successful inspection.
             for leftover in (filepath, processed_path):
