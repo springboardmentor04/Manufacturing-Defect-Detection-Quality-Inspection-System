@@ -1,0 +1,3083 @@
+/* ==========================================================================
+   VisionInspect AI - Comprehensive Signature Dark Theme
+   
+   Design Identity & Theme Philosophy:
+   - Base Canvas: Deep Charcoal Spruce (#0c1315 / #0e1618)
+   - Sidebars: Midnight Deep Teal (#081012)
+   - Primary Cards & Panels: Elevated Slate-Spruce (#141f22)
+   - Secondary Containers & Toolbars: Deep Spruce (#10181b / #121c20)
+   - Primary Brand Accent: Signature Vibrant Teal / Emerald (#14b8a6 / #2dd4bf)
+   - Secondary Brand Accent: Warm Gold / Amber (#f3c367 / #fbbf24)
+   - Status Badges: Passed (#4ade80), Failed (#f87171), Warning (#fbbf24)
+   - Typography: Headers (#ffffff), Body (#dceae7), Muted (#8da39f)
+   
+   STRICT ISOLATION: Scoped ONLY to Dashboards & Dashboard Modals.
+   Landing and Login pages remain 100% untouched in their original light theme.
+   ========================================================================== */
+
+/* ──────────────────────────────────────────────────────────────────────────
+   0. Explicit Protection for Landing & Login Pages
+   ────────────────────────────────────────────────────────────────────────── */
+html.dark .vi-landing,
+html.dark .vi-landing *,
+html.dark .vi-auth,
+html.dark .vi-auth *,
+html.dark .vi-auth-main,
+html.dark .vi-auth-panel,
+html.dark .vi-auth-wrap,
+html.dark .landing-page,
+html.dark .login-page {
+  color-scheme: light !important;
+}
+
+html.dark .vi-auth-panel h2,
+html.dark .vi-auth-panel #login-auth-title,
+html.dark .vi-auth-panel #signup-auth-title {
+  color: #123e42 !important;
+}
+
+html.dark .vi-auth-sub {
+  color: #55726e !important;
+}
+
+html.dark .vi-eyebrow {
+  color: #27837f !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   1. Dashboard Canvas & Main Layout Backgrounds
+   ────────────────────────────────────────────────────────────────────────── */
+html.dark,
+html.dark body,
+html.dark * {
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: optimizeLegibility !important;
+}
+
+html.dark .qe-app,
+html.dark .fs-app,
+html.dark .qe-main,
+html.dark .fs-main,
+html.dark .qe-content,
+html.dark .fs-content,
+html.dark .fs-stage,
+html.dark .qe-overview-layout,
+html.dark .fs-overview-layout,
+html.dark .qe-details-layout,
+html.dark .qe-reports-layout,
+html.dark .qe-history-layout {
+  background: #0c1315 !important;
+  background-color: #0c1315 !important;
+  color: #dceae7 !important;
+}
+
+/* Custom Sleek Dark Scrollbars */
+html.dark ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+html.dark ::-webkit-scrollbar-track {
+  background: #0c1315;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #1f2f33;
+  border-radius: 4px;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #2dd4bf;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   2. Sidebars & Navigation (IMAGE 5 FIX: Remove thin underline under brand)
+   ────────────────────────────────────────────────────────────────────────── */
+html.dark .qe-side,
+html.dark .fs-side {
+  background: #081012 !important;
+  background-color: #081012 !important;
+  border-right: 1px solid rgba(45, 212, 191, 0.12) !important;
+}
+
+/* Remove thin underline below logo brand in sidebar (Image 5 Fix) */
+html.dark .qe-side-top,
+html.dark .fs-side-top,
+html.dark .qe-side-brand,
+html.dark .fs-side-brand {
+  border-bottom: none !important;
+  border-bottom-width: 0 !important;
+  border-bottom-color: transparent !important;
+}
+
+html.dark .qe-side-toggle,
+html.dark .fs-side-toggle {
+  color: #8da39f !important;
+  background: #10181b !important;
+  border: 1px solid #1c2b2e !important;
+}
+
+html.dark .qe-side-toggle:hover,
+html.dark .fs-side-toggle:hover {
+  color: #2dd4bf !important;
+  background: #162428 !important;
+  border-color: #2dd4bf !important;
+}
+
+html.dark .qe-nav button,
+html.dark .fs-nav button {
+  color: #8da39f !important;
+  background: transparent !important;
+}
+
+html.dark .qe-nav button:hover,
+html.dark .fs-nav button:hover {
+  color: #ffffff !important;
+  background: rgba(20, 184, 166, 0.1) !important;
+}
+
+html.dark .qe-nav button.active,
+html.dark .fs-nav button.active {
+  color: #2dd4bf !important;
+  background: rgba(20, 184, 166, 0.16) !important;
+  border: 1px solid rgba(20, 184, 166, 0.32) !important;
+}
+
+html.dark .qe-side-ann-btn,
+html.dark .fs-side-announcement-btn,
+html.dark .qe-side-announcement-btn {
+  color: #aecac6 !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+}
+
+html.dark .qe-side-ann-btn:hover,
+html.dark .fs-side-announcement-btn:hover,
+html.dark .qe-side-announcement-btn:hover {
+  color: #ffffff !important;
+  background: rgba(20, 184, 166, 0.1) !important;
+  border-color: transparent !important;
+}
+
+html.dark .qe-side-profile,
+html.dark .fs-side-profile {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+  color: #dceae7 !important;
+}
+
+html.dark .qe-side.expanded .qe-side-profile:hover,
+html.dark .fs-side.expanded .fs-side-profile:hover,
+html.dark .qe-side-profile:hover,
+html.dark .fs-side-profile:hover {
+  background: rgba(20, 184, 166, 0.1) !important;
+  border-color: transparent !important;
+}
+
+html.dark .qe-side-profile>span,
+html.dark .fs-side-profile>span {
+  background: rgba(45, 212, 191, 0.12) !important;
+  border: 1px solid rgba(45, 212, 191, 0.22) !important;
+  color: #2dd4bf !important;
+}
+
+html.dark .qe-side-profile b,
+html.dark .fs-side-profile b {
+  color: #ffffff !important;
+}
+
+html.dark .qe-side-profile small,
+html.dark .fs-side-profile small {
+  color: #8da39f !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   3. Top Header Bar & Action Buttons
+   ────────────────────────────────────────────────────────────────────────── */
+html.dark .qe-head,
+html.dark .fs-head,
+html.dark .qe-header,
+html.dark .fs-header {
+  background: #0c1315 !important;
+  background-color: #0c1315 !important;
+  border-bottom: 1px solid rgba(45, 212, 191, 0.1) !important;
+  color: #dceae7 !important;
+}
+
+html.dark .qe-head h1,
+html.dark .fs-head h1,
+html.dark .qe-head-title h1,
+html.dark .fs-head-title h1 {
+  color: #ffffff !important;
+}
+
+html.dark .qe-kicker,
+html.dark .fs-kicker {
+  color: #f3c367 !important;
+}
+
+html.dark .qe-head p,
+html.dark .fs-head p {
+  color: #8da39f !important;
+}
+
+html.dark .qe-head-actions button,
+html.dark .fs-head-actions button,
+html.dark .qe-notif-btn,
+html.dark .fs-notif-btn,
+html.dark .fs-menu {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  border: 1px solid #223236 !important;
+  color: #2dd4bf !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+html.dark .qe-notif-btn:hover,
+html.dark .fs-notif-btn:hover,
+html.dark .fs-menu:hover {
+  background: #1a282d !important;
+  border-color: #2dd4bf !important;
+  color: #ffffff !important;
+}
+
+html.dark .qe-inspected-pill {
+  background: #10181b !important;
+  border: 1px solid #1f2f33 !important;
+  color: #dceae7 !important;
+}
+
+html.dark .qe-inspected-label {
+  color: #8da39f !important;
+}
+
+html.dark .qe-inspected-value {
+  color: #2dd4bf !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   4. Profile Menu Popup (IMAGE 2 FIX: No White Popup)
+   ────────────────────────────────────────────────────────────────────────── */
+html.dark .qe-profile-menu,
+html.dark .fs-profile-menu {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  border: 1px solid #223236 !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+  color: #dceae7 !important;
+}
+
+html.dark .qe-profile-menu-header b,
+html.dark .fs-profile-menu-header b {
+  color: #ffffff !important;
+}
+
+html.dark .qe-profile-menu-header small,
+html.dark .fs-profile-menu-header small,
+html.dark .qe-profile-menu-email,
+html.dark .fs-profile-menu-email {
+  color: #8da39f !important;
+}
+
+html.dark .qe-profile-menu-avatar,
+html.dark .fs-profile-menu-avatar {
+  background: #0a1113 !important;
+  border: 1px solid #1f2f33 !important;
+  color: #2dd4bf !important;
+}
+
+html.dark .qe-profile-menu-divider,
+html.dark .fs-profile-menu-divider {
+  background: #1c2b2e !important;
+  border-color: #1c2b2e !important;
+}
+
+html.dark .qe-profile-menu-item,
+html.dark .fs-profile-menu-item,
+html.dark .qe-profile-menu-toggle-left,
+html.dark .fs-profile-menu-toggle-left {
+  color: #dceae7 !important;
+}
+
+html.dark .qe-profile-menu-item:hover,
+html.dark .fs-profile-menu-item:hover {
+  background: rgba(20, 184, 166, 0.12) !important;
+  color: #ffffff !important;
+}
+
+html.dark .qe-profile-menu-signout,
+html.dark .fs-profile-menu-signout {
+  color: #f87171 !important;
+}
+
+html.dark .qe-profile-menu-signout:hover,
+html.dark .fs-profile-menu-signout:hover {
+  background: rgba(239, 68, 68, 0.14) !important;
+  color: #ef4444 !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   5. Notification Dropdown
+   ────────────────────────────────────────────────────────────────────────── */
+html.dark .qe-notif-dropdown {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  border: 1px solid #223236 !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75) !important;
+}
+
+html.dark .qe-notif-header {
+  background: #10181b !important;
+  background-color: #10181b !important;
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-notif-header b {
+  color: #ffffff !important;
+}
+
+html.dark .qe-notif-header small {
+  color: #8da39f !important;
+}
+
+html.dark .qe-notif-clear-all {
+  background: #172428 !important;
+  border: 1px solid #223236 !important;
+  color: #2dd4bf !important;
+}
+
+html.dark .qe-notif-clear-all:hover {
+  background: #1f363b !important;
+  color: #ffffff !important;
+  border-color: #2dd4bf !important;
+}
+
+html.dark .qe-notif-item {
+  background: #141f22 !important;
+  border-bottom: 1px solid #1a272a !important;
+}
+
+html.dark .qe-notif-item:hover {
+  background: #172428 !important;
+}
+
+html.dark .qe-notif-item-title,
+html.dark .qe-notif-item b {
+  color: #ffffff !important;
+}
+
+html.dark .qe-notif-item-desc,
+html.dark .qe-notif-item small {
+  color: #8da39f !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   6. Clean Filter Selects (No Thin Inner Box)
+   ────────────────────────────────────────────────────────────────────────── */
+html.dark .qe-filter-btn,
+html.dark .qe-result-filter,
+html.dark .qe-detail-batch-select,
+html.dark .qe-detail-date-select,
+html.dark .qe-cam-line-select,
+html.dark .qe-cam-interval-select {
+  background: #10181b !important;
+  background-color: #10181b !important;
+  border: 1px solid #223236 !important;
+  color: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+html.dark .qe-filter-btn:hover,
+html.dark .qe-result-filter:hover,
+html.dark .qe-detail-batch-select:hover,
+html.dark .qe-detail-date-select:hover,
+html.dark .qe-cam-line-select:hover,
+html.dark .qe-cam-interval-select:hover {
+  border-color: rgba(45, 212, 191, 0.4) !important;
+}
+
+html.dark .qe-filter-btn select,
+html.dark .qe-result-filter select,
+html.dark .qe-detail-batch-select select,
+html.dark .qe-detail-date-select select,
+html.dark .qe-cam-line-select select,
+html.dark .qe-cam-interval-select select {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  border-width: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: #ffffff !important;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+html.dark .qe-filter-btn select:focus,
+html.dark .qe-result-filter select:focus,
+html.dark .qe-detail-batch-select select:focus,
+html.dark .qe-detail-date-select select:focus,
+html.dark .qe-cam-line-select select:focus,
+html.dark .qe-cam-interval-select select:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+html.dark .qe-filter-btn svg,
+html.dark .qe-result-filter svg,
+html.dark .qe-detail-batch-select svg,
+html.dark .qe-detail-date-select svg,
+html.dark .qe-cam-line-select svg,
+html.dark .qe-cam-interval-select svg {
+  color: #2dd4bf !important;
+}
+
+html.dark .qe-app option,
+html.dark .fs-app option,
+html.dark .vi-settings-modal option,
+html.dark select option {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  color: #ffffff !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   7. Section Outer Containers (.qe-section)
+   ────────────────────────────────────────────────────────────────────────── */
+html.dark .qe-section,
+html.dark .qe-section-card,
+html.dark .qe-results-section,
+html.dark .qe-upload,
+html.dark .qe-detail-workspace,
+html.dark .qe-card,
+html.dark .fs-card,
+html.dark .qe-hero,
+html.dark .fs-hero,
+html.dark .fs-overview-grid > div,
+html.dark .fs-monitoring-grid > div,
+html.dark .qe-panel,
+html.dark .fs-panel {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  border: 1px solid rgba(45, 212, 191, 0.16) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45) !important;
+  color: #dceae7 !important;
+}
+
+html.dark .qe-section-head h2,
+html.dark .qe-card h2,
+html.dark .fs-card h2,
+html.dark .qe-card h3,
+html.dark .fs-card h3,
+html.dark .qe-hero h2,
+html.dark .fs-hero h2,
+html.dark .qe-history-heading h2 {
+  color: #ffffff !important;
+}
+
+html.dark .qe-section-head h2 em,
+html.dark .qe-hero h2 em {
+  color: #2dd4bf !important;
+}
+
+html.dark .qe-section-head p,
+html.dark .qe-hero p,
+html.dark .fs-hero p,
+html.dark .qe-card p,
+html.dark .fs-card p {
+  color: #8da39f !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   8. Overview KPI Banner & Review Queue
+   ────────────────────────────────────────────────────────────────────────── */
+html.dark .qe-context,
+html.dark .qe-results-context {
+  background: transparent !important;
+  border: none !important;
+}
+
+html.dark .qe-inspection-summary,
+html.dark .qe-summary-total,
+html.dark .qe-summary-passed,
+html.dark .qe-summary-failed,
+html.dark .qe-summary-personal {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  border: 1px solid #1f2f33 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+}
+
+html.dark .qe-summary-total {
+  border-left: 3px solid #2dd4bf !important;
+}
+
+html.dark .qe-summary-passed {
+  border-left: 3px solid #4ade80 !important;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), #141f22) !important;
+}
+
+html.dark .qe-summary-failed {
+  border-left: 3px solid #f87171 !important;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), #141f22) !important;
+}
+
+html.dark .qe-summary-personal {
+  border-left: 3px solid #f3c367 !important;
+}
+
+html.dark .qe-inspection-summary > span {
+  color: #8da39f !important;
+}
+
+html.dark .qe-summary-total > span {
+  color: #2dd4bf !important;
+}
+
+html.dark .qe-summary-passed > span {
+  color: #4ade80 !important;
+}
+
+html.dark .qe-summary-failed > span {
+  color: #f87171 !important;
+}
+
+html.dark .qe-summary-personal > span {
+  color: #f3c367 !important;
+}
+
+html.dark .qe-inspection-summary strong {
+  color: #ffffff !important;
+}
+
+html.dark .qe-inspection-summary p {
+  color: #8da39f !important;
+}
+
+html.dark .qe-personal-metrics .pass-part {
+  color: #4ade80 !important;
+}
+
+html.dark .qe-personal-metrics .fail-part {
+  color: #f87171 !important;
+}
+
+html.dark .qe-queue-bar {
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-queue-bar > span {
+  color: #f3c367 !important;
+}
+
+html.dark .qe-status-segmented-toggle {
+  background: #0a1113 !important;
+  border: 1px solid #1c2b2e !important;
+}
+
+html.dark .qe-status-toggle-btn {
+  color: #8da39f !important;
+  background: transparent !important;
+}
+
+html.dark .qe-status-toggle-btn:hover:not(.active) {
+  color: #ffffff !important;
+  background: rgba(20, 184, 166, 0.1) !important;
+}
+
+html.dark .qe-status-toggle-btn.active {
+  background: #0d9488 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.4) !important;
+}
+
+html.dark .qe-result,
+html.dark .qe-batch-result {
+  background: #141f22 !important;
+  border: 1px solid #1f2f33 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+html.dark .qe-result:hover,
+html.dark .qe-batch-result:hover {
+  border-color: rgba(45, 212, 191, 0.4) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55) !important;
+}
+
+html.dark .qe-result-copy {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  border-top: 1px solid #1a272a !important;
+}
+
+html.dark .qe-result-copy > div:first-child span {
+  color: #8da39f !important;
+}
+
+html.dark .qe-result-copy > div:first-child button {
+  color: #2dd4bf !important;
+  background: transparent !important;
+}
+
+html.dark .qe-result-copy h3 {
+  color: #ffffff !important;
+}
+
+html.dark .qe-result-copy p {
+  color: #8da39f !important;
+}
+
+html.dark .qe-result-copy footer {
+  border-top: 1px solid #1a272a !important;
+}
+
+html.dark .qe-result-copy footer b {
+  color: #2dd4bf !important;
+}
+
+html.dark .qe-three-dots-btn {
+  color: #8da39f !important;
+  background: transparent !important;
+}
+
+html.dark .qe-three-dots-btn:hover {
+  color: #ffffff !important;
+  background: #1a272a !important;
+}
+
+html.dark .qe-batch-dropdown {
+  background: #141f22 !important;
+  border: 1px solid #223236 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+}
+
+html.dark .qe-batch-dropdown button {
+  color: #f87171 !important;
+}
+
+html.dark .qe-batch-dropdown button:hover {
+  background: rgba(239, 68, 68, 0.14) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   9. Defect Details & Inspection Workspace (IMAGE 4 FIX: Tiered Suggestions)
+   ────────────────────────────────────────────────────────────────────────── */
+html.dark .qe-inspection-canvas-card {
+  background: #141f22 !important;
+  border: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-inspection-canvas-head {
+  background: #10181b !important;
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-inspection-canvas-head b {
+  color: #ffffff !important;
+}
+
+html.dark .qe-inspection-canvas-head small {
+  color: #8da39f !important;
+}
+
+html.dark .qe-view-switch {
+  background: #0a1113 !important;
+  border: 1px solid #1c2b2e !important;
+}
+
+html.dark .qe-view-switch button {
+  color: #8da39f !important;
+  background: transparent !important;
+}
+
+html.dark .qe-view-switch button:hover {
+  color: #ffffff !important;
+}
+
+html.dark .qe-view-switch button.active {
+  background: #0d9488 !important;
+  color: #ffffff !important;
+}
+
+html.dark .qe-inspection-canvas {
+  background-color: #070d0f !important;
+  background: #070d0f radial-gradient(rgba(45, 212, 191, 0.12) 1px, transparent 1px) !important;
+  background-size: 16px 16px !important;
+}
+
+html.dark .qe-canvas-status {
+  background: rgba(10, 18, 20, 0.85) !important;
+  border: 1px solid rgba(45, 212, 191, 0.2) !important;
+  color: #2dd4bf !important;
+}
+
+html.dark .qe-canvas-tools {
+  background: #10181b !important;
+  border-top: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-zoom-stepper,
+html.dark .qe-canvas-tools .qe-zoom-stepper {
+  background: #0a1113 !important;
+  background-color: #0a1113 !important;
+  border: 1px solid #1c2b2e !important;
+  color: #ffffff !important;
+}
+
+html.dark .qe-canvas-tools .qe-zoom-stepper button {
+  color: #8da39f !important;
+  background: #0a1113 !important;
+}
+
+html.dark .qe-canvas-tools .qe-zoom-stepper button:hover:not(:disabled) {
+  color: #2dd4bf !important;
+  background: #162428 !important;
+}
+
+html.dark .qe-canvas-tools .qe-zoom-stepper button:disabled {
+  color: #3b4e52 !important;
+}
+
+html.dark .qe-zoom-stepper output,
+html.dark .qe-canvas-tools .qe-zoom-stepper button + output {
+  background: #0a1113 !important;
+  background-color: #0a1113 !important;
+  color: #ffffff !important;
+  border-left: 1px solid #1c2b2e !important;
+  border-right: 1px solid #1c2b2e !important;
+}
+
+/* Verification In-Toolbar Audit Badge (Image 1 Fix: Reviewer name visible) */
+html.dark .qe-canvas-center-audit {
+  background: #141f22 !important;
+  border: 1px solid #223236 !important;
+  color: #dceae7 !important;
+}
+
+html.dark .qe-canvas-center-audit b,
+html.dark .qe-canvas-center-audit strong,
+html.dark .qe-audit-text b {
+  color: #ffffff !important;
+}
+
+html.dark .qe-audit-text {
+  color: #dceae7 !important;
+}
+
+html.dark .qe-audit-verdict.pass {
+  color: #4ade80 !important;
+}
+
+html.dark .qe-audit-verdict.fail {
+  color: #f87171 !important;
+}
+
+html.dark .qe-audit-timestamp {
+  color: #8da39f !important;
+}
+
+/* Right Defect Panel (Image 5 Fix: Remove underline below Batch selector) */
+html.dark .qe-defect-panel {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  border: 1px solid #1f2f33 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+}
+
+html.dark .qe-detail-selects {
+  border-bottom: none !important;
+  border: none !important;
+}
+
+html.dark .qe-defect-panel-title h3 {
+  color: #ffffff !important;
+}
+
+html.dark .qe-defect-metrics > div {
+  background: #10181b !important;
+  background-color: #10181b !important;
+  border: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-defect-metrics dt {
+  color: #8da39f !important;
+}
+
+html.dark .qe-defect-metrics dd {
+  color: #ffffff !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   IMAGE 4 FIX: Tiered Suggested Action Box
+   Critical & High -> Red
+   Medium -> Yellow / Amber
+   Low -> Green
+   ────────────────────────────────────────────────────────────────────────── */
+html.dark .qe-review-context {
+  border-radius: 8px !important;
+  padding: 12px 14px !important;
+}
+
+/* 1. Critical & High -> RED */
+html.dark .qe-review-context,
+html.dark .qe-review-context.qe-action-critical,
+html.dark .qe-review-context.qe-action-high {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border: 1px solid rgba(239, 68, 68, 0.38) !important;
+  color: #fecaca !important;
+}
+
+html.dark .qe-review-context span,
+html.dark .qe-review-context.qe-action-critical span,
+html.dark .qe-review-context.qe-action-high span {
+  color: #f87171 !important;
+}
+
+html.dark .qe-review-context b,
+html.dark .qe-review-context.qe-action-critical b,
+html.dark .qe-review-context.qe-action-high b {
+  color: #fca5a5 !important;
+}
+
+html.dark .qe-review-context p,
+html.dark .qe-review-context.qe-action-critical p,
+html.dark .qe-review-context.qe-action-high p {
+  color: #fecaca !important;
+}
+
+html.dark .qe-review-context small,
+html.dark .qe-review-context.qe-action-critical small,
+html.dark .qe-review-context.qe-action-high small {
+  color: #ef4444 !important;
+}
+
+/* 2. Medium -> YELLOW / AMBER */
+html.dark .qe-review-context.qe-action-medium {
+  background: rgba(245, 158, 11, 0.12) !important;
+  border: 1px solid rgba(245, 158, 11, 0.38) !important;
+  color: #fef3c7 !important;
+}
+
+html.dark .qe-review-context.qe-action-medium span {
+  color: #fbbf24 !important;
+}
+
+html.dark .qe-review-context.qe-action-medium b {
+  color: #fde68a !important;
+}
+
+html.dark .qe-review-context.qe-action-medium p {
+  color: #fef3c7 !important;
+}
+
+html.dark .qe-review-context.qe-action-medium small {
+  color: #f59e0b !important;
+}
+
+/* 3. Low -> GREEN */
+html.dark .qe-review-context.qe-action-low {
+  background: rgba(34, 197, 94, 0.12) !important;
+  border: 1px solid rgba(34, 197, 94, 0.38) !important;
+  color: #dcfce7 !important;
+}
+
+html.dark .qe-review-context.qe-action-low span {
+  color: #4ade80 !important;
+}
+
+html.dark .qe-review-context.qe-action-low b {
+  color: #86efac !important;
+}
+
+html.dark .qe-review-context.qe-action-low p {
+  color: #dcfce7 !important;
+}
+
+html.dark .qe-review-context.qe-action-low small {
+  color: #22c55e !important;
+}
+
+/* Products List in Sidebar */
+html.dark .qe-defect-list-head {
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-defect-list-head span {
+  color: #f3c367 !important;
+}
+
+html.dark .qe-defect-list-head small {
+  color: #8da39f !important;
+}
+
+html.dark .qe-product-list button {
+  background: #10181b !important;
+  background-color: #10181b !important;
+  border: 1px solid #1c2b2e !important;
+  color: #dceae7 !important;
+}
+
+html.dark .qe-product-list button:hover {
+  background: #162428 !important;
+  border-color: rgba(45, 212, 191, 0.3) !important;
+}
+
+html.dark .qe-product-list button.active {
+  background: #14282d !important;
+  border-color: #2dd4bf !important;
+  box-shadow: 0 0 0 1px #2dd4bf !important;
+}
+
+html.dark .qe-product-list button b {
+  color: #ffffff !important;
+}
+
+html.dark .qe-product-list button small {
+  color: #8da39f !important;
+}
+
+html.dark .qe-prod-tag.tag-pass {
+  background: rgba(34, 197, 94, 0.16) !important;
+  color: #4ade80 !important;
+  border: 1px solid rgba(34, 197, 94, 0.35) !important;
+}
+
+html.dark .qe-prod-tag.tag-fail {
+  background: rgba(239, 68, 68, 0.16) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.35) !important;
+}
+
+html.dark .qe-btn-action-good {
+  background: #065f46 !important;
+  color: #ffffff !important;
+  border: 1px solid #059669 !important;
+}
+
+html.dark .qe-btn-action-good:hover {
+  background: #047857 !important;
+}
+
+html.dark .qe-btn-action-defective {
+  background: #7f1d1d !important;
+  color: #ffffff !important;
+  border: 1px solid #b91c1c !important;
+}
+
+html.dark .qe-btn-action-defective:hover {
+  background: #991b1b !important;
+}
+
+html.dark .qe-btn-next-product {
+  background: #10181b !important;
+  border: 1px solid #223236 !important;
+  color: #2dd4bf !important;
+}
+
+html.dark .qe-btn-next-product:hover {
+  background: #162428 !important;
+  color: #ffffff !important;
+  border-color: #2dd4bf !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   10. Report & Charts
+   ────────────────────────────────────────────────────────────────────────── */
+html.dark .qe-range {
+  background: #0a1113 !important;
+  border: 1px solid #1c2b2e !important;
+  border-radius: 8px !important;
+}
+
+html.dark .qe-range button {
+  background: transparent !important;
+  border: none !important;
+  color: #8da39f !important;
+}
+
+html.dark .qe-range button:hover {
+  color: #ffffff !important;
+}
+
+html.dark .qe-range button.active {
+  background: #0d9488 !important;
+  color: #ffffff !important;
+  border-radius: 6px !important;
+}
+
+/* KPI Metric Cards (Image 4 Fix: Sleek Modern Dark Gradients) */
+html.dark .qe-report-kpis > article,
+html.dark .fs-report-kpis > article {
+  background: linear-gradient(145deg, #152427 0%, #0d1618 100%) !important;
+  border: 1px solid rgba(45, 212, 191, 0.16) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4) !important;
+  border-radius: 10px !important;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease !important;
+}
+
+html.dark .qe-report-kpis > article:hover,
+html.dark .fs-report-kpis > article:hover {
+  background: linear-gradient(145deg, #182b2f 0%, #0f1a1d 100%) !important;
+  border-color: rgba(45, 212, 191, 0.35) !important;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.55), 0 0 12px rgba(45, 212, 191, 0.1) !important;
+  transform: translateY(-2px) !important;
+}
+
+html.dark .qe-kpi-tall {
+  background: linear-gradient(145deg, #1b2623 0%, #0f1618 100%) !important;
+  border: 1px solid rgba(243, 195, 103, 0.22) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4) !important;
+  border-radius: 10px !important;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease !important;
+}
+
+html.dark .qe-kpi-tall:hover {
+  background: linear-gradient(145deg, #202d29 0%, #121b1e 100%) !important;
+  border-color: rgba(243, 195, 103, 0.4) !important;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.55), 0 0 12px rgba(243, 195, 103, 0.12) !important;
+  transform: translateY(-2px) !important;
+}
+
+html.dark .qe-report-kpis > article > span,
+html.dark .fs-report-kpis > article > span,
+html.dark .qe-kpi-tall > div:first-child span {
+  color: #8da39f !important;
+}
+
+html.dark .qe-report-kpis > article > b,
+html.dark .fs-report-kpis > article > b,
+html.dark .qe-top-defect-name {
+  color: #ffffff !important;
+}
+
+html.dark .qe-report-kpis > article p,
+html.dark .fs-report-kpis > article p,
+html.dark .qe-top-defect-body p {
+  color: #8da39f !important;
+}
+
+html.dark .qe-report-kpis i.up,
+html.dark .fs-report-kpis i.up {
+  color: #4ade80 !important;
+}
+
+html.dark .qe-report-kpis i.down,
+html.dark .fs-report-kpis i.down {
+  color: #f87171 !important;
+}
+
+html.dark .qe-top-defect-badge {
+  background: rgba(243, 195, 103, 0.12) !important;
+  color: #f3c367 !important;
+  border: 1px solid rgba(243, 195, 103, 0.3) !important;
+}
+
+html.dark .qe-chart,
+html.dark .qe-mix,
+html.dark .qe-report-note {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  border: 1px solid #1f2f33 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+}
+
+html.dark .qe-card-top h3 {
+  color: #ffffff !important;
+}
+
+html.dark .qe-chart footer {
+  border-top: 1px solid #1a272a !important;
+}
+
+html.dark .qe-chart footer p {
+  color: #8da39f !important;
+}
+
+html.dark .qe-chart footer b {
+  color: #2dd4bf !important;
+}
+
+html.dark .qe-y-axis-title,
+html.dark .qe-y-axis-ticks,
+html.dark .qe-bars span {
+  color: #8da39f !important;
+}
+
+html.dark .qe-mix ul li b {
+  color: #ffffff !important;
+}
+
+html.dark .qe-mix ul li em {
+  color: #2dd4bf !important;
+}
+
+html.dark .qe-donut > div,
+html.dark .fs-donut > div {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  color: #ffffff !important;
+}
+
+html.dark .qe-donut b,
+html.dark .fs-donut b {
+  color: #ffffff !important;
+}
+
+html.dark .qe-donut span,
+html.dark .fs-donut span {
+  color: #8da39f !important;
+}
+
+html.dark .qe-report-note h3 {
+  color: #ffffff !important;
+}
+
+html.dark .qe-report-note h3 em {
+  color: #2dd4bf !important;
+}
+
+html.dark .qe-report-note p {
+  color: #8da39f !important;
+}
+
+/* Report Export Button (Image 2 Fix: Beautiful primary pill styling) */
+html.dark .qe-report-note button {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-top: 15px !important;
+  padding: 8px 16px !important;
+  background: #0d9488 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(45, 212, 191, 0.35) !important;
+  border-radius: 8px !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.3) !important;
+  transition: all 160ms ease !important;
+}
+
+html.dark .qe-report-note button:hover {
+  background: #14b8a6 !important;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.45) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   11. Tables & Status Badges (Image 1 Fix: Borderless Seamless History Tools)
+   ────────────────────────────────────────────────────────────────────────── */
+html.dark .qe-history-tools label,
+html.dark .fs-history-tools label {
+  background: #10181b !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: #2dd4bf !important;
+  border-radius: 8px !important;
+}
+
+html.dark .qe-history-tools input,
+html.dark .fs-history-tools input {
+  color: #ffffff !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+}
+
+html.dark .qe-history-tools input::placeholder,
+html.dark .fs-history-tools input::placeholder {
+  color: #8da39f !important;
+}
+
+html.dark .qe-history-tools > div,
+html.dark .fs-history-tools > div {
+  background: #0a1113 !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
+  padding: 3px !important;
+}
+
+html.dark .qe-history-tools > button,
+html.dark .fs-history-tools > button {
+  background: #10181b !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #2dd4bf !important;
+  border-radius: 8px !important;
+  padding: 6px 14px !important;
+}
+
+html.dark .qe-history-tools > button:hover,
+html.dark .fs-history-tools > button:hover {
+  background: #172428 !important;
+  color: #ffffff !important;
+}
+
+html.dark .qe-history-tools div button {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  border-color: transparent !important;
+  color: #8da39f !important;
+  border-radius: 6px !important;
+}
+
+html.dark .qe-history-tools div button:hover {
+  color: #ffffff !important;
+  background: rgba(20, 184, 166, 0.1) !important;
+}
+
+html.dark .qe-history-tools div button.active {
+  background: #0d9488 !important;
+  background-color: #0d9488 !important;
+  color: #ffffff !important;
+  border: 0 !important;
+  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.4) !important;
+}
+
+html.dark .qe-status.complete,
+html.dark .status.complete,
+html.dark span.qe-status.complete {
+  background: rgba(34, 197, 94, 0.16) !important;
+  background-color: rgba(34, 197, 94, 0.16) !important;
+  color: #4ade80 !important;
+  border: 1px solid rgba(34, 197, 94, 0.35) !important;
+}
+
+html.dark .qe-status.review,
+html.dark .status.review,
+html.dark span.qe-status.review {
+  background: rgba(245, 158, 11, 0.16) !important;
+  background-color: rgba(245, 158, 11, 0.16) !important;
+  color: #fbbf24 !important;
+  border: 1px solid rgba(245, 158, 11, 0.35) !important;
+}
+
+html.dark .qe-history-flags.clear,
+html.dark .qe-verdict.pass,
+html.dark .qe-verdict-badge.pass,
+html.dark .qe-badge-passed,
+html.dark .fs-badge-passed,
+html.dark .vi-status-pass,
+html.dark .status-passed {
+  background: rgba(34, 197, 94, 0.16) !important;
+  background-color: rgba(34, 197, 94, 0.16) !important;
+  color: #4ade80 !important;
+  border: 1px solid rgba(34, 197, 94, 0.35) !important;
+}
+
+html.dark .qe-history-flags.flagged,
+html.dark .qe-verdict.fail,
+html.dark .qe-verdict.hold,
+html.dark .qe-verdict-badge.fail,
+html.dark .qe-badge-failed,
+html.dark .fs-badge-failed,
+html.dark .vi-status-fail,
+html.dark .status-failed {
+  background: rgba(239, 68, 68, 0.16) !important;
+  background-color: rgba(239, 68, 68, 0.16) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.35) !important;
+}
+
+html.dark .qe-history-tools {
+  background: #10181b !important;
+  border: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-history-tools label {
+  background: #0a1113 !important;
+  border: 1px solid #1c2b2e !important;
+  color: #dceae7 !important;
+}
+
+html.dark .qe-history-tools input {
+  background: transparent !important;
+  color: #ffffff !important;
+  border: none !important;
+  outline: none !important;
+}
+
+html.dark .qe-history-tools input::placeholder {
+  color: #647f7b !important;
+}
+
+html.dark .qe-history-tools svg {
+  color: #2dd4bf !important;
+}
+
+html.dark .qe-history-tools > button {
+  background: #141f22 !important;
+  border: 1px solid #1f2f33 !important;
+  color: #2dd4bf !important;
+}
+
+html.dark .qe-history-tools > button:hover:not(:disabled) {
+  background: #172428 !important;
+  color: #ffffff !important;
+  border-color: #2dd4bf !important;
+}
+
+html.dark .qe-table-wrap,
+html.dark .fs-table-wrap,
+html.dark .qe-app table,
+html.dark .fs-app table {
+  background: #141f22 !important;
+  border-color: #1f2f33 !important;
+}
+
+html.dark .qe-app table thead th,
+html.dark .fs-app table thead th {
+  background: #10181b !important;
+  background-color: #10181b !important;
+  color: #8da39f !important;
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-app table tbody td,
+html.dark .fs-app table tbody td {
+  background: transparent !important;
+  border-bottom: 1px solid #1a272a !important;
+  color: #dceae7 !important;
+}
+
+html.dark .qe-app table tbody tr:hover td,
+html.dark .fs-app table tbody tr:hover td {
+  background: #172428 !important;
+}
+
+html.dark .qe-app table tbody td b,
+html.dark .fs-app table tbody td b {
+  color: #ffffff !important;
+}
+
+html.dark .qe-app table tbody td small,
+html.dark .fs-app table tbody td small {
+  color: #8da39f !important;
+}
+
+html.dark .qe-app table tbody td button,
+html.dark .fs-app table tbody td button {
+  color: #2dd4bf !important;
+  background: transparent !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   12. Capture & Stage Batches (IMAGE 3 FIX: Line No Box & Empty Staging Space)
+   ────────────────────────────────────────────────────────────────────────── */
+html.dark .qe-capture-mode-toggle {
+  background: #0a1113 !important;
+  border: 1px solid #1c2b2e !important;
+}
+
+html.dark .qe-capture-tab-btn {
+  color: #8da39f !important;
+  background: transparent !important;
+}
+
+html.dark .qe-capture-tab-btn:hover:not(.active) {
+  color: #ffffff !important;
+  background: rgba(20, 184, 166, 0.12) !important;
+}
+
+html.dark .qe-capture-tab-btn.active {
+  color: #ffffff !important;
+  background: #0d9488 !important;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.4) !important;
+}
+
+html.dark .qe-drop {
+  background: linear-gradient(145deg, rgba(20, 184, 166, 0.08), #10181b),
+              radial-gradient(rgba(45, 212, 191, 0.1) 1px, transparent 1px) !important;
+  background-size: auto, 14px 14px !important;
+  border: 1px dashed rgba(45, 212, 191, 0.38) !important;
+}
+
+html.dark .qe-drop > svg {
+  color: #2dd4bf !important;
+}
+
+html.dark .qe-drop h3 {
+  color: #ffffff !important;
+}
+
+html.dark .qe-drop p {
+  color: #8da39f !important;
+}
+
+html.dark .qe-drop button,
+html.dark .qe-batch-foot > button,
+html.dark .qe-approve {
+  background: #0d9488 !important;
+  color: #ffffff !important;
+}
+
+html.dark .qe-drop button:hover,
+html.dark .qe-batch-foot > button:hover,
+html.dark .qe-approve:hover {
+  background: #14b8a6 !important;
+}
+
+/* Staged Manual Batch Box (IMAGE 3 FIX) */
+html.dark .qe-batch {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  border: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-batch-head {
+  background: #10181b !important;
+  background-color: #10181b !important;
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-batch-head h3 {
+  color: #ffffff !important;
+}
+
+html.dark .qe-batch-head span {
+  color: #8da39f !important;
+}
+
+html.dark .qe-batch-foot {
+  background: #10181b !important;
+  background-color: #10181b !important;
+  border-top: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-batch-foot p {
+  color: #8da39f !important;
+}
+
+/* Line No Box (Image 3 Fix: Clean Dark Rounded Box) */
+html.dark .qe-line-input-wrap {
+  background: #0a1113 !important;
+  background-color: #0a1113 !important;
+  border: 1px solid #223236 !important;
+  border-radius: 6px !important;
+  padding: 3px 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+html.dark .qe-line-input-wrap span {
+  color: #f3c367 !important; /* Gold */
+  font-size: 9px !important;
+  font-weight: 700 !important;
+}
+
+html.dark .qe-line-input {
+  background: transparent !important;
+  color: #2dd4bf !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  width: 28px !important;
+  font-weight: 700 !important;
+}
+
+/* Empty Center Staging Area (Image 3 Fix: Seamless Dark Surface with Readable Text) */
+html.dark .qe-empty-batch,
+html.dark .qe-batch-empty,
+html.dark .qe-empty {
+  background: #0e1618 !important;
+  background-color: #0e1618 !important;
+  color: #8da39f !important;
+  border: none !important;
+  padding: 36px 20px !important;
+}
+
+html.dark .qe-empty-batch p,
+html.dark .qe-batch-empty p,
+html.dark .qe-empty p {
+  color: #8da39f !important;
+}
+
+html.dark .qe-empty-batch svg,
+html.dark .qe-batch-empty svg,
+html.dark .qe-empty svg {
+  color: #2dd4bf !important;
+  opacity: 0.6 !important;
+}
+
+/* Camera Stream & Controls */
+html.dark .qe-camera-stream-card {
+  background: #141f22 !important;
+  border: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-cam-controls-bar {
+  background: #10181b !important;
+  background-color: #10181b !important;
+  border-top: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-cam-line-select span,
+html.dark .qe-cam-interval-select span {
+  color: #f3c367 !important;
+}
+
+html.dark .qe-cam-auto-toggle {
+  background: #141f22 !important;
+  border: 1px solid #1f2f33 !important;
+  color: #8da39f !important;
+}
+
+html.dark .qe-cam-auto-toggle.active {
+  background: rgba(34, 197, 94, 0.18) !important;
+  border-color: #22c55e !important;
+  color: #4ade80 !important;
+}
+
+html.dark .qe-cam-snap-btn {
+  background: #0d9488 !important;
+  color: #ffffff !important;
+}
+
+/* Right Staging Buffer Card */
+html.dark .qe-camera-buffer-card {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  border: 1px solid #1f2f33 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+}
+
+html.dark .qe-buffer-header {
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-buffer-header-text .qe-kicker {
+  color: #f3c367 !important;
+}
+
+html.dark .qe-buffer-header-text h3 {
+  color: #ffffff !important;
+}
+
+html.dark .qe-buffer-header-text h3 b {
+  color: #2dd4bf !important;
+}
+
+html.dark .qe-buffer-pct-badge {
+  background: #10181b !important;
+  border: 1px solid #1f2f33 !important;
+  color: #2dd4bf !important;
+}
+
+html.dark .qe-buffer-progress-track {
+  background: #0a1113 !important;
+}
+
+html.dark .qe-buffer-progress-fill {
+  background: linear-gradient(90deg, #0d9488, #2dd4bf) !important;
+  box-shadow: 0 0 10px rgba(45, 212, 191, 0.5) !important;
+}
+
+html.dark .qe-buffer-hint {
+  background: #10181b !important;
+  background-color: #10181b !important;
+  border: 1px solid #1c2b2e !important;
+  color: #8da39f !important;
+}
+
+html.dark .qe-buffer-hint b {
+  color: #ffffff !important;
+}
+
+html.dark .qe-btn-force-batch {
+  background: #0d9488 !important;
+  color: #ffffff !important;
+}
+
+html.dark .qe-btn-force-batch:hover:not(:disabled) {
+  background: #14b8a6 !important;
+}
+
+html.dark .qe-btn-clear-buffer {
+  background: #10181b !important;
+  border: 1px solid #1f2f33 !important;
+  color: #f87171 !important;
+}
+
+html.dark .qe-btn-clear-buffer:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.16) !important;
+}
+
+html.dark .qe-buffer-grid-wrap {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+html.dark .qe-buffer-grid-head {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(45, 212, 191, 0.12) !important;
+  color: #ffffff !important;
+  padding-bottom: 6px !important;
+}
+
+html.dark .qe-buffer-grid-head span {
+  color: #2dd4bf !important;
+}
+
+html.dark .qe-buffer-grid-head small {
+  color: #8da39f !important;
+}
+
+html.dark .qe-buffer-empty {
+  background: #0e1618 !important;
+  background-color: #0e1618 !important;
+  border: none !important;
+  border-width: 0 !important;
+  color: #8da39f !important;
+}
+
+html.dark .qe-buffer-empty b {
+  color: #ffffff !important;
+}
+
+html.dark .qe-buffer-thumb-card {
+  background: #141f22 !important;
+  border: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-buffer-thumb-info {
+  background: #10181b !important;
+  border-top: 1px solid #1c2b2e !important;
+}
+
+html.dark .qe-buffer-thumb-info b {
+  color: #2dd4bf !important;
+}
+
+html.dark .qe-buffer-thumb-info small {
+  color: #8da39f !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   13. Announcements & Notices Modals (IMAGE 1 FIX: High-contrast message text)
+   ────────────────────────────────────────────────────────────────────────── */
+html.dark .qe-modal-backdrop,
+html.dark .fs-modal-backdrop {
+  background: rgba(4, 10, 12, 0.78) !important;
+  backdrop-filter: blur(6px) !important;
+}
+
+html.dark .qe-notices-modal {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  border: 1px solid #223236 !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8) !important;
+}
+
+html.dark .qe-notices-modal-head {
+  background: #10181b !important;
+  background-color: #10181b !important;
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-notices-modal-head h2 {
+  color: #ffffff !important;
+}
+
+html.dark .qe-notices-mark-all-btn {
+  background: rgba(20, 184, 166, 0.15) !important;
+  color: #2dd4bf !important;
+  border: 1px solid rgba(20, 184, 166, 0.3) !important;
+}
+
+html.dark .qe-notices-mark-all-btn:hover {
+  background: #0d9488 !important;
+  color: #ffffff !important;
+}
+
+html.dark .qe-notices-modal-body {
+  background: #141f22 !important;
+}
+
+html.dark .qe-notices-section-head h3 {
+  color: #ffffff !important;
+}
+
+html.dark .qe-notices-section-head h3 span {
+  color: #8da39f !important;
+}
+
+/* Notice Cards (Image 1 Fix: Crisp, readable message text) */
+html.dark .qe-notice-card,
+html.dark .qe-notice-card.read {
+  background: #10181b !important;
+  background-color: #10181b !important;
+  border: 1px solid #1f2f33 !important;
+  color: #dceae7 !important;
+}
+
+html.dark .qe-notice-card.unread {
+  background: #162428 !important;
+  background-color: #162428 !important;
+  border-color: rgba(45, 212, 191, 0.4) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4) !important;
+}
+
+html.dark .qe-notice-author {
+  color: #ffffff !important;
+}
+
+html.dark .qe-notice-card p,
+html.dark .qe-notice-card-msg,
+html.dark .qe-notice-card-body p {
+  color: #e2f0ed !important; /* Crisp high-contrast readable message text */
+  font-size: 12.5px !important;
+  line-height: 1.5 !important;
+}
+
+html.dark .qe-notice-time {
+  color: #8da39f !important;
+}
+
+html.dark .qe-notices-modal-foot,
+html.dark .fs-alerts-modal-foot {
+  background: #10181b !important;
+  background-color: #10181b !important;
+  border-top: 1px solid #1f2f33 !important;
+  color: #8da39f !important;
+}
+
+html.dark .qe-notices-modal-foot kbd,
+html.dark .fs-alerts-modal-foot kbd {
+  background: #172428 !important;
+  border: 1px solid #223236 !important;
+  color: #dceae7 !important;
+}
+
+html.dark .qe-notices-done-btn,
+html.dark .fs-alerts-modal-done-btn {
+  background: #0d9488 !important;
+  color: #ffffff !important;
+}
+
+/* Factory Supervisor Plant Telemetry & Announcements Modal */
+html.dark .fs-alerts-modal,
+html.dark .fs-ann-modal {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  border: 1px solid #223236 !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8) !important;
+}
+
+html.dark .fs-alerts-modal-head,
+html.dark .fs-ann-modal-head {
+  background: #10181b !important;
+  background-color: #10181b !important;
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .fs-alerts-modal-head h2,
+html.dark .fs-ann-modal-head h2 {
+  color: #ffffff !important;
+}
+
+html.dark .fs-alerts-modal-tabs {
+  background: #0a1113 !important;
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .fs-alerts-tab-btn {
+  color: #8da39f !important;
+}
+
+html.dark .fs-alerts-tab-btn.active {
+  color: #2dd4bf !important;
+  border-bottom-color: #2dd4bf !important;
+}
+
+html.dark .fs-alerts-modal-body,
+html.dark .fs-ann-modal-body {
+  background: #141f22 !important;
+}
+
+html.dark .fs-alerts-card,
+html.dark .fs-ann-card {
+  background: #10181b !important;
+  background-color: #10181b !important;
+  border: 1px solid #1f2f33 !important;
+  color: #dceae7 !important;
+}
+
+html.dark .fs-alerts-card.unread,
+html.dark .fs-ann-card.unread {
+  background: #162428 !important;
+  border-color: rgba(45, 212, 191, 0.4) !important;
+}
+
+html.dark .fs-alerts-card h4,
+html.dark .fs-ann-card h4 {
+  color: #ffffff !important;
+}
+
+html.dark .fs-alerts-card p,
+html.dark .fs-ann-card p {
+  color: #e2f0ed !important;
+}
+
+html.dark .fs-alerts-modal-foot,
+html.dark .fs-ann-modal-foot {
+  background: #10181b !important;
+  background-color: #10181b !important;
+  border-top: 1px solid #1f2f33 !important;
+  color: #8da39f !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   14. Settings Modal
+   ────────────────────────────────────────────────────────────────────────── */
+html.dark .vi-settings-modal {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  border: 1px solid #223236 !important;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.85) !important;
+  color: #dceae7 !important;
+}
+
+html.dark .vi-settings-sidebar {
+  background: #0e1618 !important;
+  background-color: #0e1618 !important;
+  border-right: 1px solid #1c2b2e !important;
+}
+
+html.dark .vi-settings-group-label {
+  color: #f3c367 !important;
+}
+
+html.dark .vi-settings-nav-item {
+  color: #8da39f !important;
+  background: transparent !important;
+}
+
+html.dark .vi-settings-nav-item:hover {
+  background: rgba(20, 184, 166, 0.1) !important;
+  color: #ffffff !important;
+}
+
+html.dark .vi-settings-nav-item.active {
+  background: rgba(20, 184, 166, 0.18) !important;
+  color: #2dd4bf !important;
+}
+
+html.dark .vi-settings-avatar-badge,
+html.dark .vi-settings-avatar-large {
+  background: #0a1113 !important;
+  border: 1px solid #1f2f33 !important;
+  color: #2dd4bf !important;
+}
+
+html.dark .vi-settings-content {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  color: #dceae7 !important;
+}
+
+html.dark .vi-settings-header h2 {
+  color: #ffffff !important;
+}
+
+html.dark .vi-settings-header p {
+  color: #8da39f !important;
+}
+
+html.dark .vi-settings-section h3 {
+  color: #ffffff !important;
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .vi-settings-field-title {
+  color: #ffffff !important;
+}
+
+html.dark .vi-settings-field-desc {
+  color: #8da39f !important;
+}
+
+html.dark .vi-settings-profile-field label {
+  color: #8da39f !important;
+}
+
+html.dark .vi-settings-row-info label {
+  color: #ffffff !important;
+}
+
+html.dark .vi-settings-row-info span {
+  color: #8da39f !important;
+}
+
+html.dark .vi-settings-input,
+html.dark .vi-settings-select,
+html.dark .vi-settings-emoji-btn {
+  background: #0a1113 !important;
+  background-color: #0a1113 !important;
+  border: 1px solid #223236 !important;
+  color: #ffffff !important;
+}
+
+html.dark .vi-settings-input:focus,
+html.dark .vi-settings-select:focus {
+  border-color: #2dd4bf !important;
+  box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.25) !important;
+}
+
+html.dark .vi-settings-btn-action,
+html.dark .vi-settings-btn-secondary {
+  background: #10181b !important;
+  background-color: #10181b !important;
+  border: 1px solid #223236 !important;
+  color: #2dd4bf !important;
+}
+
+html.dark .vi-settings-btn-action:hover,
+html.dark .vi-settings-btn-secondary:hover:not(:disabled) {
+  background: #172428 !important;
+  color: #ffffff !important;
+  border-color: #2dd4bf !important;
+}
+
+html.dark .vi-settings-btn-action.active,
+html.dark .vi-settings-btn-secondary:disabled {
+  background: #0a1113 !important;
+  color: #8da39f !important;
+  border-color: #1c2b2e !important;
+}
+
+html.dark .vi-settings-btn-danger {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  color: #f87171 !important;
+}
+
+html.dark .vi-settings-btn-danger:hover {
+  background: rgba(239, 68, 68, 0.22) !important;
+  color: #ffffff !important;
+}
+
+html.dark .vi-settings-close-btn {
+  color: #8da39f !important;
+}
+
+html.dark .vi-settings-close-btn:hover {
+  color: #ffffff !important;
+  background: #172428 !important;
+}
+
+/* Emoji Picker Popover in Settings */
+html.dark .vi-emoji-picker-popover {
+  background: #141f22 !important;
+  border: 1px solid #1f2f33 !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6) !important;
+}
+
+html.dark .vi-emoji-picker-header {
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .vi-emoji-tab-active {
+  color: #ffffff !important;
+}
+
+html.dark .vi-emoji-tab-active::after {
+  background: #2dd4bf !important;
+}
+
+html.dark .vi-emoji-action-btn {
+  background: #10181b !important;
+  color: #2dd4bf !important;
+  border: 1px solid #223236 !important;
+}
+
+html.dark .vi-emoji-action-btn:hover {
+  background: #172428 !important;
+  color: #ffffff !important;
+  border-color: #2dd4bf !important;
+}
+
+html.dark .vi-emoji-remove-btn {
+  color: #f87171 !important;
+  background: transparent !important;
+  border-color: transparent !important;
+}
+
+html.dark .vi-emoji-remove-btn:hover {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #f87171 !important;
+}
+
+html.dark .vi-emoji-cat-title {
+  color: #8da39f !important;
+}
+
+html.dark .vi-emoji-item-btn:hover {
+  background: rgba(45, 212, 191, 0.15) !important;
+}
+
+html.dark .vi-emoji-item-btn.active {
+  background: rgba(20, 184, 166, 0.25) !important;
+  border-color: #2dd4bf !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   15. Batch Dialogs & Summary Popups
+   ────────────────────────────────────────────────────────────────────────── */
+html.dark .qe-batch-dialog-backdrop {
+  background: rgba(4, 10, 12, 0.78) !important;
+  backdrop-filter: blur(6px) !important;
+}
+
+html.dark .qe-batch-dialog {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  border: 1px solid #223236 !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8) !important;
+  color: #dceae7 !important;
+}
+
+html.dark .qe-batch-dialog > header {
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-batch-dialog > header span {
+  color: #f3c367 !important;
+}
+
+html.dark .qe-batch-dialog h2 {
+  color: #ffffff !important;
+}
+
+html.dark .qe-batch-dialog > header button {
+  background: #10181b !important;
+  border: 1px solid #1f2f33 !important;
+  color: #8da39f !important;
+}
+
+html.dark .qe-batch-dialog > header button:hover {
+  background: #172428 !important;
+  color: #ffffff !important;
+  border-color: #2dd4bf !important;
+}
+
+html.dark .qe-batch-dialog-meta {
+  background: #10181b !important;
+  background-color: #10181b !important;
+  border-bottom: 1px solid #1f2f33 !important;
+  color: #8da39f !important;
+}
+
+html.dark .qe-batch-detailed-review {
+  background: #172428 !important;
+  border: 1px solid #2dd4bf !important;
+  color: #2dd4bf !important;
+}
+
+html.dark .qe-batch-detailed-review:hover {
+  background: #1f363b !important;
+  color: #ffffff !important;
+}
+
+html.dark .qe-batch-dialog-head {
+  color: #8da39f !important;
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-batch-dialog-row {
+  border-bottom: 1px solid #1a272a !important;
+}
+
+html.dark .qe-batch-dialog-row b {
+  color: #ffffff !important;
+}
+
+html.dark .qe-batch-product-status.passed {
+  background: rgba(34, 197, 94, 0.16) !important;
+  color: #4ade80 !important;
+  border: 1px solid rgba(34, 197, 94, 0.35) !important;
+}
+
+html.dark .qe-batch-product-status.failed {
+  background: rgba(239, 68, 68, 0.16) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.35) !important;
+}
+
+/* History Summary Dialog */
+html.dark .qe-history-summary-dialog {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  border: 1px solid #223236 !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8) !important;
+  color: #dceae7 !important;
+}
+
+html.dark .qe-history-summary-dialog > header {
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-history-summary-dialog > header span {
+  color: #f3c367 !important;
+}
+
+html.dark .qe-history-summary-dialog h2 {
+  color: #ffffff !important;
+}
+
+html.dark .qe-history-summary-dialog > header button {
+  background: #10181b !important;
+  border: 1px solid #1f2f33 !important;
+  color: #8da39f !important;
+}
+
+html.dark .qe-history-summary-dialog > header button:hover {
+  background: #172428 !important;
+  color: #ffffff !important;
+  border-color: #2dd4bf !important;
+}
+
+html.dark .qe-history-summary-reviewer strong {
+  color: #ffffff !important;
+}
+
+html.dark .qe-history-summary-state.pass {
+  background: rgba(34, 197, 94, 0.12) !important;
+  border: 1px solid rgba(34, 197, 94, 0.3) !important;
+  color: #4ade80 !important;
+}
+
+html.dark .qe-history-summary-state.fail {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  color: #f87171 !important;
+}
+
+html.dark .qe-history-summary-state.review {
+  background: rgba(245, 158, 11, 0.12) !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+  color: #fbbf24 !important;
+}
+
+html.dark .qe-history-summary-rec {
+  background: #10181b !important;
+  background-color: #10181b !important;
+  border: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-history-summary-rec span {
+  color: #f3c367 !important;
+}
+
+html.dark .qe-history-summary-rec p {
+  color: #dceae7 !important;
+}
+
+html.dark .qe-history-summary-metrics {
+  background: transparent !important;
+}
+
+html.dark .qe-history-summary-metrics > div {
+  background: #10181b !important;
+  background-color: #10181b !important;
+  border: 1px solid #1f2f33 !important;
+}
+
+html.dark .qe-history-summary-metrics dt {
+  color: #8da39f !important;
+}
+
+html.dark .qe-history-summary-metrics dd {
+  color: #ffffff !important;
+}
+
+html.dark .qe-history-summary-dialog footer {
+  background: #10181b !important;
+  background-color: #10181b !important;
+  border-top: 1px solid #1f2f33 !important;
+  color: #8da39f !important;
+}
+
+/* Delete Confirm Dialog */
+html.dark .qe-delete-confirm-dialog {
+  background: #141f22 !important;
+  border: 1px solid #223236 !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8) !important;
+  color: #dceae7 !important;
+}
+
+html.dark .qe-delete-confirm-dialog h3 {
+  color: #ffffff !important;
+}
+
+html.dark .qe-delete-confirm-dialog p {
+  color: #8da39f !important;
+}
+
+html.dark .qe-delete-confirm-dialog p b {
+  color: #ffffff !important;
+}
+
+html.dark .qe-btn-cancel {
+  background: #10181b !important;
+  border: 1px solid #1f2f33 !important;
+  color: #8da39f !important;
+}
+
+html.dark .qe-btn-cancel:hover {
+  background: #172428 !important;
+  color: #ffffff !important;
+}
+
+/* ==========================================================================
+   16. Factory Supervisor Dashboard - Complete Signature Dark Theme Suite
+   ========================================================================== */
+
+/* 1. FS Top Header Bar & Header Actions */
+html.dark .fs-head {
+  background: #0c1315 !important;
+  background-color: #0c1315 !important;
+  border-bottom: 1px solid rgba(45, 212, 191, 0.1) !important;
+  color: #dceae7 !important;
+}
+
+html.dark .fs-head-title h1 {
+  color: #ffffff !important;
+}
+
+html.dark .fs-kicker {
+  color: #2dd4bf !important;
+}
+
+html.dark .fs-notif-btn {
+  background: #10181b !important;
+  border: 1px solid #1f2f33 !important;
+  color: #2dd4bf !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25) !important;
+}
+
+html.dark .fs-notif-btn:hover {
+  background: #172428 !important;
+  color: #ffffff !important;
+  border-color: rgba(45, 212, 191, 0.4) !important;
+}
+
+html.dark .fs-notif-btn.active {
+  background: rgba(20, 184, 166, 0.18) !important;
+  color: #2dd4bf !important;
+  border-color: #2dd4bf !important;
+}
+
+html.dark .fs-notif-badge {
+  background: #ef4444 !important;
+  border-color: #081012 !important;
+  color: #ffffff !important;
+}
+
+html.dark .fs-action-feedback {
+  background: #141f22 !important;
+  border: 1px solid #223236 !important;
+  color: #dceae7 !important;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* 2. Overview KPI / Context Cards (Single Unified Card with Column Dividers) */
+html.dark .fs-context {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  background: #141f22 !important;
+  border: 1px solid #1f2f33 !important;
+  border-radius: 11px !important;
+  gap: 0 !important;
+  overflow: hidden !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35) !important;
+}
+
+html.dark .fs-context article {
+  background: transparent !important;
+  border: none !important;
+  border-right: 1px solid #1f2f33 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 15px 17px !important;
+  min-height: 116px !important;
+  transform: none !important;
+  transition: background 180ms ease !important;
+}
+
+html.dark .fs-context article:hover {
+  background: rgba(45, 212, 191, 0.04) !important;
+  border-color: #1f2f33 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+html.dark .fs-context article:last-child {
+  border-right: none !important;
+}
+
+html.dark .fs-context span {
+  color: #8da39f !important;
+}
+
+html.dark .fs-context strong {
+  color: #ffffff !important;
+}
+
+html.dark .fs-context p {
+  color: #8da39f !important;
+}
+
+html.dark .fs-kpi-yield strong {
+  color: #4ade80 !important;
+}
+
+html.dark .fs-kpi-defects strong {
+  color: #f87171 !important;
+}
+
+html.dark .fs-kpi-lines strong {
+  color: #2dd4bf !important;
+}
+
+/* 3. FS Sections, Filter Bars & Dropdowns */
+html.dark .fs-section {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  border: 1px solid #1f2f33 !important;
+  box-shadow: 0 9px 24px rgba(0, 0, 0, 0.35) !important;
+}
+
+html.dark .fs-section-head h2 {
+  color: #ffffff !important;
+}
+
+html.dark .fs-section-head h2 em {
+  color: #2dd4bf !important;
+}
+
+html.dark .fs-section-head p {
+  color: #8da39f !important;
+}
+
+html.dark .fs-queue-bar {
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .fs-filter-btn {
+  background: #10181b !important;
+  border: 1px solid #1f2f33 !important;
+  color: #dceae7 !important;
+  border-radius: 8px !important;
+}
+
+html.dark .fs-filter-btn:hover {
+  border-color: rgba(45, 212, 191, 0.4) !important;
+  background: #162428 !important;
+}
+
+html.dark .fs-result-filter select {
+  background: #10181b !important;
+  color: #ffffff !important;
+}
+
+html.dark .fs-result-filter select option {
+  background: #10181b !important;
+  color: #ffffff !important;
+}
+
+html.dark .fs-range {
+  background: #0a1113 !important;
+  border: 1px solid #1f2f33 !important;
+  border-radius: 8px !important;
+}
+
+html.dark .fs-range button {
+  color: #8da39f !important;
+  background: transparent !important;
+}
+
+html.dark .fs-range button.active {
+  color: #ffffff !important;
+  background: #0d9488 !important;
+  border-radius: 6px !important;
+}
+
+html.dark .fs-day-toggle-group {
+  background: #0a1113 !important;
+  border: 1px solid #1f2f33 !important;
+  border-radius: 8px !important;
+}
+
+html.dark .fs-day-toggle-group button {
+  color: #8da39f !important;
+}
+
+html.dark .fs-day-toggle-group button.active {
+  background: #0d9488 !important;
+  color: #ffffff !important;
+  border-color: #14b8a6 !important;
+}
+
+/* 4. Live Shift Performance */
+html.dark .fs-shift-card {
+  background: #10181b !important;
+  border: 1px solid #1f2f33 !important;
+  border-radius: 10px !important;
+}
+
+html.dark .fs-shift-metrics > div {
+  background: #0a1113 !important;
+  border: 1px solid #1c2b2e !important;
+  border-radius: 6px !important;
+}
+
+html.dark .fs-shift-metrics dt {
+  color: #8da39f !important;
+}
+
+html.dark .fs-shift-metrics dd {
+  color: #ffffff !important;
+}
+
+html.dark .fs-shift-bar {
+  background: #0a1113 !important;
+}
+
+html.dark .fs-shift-bar span {
+  color: #8da39f !important;
+}
+
+/* 5. Defect Trends, Heatmap, Pareto & Analytics Charts */
+html.dark .fs-chart,
+html.dark .fs-mix,
+html.dark .fs-monitor-full-chart,
+html.dark .fs-report-grid article {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  border: 1px solid #1f2f33 !important;
+  border-radius: 9px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+  color: #dceae7 !important;
+}
+
+html.dark .fs-chart h3,
+html.dark .fs-mix h3 {
+  color: #ffffff !important;
+}
+
+html.dark .fs-chart .fs-kicker,
+html.dark .fs-mix .fs-kicker {
+  color: #2dd4bf !important;
+}
+
+html.dark .fs-bars {
+  border-bottom: 1px solid #1f2f33 !important;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px) !important;
+}
+
+html.dark .fs-bars span {
+  color: #8da39f !important;
+}
+
+html.dark .fs-bars i {
+  background: linear-gradient(180deg, #2dd4bf, #0d9488) !important;
+}
+
+html.dark .fs-y-axis-ticks span,
+html.dark .fs-y-axis-title {
+  color: #8da39f !important;
+}
+
+html.dark .fs-chart footer {
+  border-top-color: #1f2f33 !important;
+}
+
+html.dark .fs-chart footer p {
+  color: #8da39f !important;
+}
+
+html.dark .fs-chart footer b {
+  color: #2dd4bf !important;
+}
+
+html.dark .fs-donut > div {
+  background: #141f22 !important;
+  color: #ffffff !important;
+}
+
+html.dark .fs-donut b {
+  color: #ffffff !important;
+}
+
+html.dark .fs-donut span {
+  color: #8da39f !important;
+}
+
+html.dark .fs-mix ul li b {
+  color: #ffffff !important;
+}
+
+html.dark .fs-mix ul li em {
+  color: #8da39f !important;
+}
+
+html.dark .fs-badge-pill {
+  background: rgba(20, 184, 166, 0.16) !important;
+  color: #2dd4bf !important;
+  border: 1px solid rgba(45, 212, 191, 0.3) !important;
+}
+
+html.dark .fs-monitor-full-chart footer b {
+  color: #2dd4bf !important;
+}
+
+html.dark .fs-rate-chart {
+  background: transparent !important;
+}
+
+html.dark .fs-rate-threshold {
+  border-top: 2px dashed #f87171 !important;
+}
+
+html.dark .fs-rate-threshold span {
+  color: #f87171 !important;
+}
+
+html.dark .fs-rate-bar.under {
+  background: linear-gradient(180deg, #2dd4bf, #0d9488) !important;
+}
+
+html.dark .fs-rate-bar.over {
+  background: linear-gradient(180deg, #f87171, #ef4444) !important;
+}
+
+html.dark .fs-rate-bar-wrap > span {
+  color: #8da39f !important;
+}
+
+html.dark .fs-heatmap-header span {
+  color: #8da39f !important;
+}
+
+html.dark .fs-heatmap-label {
+  color: #ffffff !important;
+}
+
+html.dark .fs-heatmap-cell.none {
+  background: #0a1113 !important;
+  color: #475569 !important;
+  border: 1px solid #182427 !important;
+}
+
+html.dark .fs-heatmap-cell.low {
+  background: rgba(34, 197, 94, 0.16) !important;
+  color: #4ade80 !important;
+  border: 1px solid rgba(34, 197, 94, 0.3) !important;
+}
+
+html.dark .fs-heatmap-cell.medium {
+  background: rgba(245, 158, 11, 0.16) !important;
+  color: #fbbf24 !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+}
+
+html.dark .fs-heatmap-cell.high {
+  background: rgba(239, 68, 68, 0.16) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+}
+
+html.dark .fs-heatmap-cell.critical {
+  background: rgba(239, 68, 68, 0.3) !important;
+  color: #ffffff !important;
+  border: 1px solid #ef4444 !important;
+}
+
+html.dark .fs-heatmap-total-row {
+  border-top: 1px dashed rgba(45, 212, 191, 0.25) !important;
+}
+
+html.dark .fs-heatmap-total-row .fs-heatmap-label {
+  color: #2dd4bf !important;
+}
+
+html.dark .fs-heatmap-total-cell {
+  color: #ffffff !important;
+}
+
+html.dark .fs-pareto-bars {
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .fs-pareto-bar {
+  background: linear-gradient(180deg, #2dd4bf, #0d9488) !important;
+}
+
+html.dark .fs-pareto-label {
+  color: #8da39f !important;
+}
+
+html.dark .fs-pareto-count {
+  color: #2dd4bf !important;
+}
+
+html.dark .fs-pareto-ref-80 {
+  border-top: 1.5px dashed #fbbf24 !important;
+}
+
+html.dark .fs-pareto-ref-80 span {
+  color: #fbbf24 !important;
+}
+
+/* 6. Process Capability & Quality Analytics */
+html.dark .fs-gauge-card {
+  background: #141f22 !important;
+  border: 1px solid #1f2f33 !important;
+}
+
+html.dark .fs-gauge-value b {
+  color: #ffffff !important;
+}
+
+html.dark .fs-gauge-status {
+  color: #2dd4bf !important;
+}
+
+html.dark .fs-line-matrix-card {
+  background: #10181b !important;
+  border: 1px solid #1f2f33 !important;
+  border-radius: 9px !important;
+}
+
+html.dark .fs-line-matrix-head b {
+  color: #ffffff !important;
+}
+
+html.dark .fs-line-matrix-bar-wrap {
+  background: #0a1113 !important;
+}
+
+html.dark .fs-line-matrix-metrics {
+  color: #8da39f !important;
+}
+
+html.dark .fs-line-matrix-metrics span b {
+  color: #ffffff !important;
+}
+
+/* 7. Live Monitoring & Plant Telemetry */
+html.dark .fs-line-card {
+  background: #141f22 !important;
+  background-color: #141f22 !important;
+  border: 1px solid #1f2f33 !important;
+  border-radius: 11px !important;
+}
+
+html.dark .fs-line-card:hover {
+  border-color: rgba(45, 212, 191, 0.35) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45) !important;
+}
+
+html.dark .fs-line-card-head b {
+  color: #ffffff !important;
+}
+
+html.dark .fs-line-card-head small {
+  color: #8da39f !important;
+}
+
+html.dark .fs-line-card-metrics > div {
+  background: #0a1113 !important;
+  border: 1px solid #1c2b2e !important;
+  border-radius: 6px !important;
+}
+
+html.dark .fs-line-card-metrics dt {
+  color: #8da39f !important;
+}
+
+html.dark .fs-line-card-metrics dd {
+  color: #ffffff !important;
+}
+
+html.dark .fs-oee-bar {
+  background: #0a1113 !important;
+}
+
+html.dark .fs-alert-panel {
+  background: #141f22 !important;
+  border: 1px solid #1f2f33 !important;
+  border-radius: 10px !important;
+}
+
+html.dark .fs-alert-item {
+  background: #10181b !important;
+  border: 1px solid #1f2f33 !important;
+  color: #dceae7 !important;
+  border-radius: 8px !important;
+}
+
+html.dark .fs-alert-item b {
+  color: #ffffff !important;
+}
+
+html.dark .fs-alert-item p {
+  color: #8da39f !important;
+}
+
+html.dark .fs-alert-item small {
+  color: #8da39f !important;
+}
+
+html.dark .fs-alert-ack-badge {
+  background: rgba(45, 212, 191, 0.12) !important;
+  color: #2dd4bf !important;
+}
+
+html.dark .fs-handoff-notes {
+  color: #8da39f !important;
+}
+
+html.dark .fs-handoff-textarea {
+  background: #0a1113 !important;
+  border: 1px solid #223236 !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+}
+
+html.dark .fs-handoff-textarea:focus {
+  border-color: #2dd4bf !important;
+  box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.25) !important;
+}
+
+/* 8. Announcements Modal Full Dark Theme */
+html.dark .fs-ann-tab-bar {
+  background: #0a1113 !important;
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .fs-ann-tab-btn {
+  color: #8da39f !important;
+}
+
+html.dark .fs-ann-tab-btn.active {
+  background: rgba(20, 184, 166, 0.16) !important;
+  color: #2dd4bf !important;
+  border-color: rgba(45, 212, 191, 0.35) !important;
+}
+
+html.dark .fs-ann-form {
+  background: #10181b !important;
+  border: 1px solid #1f2f33 !important;
+}
+
+html.dark .fs-ann-form-field label {
+  color: #ffffff !important;
+}
+
+html.dark .fs-ann-cat-pill {
+  background: #0a1113 !important;
+  border: 1px solid #1f2f33 !important;
+  color: #dceae7 !important;
+}
+
+html.dark .fs-ann-cat-pill.active {
+  background: rgba(20, 184, 166, 0.18) !important;
+  border-color: #2dd4bf !important;
+  color: #2dd4bf !important;
+}
+
+html.dark .fs-ann-select {
+  background: #0a1113 !important;
+  border: 1px solid #1f2f33 !important;
+  color: #ffffff !important;
+}
+
+html.dark .fs-ann-textarea {
+  background: #0a1113 !important;
+  border: 1px solid #1f2f33 !important;
+  color: #ffffff !important;
+}
+
+html.dark .fs-ann-textarea:focus {
+  border-color: #2dd4bf !important;
+  box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.25) !important;
+}
+
+html.dark .fs-ann-char-count,
+html.dark .fs-ann-auto-expire-tip {
+  color: #8da39f !important;
+}
+
+html.dark .fs-ann-send-btn {
+  background: #0d9488 !important;
+  color: #ffffff !important;
+}
+
+html.dark .fs-ann-send-btn:hover:not(:disabled) {
+  background: #14b8a6 !important;
+}
+
+html.dark .fs-ann-history-head h3 {
+  color: #ffffff !important;
+}
+
+html.dark .fs-ann-empty {
+  background: #0a1113 !important;
+  border: 1px dashed #1f2f33 !important;
+}
+
+html.dark .fs-ann-empty p {
+  color: #ffffff !important;
+}
+
+html.dark .fs-ann-empty small {
+  color: #8da39f !important;
+}
+
+html.dark .fs-ann-card {
+  background: #10181b !important;
+  border: 1px solid #1f2f33 !important;
+  color: #dceae7 !important;
+}
+
+html.dark .fs-ann-card-line {
+  background: #0a1113 !important;
+  color: #2dd4bf !important;
+}
+
+html.dark .fs-ann-card-author,
+html.dark .fs-ann-card-time {
+  color: #8da39f !important;
+}
+
+html.dark .fs-ann-card-msg {
+  color: #e2f0ed !important;
+}
+
+html.dark .fs-alerts-modal {
+  background: #141f22 !important;
+  border: 1px solid #1f2f33 !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7) !important;
+}
+
+html.dark .fs-alerts-modal-head {
+  background: #10181b !important;
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .fs-alerts-modal-head h2,
+html.dark .fs-alerts-modal-head h3 {
+  color: #ffffff !important;
+}
+
+html.dark .fs-alerts-ack-all-btn {
+  background: rgba(20, 184, 166, 0.14) !important;
+  color: #2dd4bf !important;
+  border: 1px solid rgba(45, 212, 191, 0.35) !important;
+}
+
+html.dark .fs-alerts-ack-all-btn:hover {
+  background: #0d9488 !important;
+  color: #ffffff !important;
+  border-color: #14b8a6 !important;
+}
+
+html.dark .fs-alerts-modal-close {
+  color: #8da39f !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+}
+
+html.dark .fs-alerts-modal-close:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+html.dark .fs-alerts-modal-tabs {
+  background: #0a1113 !important;
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .fs-alerts-modal-tabs button {
+  color: #8da39f !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+}
+
+html.dark .fs-alerts-modal-tabs button:hover:not(.active) {
+  color: #ffffff !important;
+  background: rgba(20, 184, 166, 0.08) !important;
+}
+
+html.dark .fs-alerts-modal-tabs button.active {
+  background: rgba(20, 184, 166, 0.18) !important;
+  color: #2dd4bf !important;
+  border: 1px solid rgba(45, 212, 191, 0.35) !important;
+  box-shadow: none !important;
+}
+
+html.dark .fs-alerts-modal-body {
+  background: #141f22 !important;
+}
+
+html.dark .fs-alerts-modal-card {
+  background: #10181b !important;
+  border: 1px solid #1f2f33 !important;
+  color: #dceae7 !important;
+}
+
+html.dark .fs-alerts-modal-card:hover {
+  border-color: rgba(45, 212, 191, 0.4) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+}
+
+html.dark .fs-alerts-modal-card.ack {
+  background: #0d1517 !important;
+  border-color: #172427 !important;
+  opacity: 0.6 !important;
+}
+
+html.dark .fs-alerts-card-meta b {
+  color: #ffffff !important;
+}
+
+html.dark .fs-alerts-card-meta small {
+  color: #8da39f !important;
+}
+
+html.dark .fs-alerts-card-msg {
+  color: #e2f0ed !important;
+}
+
+html.dark .fs-alert-cat-badge {
+  background: rgba(45, 212, 191, 0.14) !important;
+  color: #2dd4bf !important;
+  border: 1px solid rgba(45, 212, 191, 0.28) !important;
+}
+
+html.dark .fs-alert-sev-tag.high {
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.35) !important;
+}
+
+html.dark .fs-alert-sev-tag.medium {
+  background: rgba(245, 158, 11, 0.2) !important;
+  color: #fbbf24 !important;
+  border: 1px solid rgba(245, 158, 11, 0.35) !important;
+}
+
+html.dark .fs-alert-sev-tag.low {
+  background: rgba(34, 197, 94, 0.2) !important;
+  color: #4ade80 !important;
+  border: 1px solid rgba(34, 197, 94, 0.35) !important;
+}
+
+html.dark .fs-alert-ack-action-btn {
+  background: rgba(20, 184, 166, 0.14) !important;
+  color: #2dd4bf !important;
+  border: 1px solid rgba(45, 212, 191, 0.3) !important;
+}
+
+html.dark .fs-alert-ack-action-btn:hover {
+  background: #0d9488 !important;
+  color: #ffffff !important;
+}
+
+html.dark .fs-alerts-modal-foot {
+  background: #10181b !important;
+  border-top: 1px solid #1f2f33 !important;
+  color: #8da39f !important;
+}
+
+html.dark .fs-alerts-modal-done-btn {
+  background: #0d9488 !important;
+  color: #ffffff !important;
+}
+
+html.dark .fs-alerts-modal-done-btn:hover {
+  background: #14b8a6 !important;
+}
+
+/* 9. FS Tables & Status Badges */
+html.dark .fs-table-wrap {
+  border: 1px solid #1f2f33 !important;
+  background: #141f22 !important;
+}
+
+html.dark .fs-table-wrap table {
+  background: #141f22 !important;
+}
+
+html.dark .fs-table-wrap th {
+  background: #10181b !important;
+  color: #8da39f !important;
+  border-bottom: 1px solid #1f2f33 !important;
+}
+
+html.dark .fs-table-wrap td {
+  border-bottom: 1px solid #1a272a !important;
+  color: #dceae7 !important;
+}
+
+html.dark .fs-table-wrap tr:hover td {
+  background: rgba(20, 184, 166, 0.05) !important;
+}
+
+html.dark .fs-table-wrap td b {
+  color: #ffffff !important;
+}
+
+html.dark .fs-table-wrap td small {
+  color: #8da39f !important;
+}
+
+html.dark .fs-history-count {
+  color: #ffffff !important;
+}
+
+html.dark .fs-date {
+  color: #8da39f !important;
+}
+
+html.dark .fs-verdict.pass,
+html.dark .fs-history-flags.clear,
+html.dark .fs-line-status-badge.running,
+html.dark .fs-yield-badge.good,
+html.dark .fs-capability.excellent,
+html.dark .fs-line-matrix-status.running {
+  background: rgba(34, 197, 94, 0.16) !important;
+  color: #4ade80 !important;
+  border: 1px solid rgba(34, 197, 94, 0.3) !important;
+}
+
+html.dark .fs-verdict.fail,
+html.dark .fs-history-flags.flagged,
+html.dark .fs-line-status-badge.maintenance,
+html.dark .fs-yield-badge.bad,
+html.dark .fs-capability.poor {
+  background: rgba(239, 68, 68, 0.16) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+}
+
+html.dark .fs-line-status-badge.idle,
+html.dark .fs-yield-badge.warn,
+html.dark .fs-capability.adequate,
+html.dark .fs-line-matrix-status.idle {
+  background: rgba(245, 158, 11, 0.16) !important;
+  color: #fbbf24 !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+}
