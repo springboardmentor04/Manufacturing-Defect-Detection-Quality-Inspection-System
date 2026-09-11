@@ -17,6 +17,12 @@ services:
     envVars:
       - key: PYTHONPATH
         value: .
+      - key: MALLOC_ARENA_MAX
+        value: "2"
+      - key: OMP_NUM_THREADS
+        value: "1"
+      - key: OPENBLAS_NUM_THREADS
+        value: "1"
       - key: MODEL_PATH
         value: ml/models/best.pt
       - key: CLASSIFIER_PATH

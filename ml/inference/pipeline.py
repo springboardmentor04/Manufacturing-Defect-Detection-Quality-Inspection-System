@@ -3,6 +3,7 @@ import os
 import gc
 from contextlib import nullcontext
 
+os.environ["MALLOC_ARENA_MAX"] = "2"
 os.environ["OMP_NUM_THREADS"] = "1"
 os.environ["OPENBLAS_NUM_THREADS"] = "1"
 os.environ["MKL_NUM_THREADS"] = "1"
