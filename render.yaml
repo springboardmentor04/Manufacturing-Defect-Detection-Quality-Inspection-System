@@ -19,6 +19,8 @@ services:
         value: .
       - key: MODEL_PATH
         value: ml/models/best.pt
+      - key: CLASSIFIER_PATH
+        value: ml/models/defect_classifier_v2/weights/weights/best.pt
       - key: UPLOAD_DIR
         value: storage/uploads
       - key: CORS_ORIGINS
