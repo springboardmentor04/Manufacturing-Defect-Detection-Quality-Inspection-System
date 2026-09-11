@@ -67,18 +67,21 @@ export const getAssetUrl = (path: string | null | undefined): string => {
 export const formatApiError = (error: any, fallbackMessage: string = 'Operation failed. Please verify the backend connection and try again.'): string => {
   if (!error) return fallbackMessage;
 
+  const status = error.response?.status;
+  const statusPrefix = status ? `[HTTP ${status}] ` : '';
+
   // 1. Check for detailed backend response body
   if (error.response?.data) {
     const data = error.response.data;
 
     // String detail
     if (typeof data.detail === 'string' && data.detail.trim()) {
-      return data.detail.trim();
+      return `${statusPrefix}${data.detail.trim()}`;
     }
 
     // Array of Pydantic validation errors (FastAPI 422)
     if (Array.isArray(data.detail) && data.detail.length > 0) {
-      return data.detail
+      const details = data.detail
         .map((item: any) => {
           if (typeof item === 'string') return item;
           if (item?.msg) {
@@ -90,39 +93,40 @@ export const formatApiError = (error: any, fallbackMessage: string = 'Operation 
           return JSON.stringify(item);
         })
         .join('; ');
+      return `${statusPrefix}Validation Error: ${details}`;
     }
 
     // Generic message field
     if (typeof data.message === 'string' && data.message.trim()) {
-      return data.message.trim();
+      return `${statusPrefix}${data.message.trim()}`;
     }
   }
 
   // 2. HTTP Status Code specific descriptions
-  if (error.response?.status) {
-    switch (error.response.status) {
+  if (status) {
+    switch (status) {
       case 400:
-        return 'Bad Request: Invalid image format or inspection parameters provided.';
+        return `${statusPrefix}Bad Request: Invalid image format or inspection parameters provided.`;
       case 401:
-        return 'Authentication required. Your session may have expired. Please sign in again.';
+        return `${statusPrefix}Authentication required. Your session may have expired. Please sign in again.`;
       case 403:
-        return 'Access Forbidden: Your account role does not have permission to perform this inspection action.';
+        return `${statusPrefix}Access Forbidden: Your account role does not have permission to perform this inspection action.`;
       case 404:
-        return 'Resource not found on backend.';
+        return `${statusPrefix}Resource not found on backend.`;
       case 422:
-        return 'Unprocessable Entity: Required parameters missing or invalid format.';
+        return `${statusPrefix}Unprocessable Entity: Required parameters missing or invalid format.`;
       case 500:
-        return 'Internal Server Error: AI inference failure. Please check the backend model runtime.';
+        return `${statusPrefix}Internal Server Error: AI inference failure. Please check the backend model runtime.`;
       case 502:
       case 503:
       case 504:
-        return 'Backend Service Unavailable: The Render backend service is waking up from idle (cold start). Please wait a moment and retry.';
+        return `${statusPrefix}Backend Service Unavailable: The Render backend service is waking up from idle (cold start). Please wait a moment and retry.`;
     }
   }
 
   // 3. Network & Connectivity issues
   if (error.code === 'ERR_NETWORK' || error.message?.toLowerCase().includes('network error') || !error.response) {
-    return `Network Error: Unable to reach VisionInspect AI backend. Please verify your internet connection and backend deployment.`;
+    return `Network Error: Unable to reach VisionInspect AI backend at ${API_URL}. The service may be starting up or experiencing connectivity delays. Please retry in a few seconds.`;
   }
 
   // 4. Timeouts
@@ -130,7 +134,7 @@ export const formatApiError = (error: any, fallbackMessage: string = 'Operation 
     return 'Request Timeout: AI model inference took longer than expected. Please retry.';
   }
 
-  return error.message || fallbackMessage;
+  return error.message ? `${statusPrefix}${error.message}` : fallbackMessage;
 };
 
 export const api = axios.create({

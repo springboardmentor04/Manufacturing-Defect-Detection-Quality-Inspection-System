@@ -68,6 +68,7 @@ allowed_origins = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
     "https://vision-ai-inspect-frontend-prod.onrender.com",
+    "https://vision-ai-inspect.onrender.com",
 ]
 if cors_origins_env and cors_origins_env != "*":
     for origin in cors_origins_env.split(","):
@@ -77,7 +78,7 @@ if cors_origins_env and cors_origins_env != "*":
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if cors_origins_env == "*" else allowed_origins,
+    allow_origins=allowed_origins,
     allow_origin_regex=r"https?://.*",
     allow_credentials=True,
     allow_methods=["*"],

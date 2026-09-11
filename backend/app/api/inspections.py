@@ -229,12 +229,35 @@ async def create_and_run_inspection(
     if role_name in {"SUPERVISOR", "FACTORY_SUPERVISOR"}:
         raise HTTPException(status_code=403, detail="Factory Supervisor role is read-only and cannot start a new inspection.")
 
-    product = db.query(Product).filter(Product.id == product_id).first() if product_id else None
-    product_name = product.name.strip() if product else None
-    if not batch_id and product_id:
-        batch = db.query(ProductionBatch).filter(ProductionBatch.product_id == product_id).first()
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Product with ID {product_id} was not found. Please select or create a valid product first."
+        )
+    product_name = product.name.strip() if product.name else None
+
+    # Resolve or create a valid production batch for this product
+    if batch_id:
+        batch = db.query(ProductionBatch).filter(ProductionBatch.id == batch_id).first()
+        if not batch or batch.product_id != product.id:
+            batch = db.query(ProductionBatch).filter(ProductionBatch.product_id == product.id).first()
+            if not batch:
+                batch = ProductionBatch(
+                    batch_number=f"BATCH-{product.product_code or product.id}-001",
+                    product_id=product.id
+                )
+                db.add(batch)
+                db.commit()
+                db.refresh(batch)
+            batch_id = batch.id
+    else:
+        batch = db.query(ProductionBatch).filter(ProductionBatch.product_id == product.id).first()
         if not batch:
-            batch = ProductionBatch(batch_number=f"BATCH-{product_id}-{uuid.uuid4().hex[:6].upper()}", product_id=product_id)
+            batch = ProductionBatch(
+                batch_number=f"BATCH-{product.product_code or product.id}-001",
+                product_id=product.id
+            )
             db.add(batch)
             db.commit()
             db.refresh(batch)
