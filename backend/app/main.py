@@ -106,7 +106,16 @@ app.include_router(reports.router, prefix="/api/v1/reports", tags=["reports"])
 
 @app.get("/health")
 def health_check():
-    return {"status": "ok", "version": "v1.2.0-single-model"}
+    from ml.inference.pipeline import pipeline
+    return {
+        "status": "ok",
+        "version": "v1.2.0-single-model",
+        "model_status": pipeline.model_status,
+        "model_path": pipeline.model_path,
+        "classifier_path": pipeline.classifier_path,
+        "classifier_loaded": pipeline.classifier_model is not None,
+        "classifier_file_exists": os.path.isfile(pipeline.classifier_path) if pipeline.classifier_path else False,
+    }
 
 
 @app.on_event("startup")
