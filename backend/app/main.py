@@ -98,7 +98,7 @@ app.include_router(reports.router, prefix="/api/reports", tags=["reports"])
 
 @app.get("/health")
 def health_check():
-    return {"status": "ok"}
+    return {"status": "ok", "version": "v1.2.0-single-model"}
 
 
 @app.on_event("startup")
