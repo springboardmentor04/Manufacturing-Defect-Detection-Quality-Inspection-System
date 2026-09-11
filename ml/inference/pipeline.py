@@ -305,18 +305,18 @@ class InferencePipeline:
                     # Localized subcrops for large bounding boxes (e.g. capsule surface defects)
                     if bw > 250 or bh > 250:
                         if clean_product == 'capsule' or (clean_product and clean_product in ("capsule", "wood", "leather", "carpet", "tile", "pill")):
-                            for sub_w, sub_h in [(260, 110), (300, 140)]:
-                                step_x, step_y = 40, 35
-                                for gy in range(by1, max(by1 + 1, by2 - sub_h + 1), step_y):
-                                    for gx in range(bx1, max(bx1 + 1, bx2 - sub_w + 1), step_x):
-                                        gx2 = min(w, gx + sub_w)
-                                        gy2 = min(h, gy + sub_h)
-                                        if obj_mask is not None:
-                                            mask_roi = obj_mask[gy:gy2, gx:gx2]
-                                            if mask_roi.size > 0 and (np.count_nonzero(mask_roi) / mask_roi.size) >= 0.85:
-                                                crops.append(('sub_surface', orig_img[gy:gy2, gx:gx2]))
-                                        else:
+                            sub_w, sub_h = min(bw, 260), min(bh, 110)
+                            step_x, step_y = 90, 80
+                            for gy in range(by1, max(by1 + 1, by2 - sub_h + 1), step_y):
+                                for gx in range(bx1, max(bx1 + 1, bx2 - sub_w + 1), step_x):
+                                    gx2 = min(w, gx + sub_w)
+                                    gy2 = min(h, gy + sub_h)
+                                    if obj_mask is not None:
+                                        mask_roi = obj_mask[gy:gy2, gx:gx2]
+                                        if mask_roi.size > 0 and (np.count_nonzero(mask_roi) / mask_roi.size) >= 0.85:
                                             crops.append(('sub_surface', orig_img[gy:gy2, gx:gx2]))
+                                    else:
+                                        crops.append(('sub_surface', orig_img[gy:gy2, gx:gx2]))
 
                     # Connector head subcrop for structured assemblies like cable
                     if clean_product == 'cable' and bh > 300:
