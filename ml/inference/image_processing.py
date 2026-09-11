@@ -60,12 +60,12 @@ def analyse_image_quality(image: np.ndarray) -> dict:
 def preprocess_image(image: np.ndarray, output_path: str) -> str:
     """Create a derived inspection image without altering the uploaded original."""
     height, width = image.shape[:2]
-    max_side = 1280
+    max_side = 640
     scale = min(1.0, max_side / max(width, height))
     if scale < 1.0:
         image = cv2.resize(image, (round(width * scale), round(height * scale)), interpolation=cv2.INTER_AREA)
-    # Lightweight bilateral filter for efficient edge-preserving denoising in production
-    denoised = cv2.bilateralFilter(image, d=5, sigmaColor=50, sigmaSpace=50)
+    # Lightweight Gaussian blur for fast, low-memory denoising in cloud container
+    denoised = cv2.GaussianBlur(image, (3, 3), 0)
     lab = cv2.cvtColor(denoised, cv2.COLOR_BGR2LAB)
     l, a, b = cv2.split(lab)
     enhanced = cv2.cvtColor(cv2.merge((cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8)).apply(l), a, b)), cv2.COLOR_LAB2BGR)

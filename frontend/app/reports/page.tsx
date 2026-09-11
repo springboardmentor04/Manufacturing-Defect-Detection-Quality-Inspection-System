@@ -3,8 +3,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { reportsService } from '@/services/reports';
-import { getAssetUrl } from '@/services/api';
-import { FileText, Download, Plus, RotateCw, AlertCircle, CheckCircle2, X, Loader2, ExternalLink } from 'lucide-react';
+import { getAssetUrl, formatApiError } from '@/services/api';
+import { FileText, Plus, RotateCw, AlertCircle, CheckCircle2, X, Loader2, ExternalLink } from 'lucide-react';
 
 interface ReportFormData {
   report_type: string;
@@ -34,17 +34,8 @@ export default function ReportsPage() {
       setReports(Array.isArray(data) ? data : []);
     } catch (error: any) {
       console.error('[ReportsPage] Failed to fetch reports:', error);
-      let errorMsg = 'Failed to load reports from server.';
-      if (error.response?.data?.detail) {
-        if (typeof error.response.data.detail === 'string') {
-          errorMsg = error.response.data.detail;
-        } else if (Array.isArray(error.response.data.detail)) {
-          errorMsg = error.response.data.detail.map((d: any) => d.msg || JSON.stringify(d)).join(', ');
-        }
-      } else if (error.message) {
-        errorMsg = error.message;
-      }
-      setFetchError(errorMsg);
+      const formatted = formatApiError(error, 'Failed to load reports from server.');
+      setFetchError(formatted);
     } finally {
       setLoading(false);
     }
@@ -95,19 +86,8 @@ export default function ReportsPage() {
       await fetchReports();
     } catch (error: any) {
       console.error('[ReportsPage] Error generating report:', error);
-      let errorMsg = 'Failed to generate report.';
-      if (error.response?.data?.detail) {
-        if (typeof error.response.data.detail === 'string') {
-          errorMsg = error.response.data.detail;
-        } else if (Array.isArray(error.response.data.detail)) {
-          errorMsg = error.response.data.detail.map((d: any) => d.msg || JSON.stringify(d)).join('; ');
-        }
-      } else if (error.response?.status === 401) {
-        errorMsg = 'Session expired. Please log in again.';
-      } else if (error.message) {
-        errorMsg = error.message;
-      }
-      setGenerateError(errorMsg);
+      const formatted = formatApiError(error, 'Failed to generate report.');
+      setGenerateError(formatted);
     } finally {
       setIsGenerating(false);
     }
@@ -209,13 +189,13 @@ export default function ReportsPage() {
                     </div>
 
                     <h3 className="font-bold text-slate-900 text-base mb-1">
-                      {report.report_type.replace(/_/g, ' ')}
+                      {report.report_type?.replace(/_/g, ' ') || 'Quality Report'}
                     </h3>
                     <p className="text-xs font-medium text-slate-500 mb-2">
                       Range: <span className="text-slate-800 font-semibold">{report.date_range}</span>
                     </p>
                     <p className="text-xs text-slate-400">
-                      Generated: {new Date(report.created_at).toLocaleString()}
+                      Generated: {report.created_at ? new Date(report.created_at).toLocaleString() : 'Recently'}
                     </p>
                   </div>
 
@@ -276,7 +256,7 @@ export default function ReportsPage() {
               )}
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label htmlFor="report-type" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                   Report Type <span className="text-rose-500">*</span>
                 </label>
                 <select
@@ -294,7 +274,7 @@ export default function ReportsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label htmlFor="date-range" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                   Date Range <span className="text-rose-500">*</span>
                 </label>
                 <select

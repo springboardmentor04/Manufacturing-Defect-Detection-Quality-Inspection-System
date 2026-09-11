@@ -26,11 +26,11 @@ export default function Sidebar() {
       { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['ADMIN', 'QUALITY_ENGINEER', 'SUPERVISOR', 'FACTORY_SUPERVISOR'] },
       { name: 'Inspections', href: '/inspections', icon: Camera, roles: ['ADMIN', 'QUALITY_ENGINEER', 'SUPERVISOR', 'FACTORY_SUPERVISOR', 'OPERATOR'] },
       { name: 'New Inspection', href: '/inspections/new', icon: Plus, roles: ['ADMIN', 'QUALITY_ENGINEER', 'OPERATOR'] },
-      { name: 'Products', href: '/products', icon: Box, roles: ['ADMIN', 'QUALITY_ENGINEER'] },
+      { name: 'Products', href: '/products', icon: Box, roles: ['ADMIN', 'QUALITY_ENGINEER', 'SUPERVISOR', 'FACTORY_SUPERVISOR'] },
       { name: 'Batches', href: '/batches', icon: Layers, roles: ['ADMIN', 'QUALITY_ENGINEER', 'SUPERVISOR', 'FACTORY_SUPERVISOR'] },
       { name: 'Analytics', href: '/analytics', icon: BarChart3, roles: ['ADMIN', 'QUALITY_ENGINEER', 'SUPERVISOR', 'FACTORY_SUPERVISOR'] },
       { name: 'Reports', href: '/reports', icon: FileText, roles: ['ADMIN', 'QUALITY_ENGINEER', 'SUPERVISOR', 'FACTORY_SUPERVISOR'] },
-      { name: 'Models', href: '/models', icon: Cpu, roles: ['ADMIN', 'QUALITY_ENGINEER'] },
+      { name: 'Models', href: '/models', icon: Cpu, roles: ['ADMIN', 'QUALITY_ENGINEER', 'SUPERVISOR', 'FACTORY_SUPERVISOR'] },
     ];
 
     if (!user || !user.role) return items;

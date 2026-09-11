@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { productsService, CreateProductInput } from '@/services/products';
+import { formatApiError } from '@/services/api';
 import { Product } from '@/types';
 import { Plus, RotateCw, AlertCircle, CheckCircle2, Package, X, Loader2 } from 'lucide-react';
 
@@ -37,20 +38,9 @@ export default function ProductsPage() {
       const data = await productsService.getAll();
       setProducts(Array.isArray(data) ? data : []);
     } catch (error: any) {
-      console.error('Failed to fetch products:', error);
-      let errorMsg = 'Failed to load products from server.';
-      if (error.response?.data?.detail) {
-        if (typeof error.response.data.detail === 'string') {
-          errorMsg = error.response.data.detail;
-        } else if (Array.isArray(error.response.data.detail)) {
-          errorMsg = error.response.data.detail
-            .map((d: any) => d.msg || JSON.stringify(d))
-            .join(', ');
-        }
-      } else if (error.message) {
-        errorMsg = error.message;
-      }
-      setFetchError(errorMsg);
+      console.error('[ProductsPage] Failed to fetch products:', error);
+      const formatted = formatApiError(error, 'Failed to load products from server.');
+      setFetchError(formatted);
     } finally {
       setLoading(false);
     }
@@ -82,10 +72,7 @@ export default function ProductsPage() {
 
     if (isSaving) return;
 
-    console.log('[ProductsPage] handleSave triggered with formData:', formData);
-
     if (!formData.name || !formData.name.trim()) {
-      console.warn('[ProductsPage] Validation failed: Product name is required');
       setSaveError('Product Name is required.');
       return;
     }
@@ -101,11 +88,8 @@ export default function ProductsPage() {
         description: formData.description?.trim() || undefined,
       };
 
-      console.log('[ProductsPage] Sending POST request to backend with payload:', payload);
       const createdProduct = await productsService.create(payload);
-      console.log('[ProductsPage] Product created successfully:', createdProduct);
 
-      // Optimistically update list immediately
       if (createdProduct && createdProduct.id) {
         setProducts((prev) => [
           createdProduct,
@@ -119,25 +103,11 @@ export default function ProductsPage() {
       setIsModalOpen(false);
       setFormData(initialFormData);
 
-      // Refresh list to synchronize with backend database
       await fetchProducts();
     } catch (error: any) {
       console.error('[ProductsPage] Failed to create product:', error);
-      let errorMsg = 'Failed to save product. Please check the details and try again.';
-      if (error.response?.data?.detail) {
-        if (typeof error.response.data.detail === 'string') {
-          errorMsg = error.response.data.detail;
-        } else if (Array.isArray(error.response.data.detail)) {
-          errorMsg = error.response.data.detail
-            .map((d: any) => d.msg || (d.loc ? `${d.loc.join('.')}: ${d.msg}` : JSON.stringify(d)))
-            .join('; ');
-        }
-      } else if (error.response?.status === 401) {
-        errorMsg = 'Session expired or not authenticated. Please log in again.';
-      } else if (error.message) {
-        errorMsg = error.message;
-      }
-      setSaveError(errorMsg);
+      const formatted = formatApiError(error, 'Failed to save product.');
+      setSaveError(formatted);
     } finally {
       setIsSaving(false);
     }
@@ -314,7 +284,7 @@ export default function ProductsPage() {
               )}
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label htmlFor="product-name" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                   Product Name <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -333,7 +303,7 @@ export default function ProductsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label htmlFor="product-code" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                   Product Code / SKU
                 </label>
                 <input
@@ -348,7 +318,7 @@ export default function ProductsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label htmlFor="production-line" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                   Production Line
                 </label>
                 <input
@@ -363,7 +333,7 @@ export default function ProductsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label htmlFor="product-description" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                   Description
                 </label>
                 <textarea

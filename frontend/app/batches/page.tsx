@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { batchesService, CreateBatchInput } from '@/services/batches';
 import { productsService } from '@/services/products';
+import { formatApiError } from '@/services/api';
 import { Batch, Product } from '@/types';
 import { Plus, RotateCw, AlertCircle, CheckCircle2, Layers, X, Loader2 } from 'lucide-react';
 
@@ -40,17 +41,8 @@ export default function BatchesPage() {
       setProducts(Array.isArray(productsData) ? productsData : []);
     } catch (error: any) {
       console.error('[BatchesPage] Failed to load data:', error);
-      let errorMsg = 'Failed to load batches from server.';
-      if (error.response?.data?.detail) {
-        if (typeof error.response.data.detail === 'string') {
-          errorMsg = error.response.data.detail;
-        } else if (Array.isArray(error.response.data.detail)) {
-          errorMsg = error.response.data.detail.map((d: any) => d.msg || JSON.stringify(d)).join(', ');
-        }
-      } else if (error.message) {
-        errorMsg = error.message;
-      }
-      setFetchError(errorMsg);
+      const formatted = formatApiError(error, 'Failed to load batches from server.');
+      setFetchError(formatted);
     } finally {
       setLoading(false);
     }
@@ -100,10 +92,8 @@ export default function BatchesPage() {
         product_id: parseInt(formData.product_id, 10),
       };
 
-      console.log('[BatchesPage] Creating batch with payload:', payload);
       const createdBatch = await batchesService.create(payload);
 
-      // Optimistically update list
       if (createdBatch && createdBatch.id) {
         setBatches((prev) => [
           createdBatch,
@@ -117,31 +107,16 @@ export default function BatchesPage() {
       setIsModalOpen(false);
       setFormData(initialFormData);
 
-      // Synchronize with database
       await fetchData();
     } catch (error: any) {
       console.error('[BatchesPage] Error creating batch:', error);
-      let errorMsg = 'Failed to create batch. Please try again.';
-      if (error.response?.data?.detail) {
-        if (typeof error.response.data.detail === 'string') {
-          errorMsg = error.response.data.detail;
-        } else if (Array.isArray(error.response.data.detail)) {
-          errorMsg = error.response.data.detail
-            .map((d: any) => d.msg || (d.loc ? `${d.loc.join('.')}: ${d.msg}` : JSON.stringify(d)))
-            .join('; ');
-        }
-      } else if (error.response?.status === 401) {
-        errorMsg = 'Session expired. Please log in again.';
-      } else if (error.message) {
-        errorMsg = error.message;
-      }
-      setSaveError(errorMsg);
+      const formatted = formatApiError(error, 'Failed to create batch.');
+      setSaveError(formatted);
     } finally {
       setIsSaving(false);
     }
   };
 
-  // Map product names for display in table
   const getProductName = (productId: number, productObj?: Product) => {
     if (productObj?.name) return productObj.name;
     const found = products.find((p) => p.id === productId);
@@ -303,7 +278,7 @@ export default function BatchesPage() {
               )}
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label htmlFor="batch-number" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                   Batch Number <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -322,7 +297,7 @@ export default function BatchesPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label htmlFor="batch-product" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                   Product <span className="text-rose-500">*</span>
                 </label>
                 <select

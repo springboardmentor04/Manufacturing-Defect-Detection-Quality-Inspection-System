@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { modelsService } from '@/services/models';
+import { formatApiError } from '@/services/api';
 import { ModelVersion } from '@/types';
 import { CheckCircle2, RotateCw, AlertCircle, Cpu, Loader2, Zap } from 'lucide-react';
 
@@ -21,17 +22,8 @@ export default function ModelsPage() {
       setModels(Array.isArray(data) ? data : []);
     } catch (err: any) {
       console.error('[ModelsPage] Failed to fetch models:', err);
-      let errorMsg = 'Failed to load model registry from server.';
-      if (err.response?.data?.detail) {
-        if (typeof err.response.data.detail === 'string') {
-          errorMsg = err.response.data.detail;
-        } else if (Array.isArray(err.response.data.detail)) {
-          errorMsg = err.response.data.detail.map((d: any) => d.msg || JSON.stringify(d)).join(', ');
-        }
-      } else if (err.message) {
-        errorMsg = err.message;
-      }
-      setError(errorMsg);
+      const formatted = formatApiError(err, 'Failed to load model registry from server.');
+      setError(formatted);
     } finally {
       setLoading(false);
     }
@@ -51,13 +43,8 @@ export default function ModelsPage() {
       await fetchModels();
     } catch (err: any) {
       console.error('[ModelsPage] Failed to activate model:', err);
-      let errorMsg = 'Failed to activate model.';
-      if (err.response?.data?.detail && typeof err.response.data.detail === 'string') {
-        errorMsg = err.response.data.detail;
-      } else if (err.message) {
-        errorMsg = err.message;
-      }
-      setError(errorMsg);
+      const formatted = formatApiError(err, 'Failed to activate model.');
+      setError(formatted);
     } finally {
       setActivatingId(null);
     }

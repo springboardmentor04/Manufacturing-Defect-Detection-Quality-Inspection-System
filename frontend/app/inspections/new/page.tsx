@@ -6,8 +6,9 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { productsService } from '@/services/products';
 import { batchesService } from '@/services/batches';
 import { inspectionsService } from '@/services/inspections';
+import { formatApiError } from '@/services/api';
 import { Product, Batch } from '@/types';
-import { Camera as CameraIcon, UploadCloud, X, RefreshCw, Cpu, AlertCircle, Loader2 } from 'lucide-react';
+import { Camera as CameraIcon, UploadCloud, X, Cpu, AlertCircle, Loader2 } from 'lucide-react';
 import Webcam from 'react-webcam';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -49,11 +50,12 @@ export default function NewInspectionPage() {
         ]);
         setProducts(Array.isArray(p) ? p : []);
         setBatches(Array.isArray(b) ? b : []);
-        if (p.length > 0 && !selectedProduct) {
+        if (p && p.length > 0 && !selectedProduct) {
           setSelectedProduct(p[0].id.toString());
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('[NewInspectionPage] Failed to load products/batches:', error);
+        setErrorMessage(formatApiError(error, 'Failed to load products and batches for inspection.'));
       } finally {
         setLoadingContext(false);
       }
@@ -90,6 +92,9 @@ export default function NewInspectionPage() {
           const newFile = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' });
           setFile(newFile);
           setErrorMessage(null);
+        })
+        .catch((err) => {
+          setErrorMessage(`Camera capture error: ${err.message}`);
         });
     }
   }, [webcamRef]);
@@ -102,18 +107,18 @@ export default function NewInspectionPage() {
 
   const runInspection = async () => {
     if (!selectedProduct) {
-      setErrorMessage('Please select a product before submitting.');
+      setErrorMessage('Please select a product from the list before starting inspection.');
       return;
     }
     if (!file) {
-      setErrorMessage('Please upload or capture a product inspection image.');
+      setErrorMessage('Please upload or capture an optical inspection image.');
       return;
     }
 
     try {
       setIsProcessing(true);
       setErrorMessage(null);
-      setStatusText('Uploading high-resolution image to AI pipeline...');
+      setStatusText('Uploading high-resolution image to AI pipeline and executing YOLO defect inference...');
 
       const inspection = await inspectionsService.createAndRun(
         parseInt(selectedProduct, 10),
@@ -121,21 +126,15 @@ export default function NewInspectionPage() {
         file
       );
 
-      setStatusText('Inference complete! Loading inspection results...');
+      setStatusText('Inference complete! Redirecting to inspection report...');
       router.push(`/inspections/${inspection.id}`);
     } catch (error: any) {
-      console.error('[NewInspectionPage] Inspection run error:', error);
-      let detail = 'Inspection failed. Please verify the backend connection and image format.';
-      if (error.response?.data?.detail) {
-        if (typeof error.response.data.detail === 'string') {
-          detail = error.response.data.detail;
-        } else if (Array.isArray(error.response.data.detail)) {
-          detail = error.response.data.detail.map((d: any) => d.msg || JSON.stringify(d)).join('; ');
-        }
-      } else if (error.message) {
-        detail = error.message;
-      }
-      setErrorMessage(detail);
+      console.error('[NewInspectionPage] Inspection execution error:', error);
+      const formatted = formatApiError(
+        error, 
+        'AI Quality Inspection failed. Please verify the backend service connection and image format.'
+      );
+      setErrorMessage(formatted);
       setIsProcessing(false);
     }
   };
@@ -149,7 +148,7 @@ export default function NewInspectionPage() {
             New AI Quality Inspection
           </h1>
           <p className="text-sm text-slate-500 mt-1">
-            Run automated YOLO defect detection and multi-attribute severity assessment
+            Run automated YOLO defect localization and multi-attribute 4-state quality decision assessment
           </p>
         </div>
 
@@ -158,8 +157,15 @@ export default function NewInspectionPage() {
             <AlertCircle size={20} className="text-rose-600 shrink-0 mt-0.5" />
             <div className="flex-1">
               <p className="font-semibold text-sm">Inspection Error</p>
-              <p className="text-xs mt-0.5">{errorMessage}</p>
+              <p className="text-xs mt-0.5 whitespace-pre-wrap">{errorMessage}</p>
             </div>
+            <button 
+              type="button" 
+              onClick={() => setErrorMessage(null)} 
+              className="text-rose-500 hover:text-rose-700 p-1"
+            >
+              <X size={16} />
+            </button>
           </div>
         )}
 
@@ -167,7 +173,7 @@ export default function NewInspectionPage() {
           <h2 className="text-base font-bold text-slate-800 mb-4">1. Inspection Context</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label htmlFor="select-product-inspection" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 Product <span className="text-rose-500">*</span>
               </label>
               <select
@@ -178,10 +184,10 @@ export default function NewInspectionPage() {
                   setErrorMessage(null);
                 }}
                 disabled={isProcessing || loadingContext}
-                className="w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all bg-white"
+                className="w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all bg-white disabled:bg-slate-50"
               >
                 {products.length === 0 ? (
-                  <option value="">No products available</option>
+                  <option value="">{loadingContext ? 'Loading products...' : 'No products available'}</option>
                 ) : (
                   products.map((p) => (
                     <option key={p.id} value={p.id}>
@@ -193,7 +199,7 @@ export default function NewInspectionPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label htmlFor="select-batch-inspection" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 Production Batch (Optional)
               </label>
               <select
@@ -201,7 +207,7 @@ export default function NewInspectionPage() {
                 value={selectedBatch}
                 onChange={(e) => setSelectedBatch(e.target.value)}
                 disabled={isProcessing || loadingContext}
-                className="w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all bg-white"
+                className="w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all bg-white disabled:bg-slate-50"
               >
                 <option value="">No Batch Assigned</option>
                 {batches.map((b) => (
@@ -220,6 +226,7 @@ export default function NewInspectionPage() {
             <div className="flex bg-slate-100 p-1 rounded-lg">
               <button
                 type="button"
+                id="toggle-mode-upload"
                 onClick={() => setMode('upload')}
                 disabled={isProcessing}
                 className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${
@@ -230,6 +237,7 @@ export default function NewInspectionPage() {
               </button>
               <button
                 type="button"
+                id="toggle-mode-camera"
                 onClick={() => setMode('camera')}
                 disabled={isProcessing}
                 className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${
@@ -255,15 +263,16 @@ export default function NewInspectionPage() {
                     <label className="text-blue-600 hover:underline cursor-pointer">
                       browse
                       <input
+                        id="image-file-input"
                         type="file"
-                        accept="image/*"
+                        accept="image/jpeg,image/png,image/webp,image/jpg"
                         onChange={handleFileChange}
                         disabled={isProcessing}
                         className="hidden"
                       />
                     </label>
                   </p>
-                  <p className="text-xs text-slate-400">Supports JPEG, PNG, WebP up to 25MB</p>
+                  <p className="text-xs text-slate-400">Supports JPG, JPEG, PNG, WEBP high-resolution inspection images</p>
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center p-4 bg-slate-900 rounded-xl overflow-hidden min-h-[300px]">
@@ -274,6 +283,7 @@ export default function NewInspectionPage() {
                   />
                   <button
                     type="button"
+                    id="capture-photo-btn"
                     onClick={captureCamera}
                     disabled={isProcessing}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-semibold flex items-center gap-2 text-sm shadow-md transition-colors cursor-pointer"
@@ -288,12 +298,13 @@ export default function NewInspectionPage() {
             <div className="relative border border-slate-200 rounded-xl overflow-hidden bg-slate-900 flex flex-col items-center justify-center p-2 min-h-[300px]">
               <img
                 src={preview}
-                alt="Selected preview"
+                alt="Selected inspection preview"
                 className="max-h-[420px] object-contain rounded"
               />
               {!isProcessing && (
                 <button
                   type="button"
+                  id="remove-image-btn"
                   onClick={clearSelection}
                   className="absolute top-4 right-4 bg-slate-900/80 hover:bg-slate-900 text-white p-2 rounded-full shadow-lg transition-colors cursor-pointer"
                   title="Remove image"
@@ -308,6 +319,7 @@ export default function NewInspectionPage() {
         <div className="flex justify-end gap-3 pt-2">
           <button
             type="button"
+            id="cancel-inspection-btn"
             onClick={() => router.back()}
             disabled={isProcessing}
             className="px-5 py-2.5 text-sm font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
@@ -324,7 +336,7 @@ export default function NewInspectionPage() {
             {isProcessing ? (
               <>
                 <Loader2 size={18} className="animate-spin" />
-                <span>{statusText || 'Processing AI Inspection...'}</span>
+                <span>{statusText || 'Executing AI Inspection...'}</span>
               </>
             ) : (
               <>

@@ -3,13 +3,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { api, getAssetUrl } from '@/services/api';
+import { api, getAssetUrl, formatApiError } from '@/services/api';
 import { analyticsService } from '@/services/analytics';
 import { productsService } from '@/services/products';
 import { reportsService } from '@/services/reports';
 import { inspectionsService } from '@/services/inspections';
-import { UploadCloud, AlertTriangle, CheckCircle2, FileText, Download, Eye, ShieldCheck, Cpu, BarChart3 } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import { UploadCloud, AlertTriangle, CheckCircle2, FileText, Download, Eye, ShieldCheck, Cpu, BarChart3, AlertCircle } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { formatDefectType } from '@/utils/formatters';
 
 const COLORS = ['#0ea5e9', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#64748b'];
@@ -19,19 +19,22 @@ const normalizeRole = (role?: string | null) => (role || '').toString().trim().r
 export default function DashboardPage() {
   const { user } = useAuth();
   const normalizedRole = normalizeRole(user?.role);
-  const isQualityEngineer = ['QUALITY_ENGINEER', 'ADMIN'].includes(normalizedRole);
+  const isQualityEngineer = ['QUALITY_ENGINEER', 'ADMIN', 'OPERATOR'].includes(normalizedRole);
   const isSupervisorRole = ['SUPERVISOR', 'FACTORY_SUPERVISOR'].includes(normalizedRole);
+
   const [summary, setSummary] = useState<any>(null);
   const [inspections, setInspections] = useState<any[]>([]);
   const [reports, setReports] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  
   const [selectedProduct, setSelectedProduct] = useState<number | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadMessage, setUploadMessage] = useState('');
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const loadData = async () => {
     try {
@@ -39,8 +42,8 @@ export default function DashboardPage() {
       setError('');
       const [dashboardData, inspectionResponse, reportResponse, productResponse] = await Promise.all([
         analyticsService.getOverview().catch(() => api.get('/analytics/dashboard').then(r => r.data).catch(() => null)),
-        inspectionsService.getAll(0, 20).catch(() => []),
-        reportsService.getRecent(5).catch(() => []),
+        inspectionsService.getAll(0, 50).catch(() => []),
+        reportsService.getRecent(10).catch(() => []),
         productsService.getAll(0, 50).catch(() => []),
       ]);
 
@@ -51,9 +54,9 @@ export default function DashboardPage() {
       if ((productResponse || []).length > 0 && !selectedProduct) {
         setSelectedProduct(productResponse[0].id);
       }
-    } catch (loadError) {
-      console.error('Failed to load dashboard data', loadError);
-      setError('Unable to load dashboard data. Please check the backend connection and authentication.');
+    } catch (loadError: any) {
+      console.error('[DashboardPage] Failed to load dashboard data', loadError);
+      setError(formatApiError(loadError, 'Unable to load dashboard data. Please verify your connection.'));
     } finally {
       setLoading(false);
     }
@@ -67,7 +70,7 @@ export default function DashboardPage() {
 
   const recentInspectionRows = useMemo(() => {
     const source = summary?.recent_inspections || inspections;
-    return source.slice(0, 6);
+    return source.slice(0, 8);
   }, [summary, inspections]);
 
   const handleFileSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,24 +78,31 @@ export default function DashboardPage() {
     if (!file) return;
     setSelectedFile(file);
     setPreview(URL.createObjectURL(file));
+    setUploadError(null);
+    setUploadMessage('');
   };
 
   const runInspection = async () => {
     if (!selectedFile || !selectedProduct) {
-      setUploadMessage('Please select a product and an image before running inspection.');
+      setUploadError('Please select a product and an image before running inspection.');
       return;
     }
 
     try {
       setIsUploading(true);
-      setUploadMessage('Uploading image and running AI inspection...');
+      setUploadError(null);
+      setUploadMessage('Uploading image and executing YOLO defect inspection...');
       const inspection = await inspectionsService.createAndRun(selectedProduct, null, selectedFile);
-      setUploadMessage(`Inspection #${inspection.id} completed with ${inspection.final_decision || inspection.ai_decision || 'status'} .`);
+      const decision = inspection.final_decision || inspection.ai_decision || 'COMPLETED';
+      setUploadMessage(`Inspection #${inspection.id} completed with status ${decision}.`);
+      setSelectedFile(null);
+      setPreview(null);
       await loadData();
-    } catch (uploadError: any) {
-      console.error('Inspection run failed', uploadError);
-      const detail = uploadError.response?.data?.detail || uploadError.message || 'Inspection failed. Check backend connection.';
-      setUploadMessage(`Inspection failed: ${typeof detail === 'string' ? detail : JSON.stringify(detail)}`);
+    } catch (err: any) {
+      console.error('[DashboardPage] Inspection run failed', err);
+      const formatted = formatApiError(err, 'Inspection failed. Please verify backend connection.');
+      setUploadError(formatted);
+      setUploadMessage('');
     } finally {
       setIsUploading(false);
     }
@@ -112,16 +122,19 @@ export default function DashboardPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-extrabold text-slate-900">Quality Engineer Dashboard</h1>
-          <p className="text-slate-500">Defect monitoring, automated inspections, and quality decision workflow.</p>
+          <p className="text-slate-500">Defect monitoring, automated inspections, quality reports, and decision workflow.</p>
         </div>
       </div>
 
       {error && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 flex items-center gap-2">
+          <AlertCircle size={18} className="shrink-0" />
+          <span>{error}</span>
+        </div>
       )}
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
-        <KpiCard label="Total Inspections" value={summary?.total_inspections ?? 0} tone="blue" />
+        <KpiCard label="Total Inspections" value={summary?.total_inspections ?? inspections.length ?? 0} tone="blue" />
         <KpiCard label="PASS" value={summary?.passed_inspections ?? 0} tone="green" />
         <KpiCard label="FAIL" value={summary?.failed_inspections ?? 0} tone="red" />
         <KpiCard label="REVIEW" value={summary?.review_inspections ?? 0} tone="amber" />
@@ -133,34 +146,36 @@ export default function DashboardPage() {
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-xl font-bold text-slate-800">Defect Details</h2>
-            <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-medium uppercase tracking-wide text-slate-600">{summary?.total_detected_defects ?? 0} defects</span>
+            <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-medium uppercase tracking-wide text-slate-600">
+              {summary?.total_detected_defects ?? 0} defects detected
+            </span>
           </div>
           <div className="overflow-hidden rounded-xl border border-slate-200">
             <table className="min-w-full divide-y divide-slate-200 text-left">
               <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
                 <tr>
                   <th className="px-4 py-3">Defect Type</th>
-                  <th className="px-4 py-3">Count</th>
-                  <th className="px-4 py-3">Severity</th>
-                  <th className="px-4 py-3">Product</th>
-                  <th className="px-4 py-3">Date</th>
+                  <th className="px-4 py-3">Occurrences</th>
+                  <th className="px-4 py-3">Product Category</th>
+                  <th className="px-4 py-3">Severity Level</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 bg-white">
                 {(summary?.defect_types?.length ? summary.defect_types : []).map((defect: any) => (
-                  <tr key={defect.name} className="text-sm text-slate-700">
-                    <td className="px-4 py-3 font-medium">{formatDefectType(defect.name)}</td>
-                    <td className="px-4 py-3">{defect.value}</td>
+                  <tr key={defect.name} className="text-sm text-slate-700 hover:bg-slate-50">
+                    <td className="px-4 py-3 font-medium text-slate-900">{formatDefectType(defect.name) || defect.name}</td>
+                    <td className="px-4 py-3 font-mono font-bold text-rose-600">{defect.value}</td>
+                    <td className="px-4 py-3">{defect.category || 'Industrial Part'}</td>
                     <td className="px-4 py-3">
-                      <span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">Moderate</span>
+                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800">
+                        {defect.severity || 'Moderate'}
+                      </span>
                     </td>
-                    <td className="px-4 py-3">{recentInspectionRows[0]?.product_name || 'N/A'}</td>
-                    <td className="px-4 py-3">{recentInspectionRows[0]?.created_at ? new Date(recentInspectionRows[0].created_at).toLocaleDateString() : 'N/A'}</td>
                   </tr>
                 ))}
                 {(!summary?.defect_types || summary.defect_types.length === 0) && (
                   <tr>
-                    <td colSpan={5} className="px-4 py-8 text-center text-slate-500">No defect records found yet.</td>
+                    <td colSpan={4} className="px-4 py-8 text-center text-slate-500">No defect records found yet. Clean production run.</td>
                   </tr>
                 )}
               </tbody>
@@ -168,51 +183,80 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {!isSupervisorRole && (
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-slate-800">Upload Product Image</h2>
-              <Cpu className="text-blue-600" size={20} />
-            </div>
+        {/* New Inspection / Upload Image Card */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-xl font-bold text-slate-800">New Inspection / Upload Image</h2>
+            <Cpu className="text-blue-600" size={20} />
+          </div>
 
-            <div className="space-y-4">
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="qe-select-product" className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                Target Product
+              </label>
               <select
+                id="qe-select-product"
                 value={selectedProduct ?? ''}
                 onChange={(event) => setSelectedProduct(Number(event.target.value))}
+                disabled={isUploading}
                 className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">Select product</option>
+                <option value="">Select product...</option>
                 {products.map((product) => (
                   <option key={product.id} value={product.id}>{product.name}</option>
                 ))}
               </select>
-
-              <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-6 text-center transition hover:border-blue-400 hover:bg-blue-50">
-                <input type="file" accept="image/*" className="hidden" onChange={handleFileSelection} />
-                <UploadCloud className="mb-3 text-slate-500" size={42} />
-                <span className="text-sm font-semibold text-slate-700">Choose product image</span>
-                <span className="mt-1 text-xs text-slate-500">PNG, JPG, JPEG, WEBP</span>
-              </label>
-
-              {preview && (
-                <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-                  <img src={preview} alt="Selected product preview" className="h-56 w-full object-cover" />
-                </div>
-              )}
-
-              <button
-                type="button"
-                onClick={runInspection}
-                disabled={!selectedFile || !selectedProduct || isUploading}
-                className="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300"
-              >
-                {isUploading ? 'Running AI Inspection...' : 'Run Inspection'}
-              </button>
-
-              {uploadMessage && <p className="text-sm text-slate-600">{uploadMessage}</p>}
             </div>
+
+            <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-6 text-center transition hover:border-blue-400 hover:bg-blue-50">
+              <input id="qe-file-input" type="file" accept="image/*" className="hidden" onChange={handleFileSelection} disabled={isUploading} />
+              <UploadCloud className="mb-3 text-slate-500" size={42} />
+              <span className="text-sm font-semibold text-slate-700">Choose optical inspection image</span>
+              <span className="mt-1 text-xs text-slate-500">Supports PNG, JPG, JPEG, WEBP</span>
+            </label>
+
+            {preview && (
+              <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                <img src={preview} alt="Selected preview" className="h-48 w-full object-contain" />
+              </div>
+            )}
+
+            {uploadError && (
+              <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-lg text-xs flex items-center gap-2">
+                <AlertCircle size={16} className="text-rose-600 shrink-0" />
+                <span>{uploadError}</span>
+              </div>
+            )}
+
+            {uploadMessage && !uploadError && (
+              <div className="p-3 bg-blue-50 border border-blue-200 text-blue-800 rounded-lg text-xs flex items-center gap-2">
+                <CheckCircle2 size={16} className="text-blue-600 shrink-0" />
+                <span>{uploadMessage}</span>
+              </div>
+            )}
+
+            <button
+              type="button"
+              id="qe-run-inspection-btn"
+              onClick={runInspection}
+              disabled={!selectedFile || !selectedProduct || isUploading}
+              className="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300 flex justify-center items-center gap-2 cursor-pointer"
+            >
+              {isUploading ? (
+                <>
+                  <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Running AI Inspection...</span>
+                </>
+              ) : (
+                <>
+                  <Cpu size={18} />
+                  <span>Run Inspection</span>
+                </>
+              )}
+            </button>
           </div>
-        )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
@@ -222,23 +266,23 @@ export default function DashboardPage() {
             <FileText className="text-blue-600" size={20} />
           </div>
           <div className="grid grid-cols-2 gap-3 text-sm">
-            <MetricBox label="Total inspections" value={summary?.total_inspections ?? 0} />
+            <MetricBox label="Total inspections" value={summary?.total_inspections ?? inspections.length ?? 0} />
             <MetricBox label="Passed" value={summary?.passed_inspections ?? 0} />
             <MetricBox label="Failed" value={summary?.failed_inspections ?? 0} />
             <MetricBox label="Defect rate" value={`${Number(summary?.defect_rate ?? 0).toFixed(1)}%`} />
           </div>
           <div className="mt-4 space-y-3">
-            {reports.length > 0 ? reports.map((report) => (
+            {reports.length > 0 ? reports.slice(0, 5).map((report) => (
               <div key={report.id} className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-3">
                 <div>
-                  <p className="font-semibold text-slate-800">{report.report_type?.replace('_', ' ') || 'Report'}</p>
+                  <p className="font-semibold text-slate-800">{report.report_type?.replace(/_/g, ' ') || 'Report'}</p>
                   <p className="text-xs text-slate-500">{new Date(report.created_at).toLocaleString()}</p>
                 </div>
                 <a href={getAssetUrl(report.file_path) || '#'} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-xs font-semibold text-blue-600 shadow-sm hover:bg-slate-100">
                   <Download size={14} /> View
                 </a>
               </div>
-            )) : <p className="text-sm text-slate-500">No reports available yet.</p>}
+            )) : <p className="text-sm text-slate-500">No reports generated yet.</p>}
           </div>
         </div>
 
@@ -248,17 +292,20 @@ export default function DashboardPage() {
             <ShieldCheck className="text-emerald-600" size={20} />
           </div>
           <div className="space-y-3">
-            {recentInspectionRows.length > 0 ? recentInspectionRows.map((inspection: any) => (
-              <div key={inspection.id} className="flex items-center justify-between rounded-xl border border-slate-200 p-3">
-                <div>
-                  <p className="font-semibold text-slate-800">#{inspection.id} · {inspection.product_name || 'Product'}</p>
-                  <p className="text-xs text-slate-500">{inspection.batch_number || 'Batch not assigned'} · {new Date(inspection.created_at).toLocaleDateString()}</p>
+            {recentInspectionRows.length > 0 ? recentInspectionRows.map((inspection: any) => {
+              const dec = inspection.final_decision || inspection.decision || inspection.ai_decision || 'PASS';
+              return (
+                <div key={inspection.id} className="flex items-center justify-between rounded-xl border border-slate-200 p-3 hover:bg-slate-50">
+                  <div>
+                    <p className="font-semibold text-slate-800">#{inspection.id} · {inspection.product?.name || inspection.product_name || `Product #${inspection.product_id || 1}`}</p>
+                    <p className="text-xs text-slate-500">{inspection.batch?.batch_number || inspection.batch_number || 'No batch'} · {new Date(inspection.created_at).toLocaleDateString()}</p>
+                  </div>
+                  <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${statusPill(dec)}`}>
+                    {dec}
+                  </span>
                 </div>
-                <span className={`rounded-full px-2 py-1 text-xs font-bold ${statusPill((inspection.final_decision || inspection.decision || 'PASS'))}`}>
-                  {inspection.final_decision || inspection.decision || 'PASS'}
-                </span>
-              </div>
-            )) : <p className="text-sm text-slate-500">No inspection results available.</p>}
+              );
+            }) : <p className="text-sm text-slate-500">No inspection results available.</p>}
           </div>
         </div>
       </div>
@@ -277,22 +324,26 @@ export default function DashboardPage() {
                 <th className="px-4 py-3 font-semibold">Date</th>
                 <th className="px-4 py-3 font-semibold">Result</th>
                 <th className="px-4 py-3 font-semibold">Defects</th>
-                <th className="px-4 py-3 font-semibold">Quality</th>
+                <th className="px-4 py-3 font-semibold">Inference</th>
                 <th className="px-4 py-3 font-semibold">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
-              {inspections.length > 0 ? inspections.map((inspection: any) => (
-                <tr key={inspection.id}>
-                  <td className="px-4 py-3 font-medium text-slate-800">#{inspection.id}</td>
-                  <td className="px-4 py-3 text-slate-700">{inspection.product?.name || inspection.product_id || 'N/A'}</td>
-                  <td className="px-4 py-3 text-slate-600">{new Date(inspection.created_at).toLocaleString()}</td>
-                  <td className="px-4 py-3"><span className={`rounded-full px-2 py-1 text-xs font-bold ${statusPill(inspection.final_decision || inspection.ai_decision || 'PASS')}`}>{inspection.final_decision || inspection.ai_decision || 'PASS'}</span></td>
-                  <td className="px-4 py-3">{inspection.detections?.length || inspection.bounding_boxes?.length || 0}</td>
-                  <td className="px-4 py-3">{inspection.severity_score ? `${Number(inspection.severity_score).toFixed(1)}` : 'N/A'}</td>
-                  <td className="px-4 py-3"><a href={`/inspections/${inspection.id}`} className="inline-flex items-center gap-2 rounded-lg bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700"><Eye size={14} /> View</a></td>
-                </tr>
-              )) : <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-500">No inspection history yet.</td></tr>}
+              {inspections.length > 0 ? inspections.map((inspection: any) => {
+                const dec = inspection.final_decision || inspection.ai_decision || 'PASS';
+                const defectCount = inspection.detections?.length ?? (inspection.bounding_boxes?.length ?? (dec === 'FAIL' ? 1 : 0));
+                return (
+                  <tr key={inspection.id} className="hover:bg-slate-50">
+                    <td className="px-4 py-3 font-medium text-slate-800">#{inspection.id}</td>
+                    <td className="px-4 py-3 text-slate-700">{inspection.product?.name || inspection.product_name || `Product #${inspection.product_id}`}</td>
+                    <td className="px-4 py-3 text-slate-600">{new Date(inspection.created_at).toLocaleString()}</td>
+                    <td className="px-4 py-3"><span className={`rounded-full px-2 py-0.5 text-xs font-bold ${statusPill(dec)}`}>{dec}</span></td>
+                    <td className="px-4 py-3">{defectCount}</td>
+                    <td className="px-4 py-3 font-mono text-xs">{inspection.processing_time_ms ? `${Number(inspection.processing_time_ms).toFixed(1)} ms` : '-'}</td>
+                    <td className="px-4 py-3"><a href={`/inspections/${inspection.id}`} className="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-100"><Eye size={14} /> View</a></td>
+                  </tr>
+                );
+              }) : <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-500">No inspection history yet.</td></tr>}
             </tbody>
           </table>
         </div>
@@ -305,15 +356,15 @@ export default function DashboardPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-extrabold text-slate-900">Factory Supervisor Dashboard</h1>
-          <p className="text-slate-500">Production overview, defect trends, and quality performance.</p>
+          <p className="text-slate-500">High-level production overview, quality analysis, and defect trend monitoring.</p>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
-        <KpiCard label="Products Inspected" value={summary?.total_products_inspected ?? 0} tone="blue" />
-        <KpiCard label="Total Inspections" value={summary?.total_inspections ?? 0} tone="indigo" />
+        <KpiCard label="Products Inspected" value={summary?.total_products_inspected ?? products.length ?? 0} tone="blue" />
+        <KpiCard label="Total Inspections" value={summary?.total_inspections ?? inspections.length ?? 0} tone="indigo" />
         <KpiCard label="PASS Rate" value={`${Number(summary?.pass_rate ?? 0).toFixed(1)}%`} tone="green" />
-        <KpiCard label="FAIL Rate" value={`${Number(summary?.fail_rate ?? 0).toFixed(1)}%`} tone="red" />
+        <KpiCard label="FAIL Rate" value={`${Number(summary?.fail_rate ?? summary?.defect_rate ?? 0).toFixed(1)}%`} tone="red" />
         <KpiCard label="REVIEW Rate" value={`${Number(summary?.review_rate ?? 0).toFixed(1)}%`} tone="amber" />
         <KpiCard label="REWORK Rate" value={`${Number(summary?.rework_rate ?? 0).toFixed(1)}%`} tone="blue" />
       </div>
@@ -322,10 +373,10 @@ export default function DashboardPage() {
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="mb-4 text-xl font-bold text-slate-800">Production Overview</h2>
           <div className="grid grid-cols-2 gap-3 text-sm">
-            <MetricBox label="PASS" value={summary?.passed_inspections ?? 0} />
-            <MetricBox label="FAIL" value={summary?.failed_inspections ?? 0} />
-            <MetricBox label="REVIEW" value={summary?.review_inspections ?? 0} />
-            <MetricBox label="REWORK" value={summary?.rework_inspections ?? 0} />
+            <MetricBox label="PASS (Accepted)" value={summary?.passed_inspections ?? 0} />
+            <MetricBox label="FAIL (Rejected)" value={summary?.failed_inspections ?? 0} />
+            <MetricBox label="REVIEW (Pending)" value={summary?.review_inspections ?? 0} />
+            <MetricBox label="REWORK (Station)" value={summary?.rework_inspections ?? 0} />
           </div>
         </div>
 
@@ -333,10 +384,10 @@ export default function DashboardPage() {
           <h2 className="mb-4 text-xl font-bold text-slate-800">Quality Analysis</h2>
           <div className="space-y-3 text-sm text-slate-600">
             <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3"><span>PASS rate</span><strong className="text-emerald-700">{Number(summary?.pass_rate ?? 0).toFixed(1)}%</strong></div>
-            <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3"><span>FAIL rate</span><strong className="text-red-700">{Number(summary?.fail_rate ?? 0).toFixed(1)}%</strong></div>
+            <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3"><span>FAIL rate</span><strong className="text-red-700">{Number(summary?.fail_rate ?? summary?.defect_rate ?? 0).toFixed(1)}%</strong></div>
             <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3"><span>REVIEW rate</span><strong className="text-amber-700">{Number(summary?.review_rate ?? 0).toFixed(1)}%</strong></div>
             <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3"><span>REWORK rate</span><strong className="text-blue-700">{Number(summary?.rework_rate ?? 0).toFixed(1)}%</strong></div>
-            <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3"><span>Most frequent defect</span><strong className="text-slate-900">{formatDefectType(summary?.defect_types?.[0]?.name) || 'N/A'}</strong></div>
+            <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3"><span>Most frequent defect</span><strong className="text-slate-900">{formatDefectType(summary?.defect_types?.[0]?.name) || 'Clean surface'}</strong></div>
           </div>
         </div>
       </div>
@@ -379,9 +430,10 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* Supervisor Product Monitoring / Inspection Results */}
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-slate-800">Recent Inspection Results</h2>
+          <h2 className="text-xl font-bold text-slate-800">Product Monitoring & Inspection Results</h2>
           <AlertTriangle className="text-amber-500" size={20} />
         </div>
         <div className="overflow-x-auto">
@@ -392,21 +444,26 @@ export default function DashboardPage() {
                 <th className="px-4 py-3 font-semibold">Product</th>
                 <th className="px-4 py-3 font-semibold">Result</th>
                 <th className="px-4 py-3 font-semibold">Defects</th>
-                <th className="px-4 py-3 font-semibold">Quality</th>
+                <th className="px-4 py-3 font-semibold">Inference</th>
                 <th className="px-4 py-3 font-semibold">Date</th>
+                <th className="px-4 py-3 font-semibold">View</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
-              {recentInspectionRows.length > 0 ? recentInspectionRows.map((item: any) => (
-                <tr key={item.id}>
-                  <td className="px-4 py-3 font-medium text-slate-800">#{item.id}</td>
-                  <td className="px-4 py-3 text-slate-700">{item.product_name || 'N/A'}</td>
-                  <td className="px-4 py-3"><span className={`rounded-full px-2 py-1 text-xs font-bold ${statusPill(item.decision || 'PASS')}`}>{item.decision || 'PASS'}</span></td>
-                  <td className="px-4 py-3">{item.defect_count || 0}</td>
-                  <td className="px-4 py-3">{item.quality_score ? `${Number(item.quality_score).toFixed(1)}%` : 'N/A'}</td>
-                  <td className="px-4 py-3 text-slate-600">{item.created_at ? new Date(item.created_at).toLocaleString() : 'N/A'}</td>
-                </tr>
-              )) : <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-500">No supervisor monitoring data available.</td></tr>}
+              {recentInspectionRows.length > 0 ? recentInspectionRows.map((item: any) => {
+                const dec = item.final_decision || item.decision || item.ai_decision || 'PASS';
+                return (
+                  <tr key={item.id} className="hover:bg-slate-50">
+                    <td className="px-4 py-3 font-medium text-slate-800">#{item.id}</td>
+                    <td className="px-4 py-3 text-slate-700">{item.product?.name || item.product_name || `Product #${item.product_id}`}</td>
+                    <td className="px-4 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-bold ${statusPill(dec)}`}>{dec}</span></td>
+                    <td className="px-4 py-3">{item.detections?.length || item.bounding_boxes?.length || item.defect_count || 0}</td>
+                    <td className="px-4 py-3 font-mono text-xs">{item.processing_time_ms ? `${Number(item.processing_time_ms).toFixed(1)} ms` : '-'}</td>
+                    <td className="px-4 py-3 text-slate-600">{item.created_at ? new Date(item.created_at).toLocaleString() : 'N/A'}</td>
+                    <td className="px-4 py-3"><a href={`/inspections/${item.id}`} className="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-100"><Eye size={14} /> View</a></td>
+                  </tr>
+                );
+              }) : <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-500">No supervisor monitoring data available.</td></tr>}
             </tbody>
           </table>
         </div>

@@ -62,35 +62,28 @@ os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
 
 cors_origins_env = os.getenv("CORS_ORIGINS", "").strip()
-if cors_origins_env == "*":
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-else:
-    allowed_origins = [
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-    ]
-    if cors_origins_env:
-        for origin in cors_origins_env.split(","):
-            cleaned = origin.strip().rstrip("/")
-            if cleaned and cleaned not in allowed_origins:
-                allowed_origins.append(cleaned)
+allowed_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "https://vision-ai-inspect-frontend-prod.onrender.com",
+]
+if cors_origins_env and cors_origins_env != "*":
+    for origin in cors_origins_env.split(","):
+        cleaned = origin.strip().rstrip("/")
+        if cleaned and cleaned not in allowed_origins:
+            allowed_origins.append(cleaned)
 
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=allowed_origins,
-        allow_origin_regex=r"https?://.*",
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"] if cors_origins_env == "*" else allowed_origins,
+    allow_origin_regex=r"https?://.*",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+)
 
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(products.router, prefix="/api/products", tags=["products"])
@@ -131,6 +124,45 @@ def create_tables_on_startup():
                     role_id=admin_role.id
                 )
                 db.add(admin)
+
+            qe_role = db.query(Role).filter(Role.name == "QUALITY_ENGINEER").first()
+            if qe_role and not db.query(User).filter((User.username == "quality_eng") | (User.email == "quality_eng@visioninspect.ai")).first():
+                qe = User(
+                    username="quality_eng",
+                    email="quality_eng@visioninspect.ai",
+                    hashed_password=get_password_hash("quality123"),
+                    role_id=qe_role.id
+                )
+                db.add(qe)
+
+            sup_role = db.query(Role).filter(Role.name == "SUPERVISOR").first()
+            if sup_role and not db.query(User).filter((User.username == "supervisor") | (User.email == "supervisor@visioninspect.ai")).first():
+                sup = User(
+                    username="supervisor",
+                    email="supervisor@visioninspect.ai",
+                    hashed_password=get_password_hash("supervisor123"),
+                    role_id=sup_role.id
+                )
+                db.add(sup)
+
+            db.commit()
+
+            # Seed initial products if catalog is empty
+            from app.models.all_models import Product, ProductionBatch
+            if db.query(Product).count() == 0:
+                p1 = Product(name="Bottle Container Inspection", product_code="BTL-001", production_line="Line 1 - Bottling", description="Translucent glass & PET container defect detection")
+                p2 = Product(name="PCB Logic Board Assembly", product_code="PCB-X100", production_line="Line 2 - SMT", description="High-density printed circuit boards with surface mount components")
+                p3 = Product(name="Precision Gearbox Transmission", product_code="GR-204", production_line="Line 3 - Machining", description="Precision machined automotive gears and bearings")
+                db.add_all([p1, p2, p3])
+                db.commit()
+                db.refresh(p1)
+                db.refresh(p2)
+                db.refresh(p3)
+
+                b1 = ProductionBatch(batch_number="BATCH-BTL-001", product_id=p1.id)
+                b2 = ProductionBatch(batch_number="BATCH-PCB-001", product_id=p2.id)
+                b3 = ProductionBatch(batch_number="BATCH-GR-001", product_id=p3.id)
+                db.add_all([b1, b2, b3])
                 db.commit()
         finally:
             db.close()

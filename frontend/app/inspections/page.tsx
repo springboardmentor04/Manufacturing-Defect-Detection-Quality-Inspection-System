@@ -5,6 +5,7 @@ import Link from 'next/link';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { inspectionsService } from '@/services/inspections';
 import { productsService } from '@/services/products';
+import { formatApiError } from '@/services/api';
 import { Inspection, Product } from '@/types';
 import { Plus, Eye, RotateCw, AlertCircle, Camera, Loader2, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
@@ -32,17 +33,8 @@ export default function InspectionsPage() {
       setProducts(Array.isArray(productsData) ? productsData : []);
     } catch (err: any) {
       console.error('[InspectionsPage] Failed to fetch inspections:', err);
-      let errorMsg = 'Failed to load inspections from server.';
-      if (err.response?.data?.detail) {
-        if (typeof err.response.data.detail === 'string') {
-          errorMsg = err.response.data.detail;
-        } else if (Array.isArray(err.response.data.detail)) {
-          errorMsg = err.response.data.detail.map((d: any) => d.msg || JSON.stringify(d)).join(', ');
-        }
-      } else if (err.message) {
-        errorMsg = err.message;
-      }
-      setError(errorMsg);
+      const formatted = formatApiError(err, 'Failed to load inspections from server.');
+      setError(formatted);
     } finally {
       setLoading(false);
     }
@@ -129,6 +121,7 @@ export default function InspectionsPage() {
           {!isSupervisor && (
             <Link
               href="/inspections/new"
+              id="new-inspection-nav-btn"
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-colors"
             >
               <Plus size={20} />

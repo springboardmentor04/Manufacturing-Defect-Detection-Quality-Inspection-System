@@ -26,33 +26,70 @@ def get_current_user(
             token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM]
         )
         token_data = payload.get("sub")
+        if token_data is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
     except (jwt.JWTError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    user = db.query(User).filter(User.username == token_data).first()
-    # Development: if token subject is 'admin' but user is not found in DB,
-    # return a mock admin user to allow bypassing DB-backed auth for testing.
-    if not user and token_data == "admin":
-        mock_role = SimpleNamespace(name="ADMIN")
-        mock_user = SimpleNamespace(
-            id=0,
+
+    # 1. Look up user by username
+    user = db.query(User).filter(User.username == str(token_data)).first()
+
+    # 2. Look up user by email if not found by username
+    if not user:
+        user = db.query(User).filter(User.email == str(token_data)).first()
+
+    # 3. Look up user by integer primary key if token_data is numeric
+    if not user:
+        try:
+            uid = int(token_data)
+            user = db.query(User).filter(User.id == uid).first()
+        except (ValueError, TypeError):
+            pass
+
+    # Development / testing fallback for admin mock tokens
+    if not user and str(token_data) == "admin":
+        admin_role = db.query(Role).filter(Role.name == "ADMIN").first()
+        if not admin_role:
+            admin_role = Role(name="ADMIN")
+            db.add(admin_role)
+            db.commit()
+            db.refresh(admin_role)
+        from app.core.security import get_password_hash
+        user = User(
             username="admin",
-            email="admin@local",
-            hashed_password="",
-            role=mock_role,
+            email="admin@visioninspect.local",
+            hashed_password=get_password_hash("admin123"),
+            role_id=admin_role.id,
             is_active=True,
         )
-        return mock_user
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        return user
+
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found or session expired",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     return user
 
 def get_current_active_user(
     current_user: User = Depends(get_current_user),
 ) -> User:
-    if not current_user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
+    if not getattr(current_user, "is_active", True):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Inactive user account",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     return current_user

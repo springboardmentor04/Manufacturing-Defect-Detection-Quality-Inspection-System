@@ -1,28 +1,136 @@
-import axios from 'axios';
+import axios, { AxiosHeaders } from 'axios';
 
-// Resolve Backend and API URLs from environment or production Render default
-const rawEnvUrl = 
-  process.env.NEXT_PUBLIC_API_URL || 
-  process.env.VITE_API_URL || 
-  process.env.NEXT_PUBLIC_BACKEND_URL || 
-  (typeof window !== 'undefined' && (window as any).__ENV?.VITE_API_URL) ||
-  'https://vision-ai-inspect.onrender.com';
+/**
+ * Resolve Backend Base URL and API Endpoint from environment variables or production defaults.
+ * Guarantees HTTPS protocol and eliminates hardcoded localhosts in production.
+ */
+const resolveBackendUrl = (): string => {
+  const envUrl = 
+    process.env.NEXT_PUBLIC_API_URL || 
+    process.env.NEXT_PUBLIC_BACKEND_URL || 
+    process.env.VITE_API_URL || 
+    (typeof window !== 'undefined' && ((window as any).__ENV?.NEXT_PUBLIC_API_URL || (window as any).__ENV?.VITE_API_URL));
 
-const sanitizedBase = rawEnvUrl.replace(/\/+$/, '');
+  if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {
+    let clean = envUrl.trim().replace(/\/+$/, '');
+    if (!clean.startsWith('http://') && !clean.startsWith('https://') && !clean.startsWith('/')) {
+      clean = `https://${clean}`;
+    }
+    return clean;
+  }
+
+  // If running in the browser
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+      // Production Render deployed backend default
+      return 'https://visioninspect-backend.onrender.com';
+    }
+    return window.location.origin;
+  }
+
+  return 'https://visioninspect-backend.onrender.com';
+};
+
+const resolvedBase = resolveBackendUrl();
+
+// Clean Base URL for backend without /api suffix (used for static assets and uploads)
+export const BACKEND_URL = resolvedBase.replace(/\/api\/?$/, '').replace(/\/+$/, '');
 
 // Clean API Base URL (ending in /api)
-export const API_URL = sanitizedBase.endsWith('/api') 
-  ? sanitizedBase 
-  : `${sanitizedBase}/api`;
+export const API_URL = resolvedBase.endsWith('/api') 
+  ? resolvedBase 
+  : `${BACKEND_URL}/api`;
 
-// Clean Base URL for uploaded static assets (without /api)
-export const BACKEND_URL = API_URL.replace(/\/api\/?$/, '');
-
+/**
+ * Resolves static inspection image asset URLs against the backend domain.
+ * Never requests images from the frontend Render domain.
+ */
 export const getAssetUrl = (path: string | null | undefined): string => {
   if (!path) return '';
-  if (path.startsWith('http://') || path.startsWith('https://')) return path;
-  const cleanPath = path.replace(/^\//, '');
+  const trimmed = path.trim();
+  if (
+    trimmed.startsWith('http://') || 
+    trimmed.startsWith('https://') || 
+    trimmed.startsWith('data:') || 
+    trimmed.startsWith('blob:')
+  ) {
+    return trimmed;
+  }
+  const cleanPath = trimmed.replace(/^\//, '');
   return `${BACKEND_URL}/${cleanPath}`;
+};
+
+/**
+ * Centralized API error formatter that extracts exact backend detail messages.
+ */
+export const formatApiError = (error: any, fallbackMessage: string = 'Operation failed. Please verify the backend connection and try again.'): string => {
+  if (!error) return fallbackMessage;
+
+  // 1. Check for detailed backend response body
+  if (error.response?.data) {
+    const data = error.response.data;
+
+    // String detail
+    if (typeof data.detail === 'string' && data.detail.trim()) {
+      return data.detail.trim();
+    }
+
+    // Array of Pydantic validation errors (FastAPI 422)
+    if (Array.isArray(data.detail) && data.detail.length > 0) {
+      return data.detail
+        .map((item: any) => {
+          if (typeof item === 'string') return item;
+          if (item?.msg) {
+            const loc = Array.isArray(item.loc) 
+              ? item.loc.filter((l: string) => l !== 'body' && l !== 'form').join(' -> ') 
+              : '';
+            return loc ? `${loc}: ${item.msg}` : item.msg;
+          }
+          return JSON.stringify(item);
+        })
+        .join('; ');
+    }
+
+    // Generic message field
+    if (typeof data.message === 'string' && data.message.trim()) {
+      return data.message.trim();
+    }
+  }
+
+  // 2. HTTP Status Code specific descriptions
+  if (error.response?.status) {
+    switch (error.response.status) {
+      case 400:
+        return 'Bad Request: Invalid image format or inspection parameters provided.';
+      case 401:
+        return 'Authentication required. Your session may have expired. Please sign in again.';
+      case 403:
+        return 'Access Forbidden: Your account role does not have permission to perform this inspection action.';
+      case 404:
+        return 'Resource not found on backend.';
+      case 422:
+        return 'Unprocessable Entity: Required parameters missing or invalid format.';
+      case 500:
+        return 'Internal Server Error: AI inference failure. Please check the backend model runtime.';
+      case 502:
+      case 503:
+      case 504:
+        return 'Backend Service Unavailable: The Render backend service is waking up from idle (cold start). Please wait a moment and retry.';
+    }
+  }
+
+  // 3. Network & Connectivity issues
+  if (error.code === 'ERR_NETWORK' || error.message?.toLowerCase().includes('network error') || !error.response) {
+    return `Network Error: Unable to reach VisionInspect AI backend. Please verify your internet connection and backend deployment.`;
+  }
+
+  // 4. Timeouts
+  if (error.code === 'ECONNABORTED' || error.message?.toLowerCase().includes('timeout')) {
+    return 'Request Timeout: AI model inference took longer than expected. Please retry.';
+  }
+
+  return error.message || fallbackMessage;
 };
 
 export const api = axios.create({
@@ -30,13 +138,13 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 120000,
+  timeout: 180000, // 3 minutes for cold-start model warming
 });
 
-// Add a request interceptor to attach the JWT token, normalize URLs, and handle FormData
+// Request Interceptor: Attach JWT Token, normalize URLs, handle multipart FormData, and safe logging
 api.interceptors.request.use(
   (config) => {
-    // Prevent duplicate /api/api prefixes if URL already has /api
+    // Prevent duplicate /api/api prefixes
     if (config.url) {
       if (config.url.startsWith('/api/')) {
         config.url = config.url.replace(/^\/api/, '');
@@ -45,36 +153,68 @@ api.interceptors.request.use(
       }
     }
 
-    // When sending FormData (e.g. image uploads), delete Content-Type so the browser adds boundary
+    // When sending FormData (e.g. image uploads), delete Content-Type so browser adds multipart boundary
     if (config.data instanceof FormData) {
-      delete config.headers['Content-Type'];
-    }
-
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('token');
-      if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
+      if (config.headers) {
+        if (typeof (config.headers as any).delete === 'function') {
+          (config.headers as any).delete('Content-Type');
+          (config.headers as any).delete('content-type');
+        }
+        delete (config.headers as any)['Content-Type'];
+        delete (config.headers as any)['content-type'];
       }
     }
+
+    // Attach Bearer token from localStorage
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      if (token && config.headers) {
+        if (typeof (config.headers as any).set === 'function') {
+          (config.headers as any).set('Authorization', `Bearer ${token}`);
+        } else {
+          config.headers['Authorization'] = `Bearer ${token}`;
+        }
+      }
+    }
+
+    // Safe development console logging (no passwords or tokens)
+    if (process.env.NODE_ENV === 'development') {
+      const fullUrl = `${config.baseURL || ''}${config.url || ''}`;
+      console.log(`[API Request] ${config.method?.toUpperCase()} ${fullUrl}`);
+    }
+
     return config;
   },
   (error) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[API Request Error]', error?.message || error);
+    }
     return Promise.reject(error);
   }
 );
 
-// Add a response interceptor to handle 401s without disrupting auth pages
+// Response Interceptor: Safe logging and centralized 401 handling
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[API Response] ${response.status} ${response.config?.method?.toUpperCase()} ${response.config?.url}`);
+    }
+    return response;
+  },
   (error) => {
+    if (process.env.NODE_ENV === 'development') {
+      const status = error.response?.status || 'NETWORK_ERR';
+      const url = error.config?.url || 'unknown';
+      console.error(`[API Response Error] ${status} ${error.config?.method?.toUpperCase()} ${url}:`, error.response?.data || error.message);
+    }
+
     if (error.response && error.response.status === 401) {
       if (typeof window !== 'undefined') {
-        // Only redirect to login if not already on /login or /register
         const pathname = window.location.pathname;
         if (!pathname.startsWith('/login') && !pathname.startsWith('/register')) {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
-          window.location.href = '/login';
+          window.location.href = '/login?session_expired=true';
         }
       }
     }

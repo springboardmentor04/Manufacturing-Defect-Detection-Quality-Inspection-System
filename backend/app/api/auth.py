@@ -15,7 +15,10 @@ router = APIRouter()
 
 @router.post("/login", response_model=Token)
 def login(login_data: LoginRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == login_data.username).first()
+    # Support logging in with either username or email address
+    user = db.query(User).filter(
+        (User.username == login_data.username) | (User.email == login_data.username)
+    ).first()
     if not user or not verify_password(login_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -27,21 +30,30 @@ def login(login_data: LoginRequest, db: Session = Depends(get_db)):
 @router.post("/register", response_model=UserResponse)
 def register(user_in: UserCreate, db: Session = Depends(get_db)):
     try:
-        user = db.query(User).filter(User.username == user_in.username).first()
-        if user:
-            raise HTTPException(status_code=400, detail="Username already registered")
+        username = user_in.username.strip()
+        email = user_in.email.strip().lower()
 
-        role = db.query(Role).filter(Role.name == user_in.role_name).first()
+        existing_user = db.query(User).filter(
+            (User.username == username) | (User.email == email)
+        ).first()
+        if existing_user:
+            if existing_user.username.lower() == username.lower():
+                raise HTTPException(status_code=400, detail="Username already registered")
+            else:
+                raise HTTPException(status_code=400, detail="Email address already registered")
+
+        norm_role = user_in.role_name.strip().upper().replace(" ", "_")
+        role = db.query(Role).filter(Role.name == norm_role).first()
         if not role:
-            role = Role(name=user_in.role_name)
+            role = Role(name=norm_role)
             db.add(role)
             db.commit()
             db.refresh(role)
 
         hashed_password = get_password_hash(user_in.password)
         new_user = User(
-            username=user_in.username,
-            email=user_in.email,
+            username=username,
+            email=email,
             hashed_password=hashed_password,
             role_id=role.id
         )
@@ -53,7 +65,7 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
             "username": new_user.username,
             "email": new_user.email,
             "is_active": new_user.is_active,
-            "role": new_user.role.name
+            "role": new_user.role.name if new_user.role else norm_role
         }
     except HTTPException as he:
         raise he
@@ -62,12 +74,13 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
 
 @router.get("/me", response_model=UserResponse)
 def read_users_me(current_user: User = Depends(get_current_active_user)):
+    role_name = getattr(getattr(current_user, "role", None), "name", None) or str(getattr(current_user, "role", "QUALITY_ENGINEER"))
     return {
         "id": current_user.id,
         "username": current_user.username,
         "email": current_user.email,
         "is_active": current_user.is_active,
-        "role": current_user.role.name
+        "role": role_name
     }
 
 
