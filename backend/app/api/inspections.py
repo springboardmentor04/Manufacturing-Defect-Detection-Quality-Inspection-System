@@ -355,7 +355,7 @@ async def create_and_run_inspection(
         db.delete(img)
         db.delete(inspection)
         db.commit()
-        raise HTTPException(status_code=500, detail=f"AI inference failed: {error}")
+        raise HTTPException(status_code=400, detail=f"AI inference failed: {error}")
     db.add(InspectionImage(inspection_id=inspection.id, file_path=processed_path, image_type="processed"))
     quality = results["image_quality"]
     db.add(ImageAnalysis(inspection_id=inspection.id, width=results["image_info"]["width"], height=results["image_info"]["height"], file_size_bytes=results["image_info"]["file_size_bytes"], brightness=quality["brightness"], contrast=quality["contrast"], sharpness=quality["sharpness"], quality_status=quality["quality_status"], warning=quality["warning"], model_status=results["model_status"], model_message=results["model_message"]))
