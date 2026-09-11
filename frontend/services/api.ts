@@ -24,12 +24,12 @@ const resolveBackendUrl = (): string => {
     const hostname = window.location.hostname;
     if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
       // Production Render deployed backend default
-      return 'https://visioninspect-backend.onrender.com';
+      return 'https://vision-ai-inspect.onrender.com';
     }
     return window.location.origin;
   }
 
-  return 'https://visioninspect-backend.onrender.com';
+  return 'https://vision-ai-inspect.onrender.com';
 };
 
 const resolvedBase = resolveBackendUrl();
