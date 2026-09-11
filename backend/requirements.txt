@@ -10,7 +10,6 @@ passlib[bcrypt]
 python-multipart
 torch
 torchvision
-torchaudio
 ultralytics
 opencv-python-headless
 numpy

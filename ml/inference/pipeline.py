@@ -15,6 +15,10 @@ try:
             torch.set_num_interop_threads(1)
         except Exception:
             pass
+    try:
+        torch.set_grad_enabled(False)
+    except Exception:
+        pass
     
     # Allowlist Ultralytics classes for PyTorch 2.6+ weights_only security model
     try:
