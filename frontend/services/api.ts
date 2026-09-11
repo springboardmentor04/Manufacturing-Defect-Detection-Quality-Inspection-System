@@ -11,22 +11,40 @@ const resolveBackendUrl = (): string => {
     process.env.VITE_API_URL || 
     (typeof window !== 'undefined' && ((window as any).__ENV?.NEXT_PUBLIC_API_URL || (window as any).__ENV?.VITE_API_URL));
 
-  if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {
-    let clean = envUrl.trim().replace(/\/+$/, '');
-    if (!clean.startsWith('http://') && !clean.startsWith('https://') && !clean.startsWith('/')) {
-      clean = `https://${clean}`;
-    }
-    return clean;
-  }
-
-  // If running in the browser
+  // If running in the browser on a remote deployed domain (Render production)
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
     if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-      // Production Render deployed backend default
+      // If envUrl is provided, verify it is a valid remote URL and not localhost or deprecated service name
+      if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {
+        const clean = envUrl.trim();
+        if (
+          !clean.includes('localhost') && 
+          !clean.includes('127.0.0.1') && 
+          !clean.includes('visioninspect-backend.onrender.com')
+        ) {
+          let formatted = clean.replace(/\/+$/, '');
+          if (!formatted.startsWith('http://') && !formatted.startsWith('https://')) {
+            formatted = `https://${formatted}`;
+          }
+          return formatted;
+        }
+      }
+      // Authoritative production Render deployed backend domain
       return 'https://vision-ai-inspect.onrender.com';
     }
     return window.location.origin;
+  }
+
+  // Server-side / Build-time resolution
+  if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {
+    let clean = envUrl.trim().replace(/\/+$/, '');
+    if (!clean.includes('visioninspect-backend.onrender.com')) {
+      if (!clean.startsWith('http://') && !clean.startsWith('https://')) {
+        clean = `https://${clean}`;
+      }
+      return clean;
+    }
   }
 
   return 'https://vision-ai-inspect.onrender.com';

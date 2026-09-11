@@ -6,7 +6,7 @@ services:
   # FastAPI Production Backend Service
   # =======================================================
   - type: web
-    name: visioninspect-backend
+    name: vision-ai-inspect
     runtime: python
     region: oregon
     plan: free
@@ -22,7 +22,7 @@ services:
       - key: UPLOAD_DIR
         value: storage/uploads
       - key: CORS_ORIGINS
-        value: "*"
+        value: "https://vision-ai-inspect-frontend-prod.onrender.com,http://localhost:3000"
       - key: MOCK_LOGIN_ENABLED
         value: "true"
       - key: JWT_SECRET
@@ -40,7 +40,7 @@ services:
   # Next.js 16 Production Frontend Service
   # =======================================================
   - type: web
-    name: visioninspect-frontend
+    name: vision-ai-inspect-frontend-prod
     runtime: node
     rootDir: frontend
     region: oregon
@@ -52,11 +52,9 @@ services:
       - key: NODE_VERSION
         value: "20"
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          type: web
-          name: visioninspect-backend
-          property: host
-          path: /api
+        value: "https://vision-ai-inspect.onrender.com/api"
+      - key: NEXT_PUBLIC_BACKEND_URL
+        value: "https://vision-ai-inspect.onrender.com"
 
 # =======================================================
 # Managed PostgreSQL Database

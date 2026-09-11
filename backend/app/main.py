@@ -88,13 +88,21 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
+# Mount both /api and /api/v1 router prefixes for complete backward/forward compatibility
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(products.router, prefix="/api/products", tags=["products"])
+app.include_router(products.router, prefix="/api/v1/products", tags=["products"])
 app.include_router(batches.router, prefix="/api/batches", tags=["batches"])
+app.include_router(batches.router, prefix="/api/v1/batches", tags=["batches"])
 app.include_router(inspections.router, prefix="/api/inspections", tags=["inspections"])
+app.include_router(inspections.router, prefix="/api/v1/inspections", tags=["inspections"])
 app.include_router(analytics.router, prefix="/api/analytics", tags=["analytics"])
+app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["analytics"])
 app.include_router(models.router, prefix="/api/models", tags=["models"])
+app.include_router(models.router, prefix="/api/v1/models", tags=["models"])
 app.include_router(reports.router, prefix="/api/reports", tags=["reports"])
+app.include_router(reports.router, prefix="/api/v1/reports", tags=["reports"])
 
 @app.get("/health")
 def health_check():
@@ -118,36 +126,37 @@ def create_tables_on_startup():
                     db.add(Role(name=role_name))
             db.commit()
 
-            admin_role = db.query(Role).filter(Role.name == "ADMIN").first()
-            if admin_role and not db.query(User).filter(User.username == "admin").first():
-                admin = User(
-                    username="admin",
-                    email="admin@visioninspect.local",
-                    hashed_password=get_password_hash("admin123"),
-                    role_id=admin_role.id
-                )
-                db.add(admin)
-
-            qe_role = db.query(Role).filter(Role.name == "QUALITY_ENGINEER").first()
-            if qe_role and not db.query(User).filter((User.username == "quality_eng") | (User.email == "quality_eng@visioninspect.ai")).first():
-                qe = User(
-                    username="quality_eng",
-                    email="quality_eng@visioninspect.ai",
-                    hashed_password=get_password_hash("quality123"),
-                    role_id=qe_role.id
-                )
-                db.add(qe)
-
-            sup_role = db.query(Role).filter(Role.name == "SUPERVISOR").first()
-            if sup_role and not db.query(User).filter((User.username == "supervisor") | (User.email == "supervisor@visioninspect.ai")).first():
-                sup = User(
-                    username="supervisor",
-                    email="supervisor@visioninspect.ai",
-                    hashed_password=get_password_hash("supervisor123"),
-                    role_id=sup_role.id
-                )
-                db.add(sup)
-
+            roles_map = {r.name: r for r in db.query(Role).all()}
+            seed_accounts = [
+                {"username": "admin", "email": "admin@visioninspect.local", "role": "ADMIN", "password": "admin123"},
+                {"username": "quality_eng", "email": "quality_eng@visioninspect.ai", "role": "QUALITY_ENGINEER", "password": "quality123"},
+                {"username": "Quality_Engineer", "email": "qualityengineer@gmail.com", "role": "QUALITY_ENGINEER", "password": "quality123"},
+                {"username": "qualityengineer", "email": "qualityengineer1@gmail.com", "role": "QUALITY_ENGINEER", "password": "quality123"},
+                {"username": "Demo", "email": "demo_final@gmail.com", "role": "QUALITY_ENGINEER", "password": "quality123"},
+                {"username": "vicky", "email": "vicky22@gmail.com", "role": "SUPERVISOR", "password": "vicky123"},
+                {"username": "vicky12", "email": "supervisor12@test.com", "role": "SUPERVISOR", "password": "vicky123"},
+                {"username": "supervisor", "email": "supervisor@visioninspect.ai", "role": "SUPERVISOR", "password": "supervisor123"},
+                {"username": "ramya", "email": "ramya@visioninspect.ai", "role": "QUALITY_ENGINEER", "password": "ramya123"},
+            ]
+            for sa in seed_accounts:
+                target_role = roles_map.get(sa["role"])
+                if not target_role:
+                    continue
+                user_record = db.query(User).filter(
+                    (User.username == sa["username"]) | (User.email == sa["email"])
+                ).first()
+                if not user_record:
+                    user_record = User(
+                        username=sa["username"],
+                        email=sa["email"],
+                        hashed_password=get_password_hash(sa["password"]),
+                        role_id=target_role.id
+                    )
+                    db.add(user_record)
+                else:
+                    user_record.hashed_password = get_password_hash(sa["password"])
+                    user_record.role_id = target_role.id
+                    user_record.is_active = True
             db.commit()
 
             # Seed initial products if catalog is empty

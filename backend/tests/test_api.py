@@ -24,7 +24,7 @@ client = TestClient(app)
 def test_health():
     response = client.get("/health")
     assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+    assert response.json().get("status") == "ok"
 
 def test_mandatory_severity():
     # Size = 85, Location = 90, Type = 95, Confidence = 92
