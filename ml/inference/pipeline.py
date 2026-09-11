@@ -300,17 +300,10 @@ class InferencePipeline:
                     if bw > 250 or bh > 250:
                         if clean_product == 'capsule' or (clean_product and clean_product in ("capsule", "wood", "leather", "carpet", "tile", "pill")):
                             sub_w, sub_h = min(bw, 260), min(bh, 110)
-                            step_x, step_y = 90, 80
-                            for gy in range(by1, max(by1 + 1, by2 - sub_h + 1), step_y):
-                                for gx in range(bx1, max(bx1 + 1, bx2 - sub_w + 1), step_x):
-                                    gx2 = min(w, gx + sub_w)
-                                    gy2 = min(h, gy + sub_h)
-                                    if obj_mask is not None:
-                                        mask_roi = obj_mask[gy:gy2, gx:gx2]
-                                        if mask_roi.size > 0 and (np.count_nonzero(mask_roi) / mask_roi.size) >= 0.80:
-                                            crops.append(('sub_surface', orig_img[gy:gy2, gx:gx2]))
-                                    else:
-                                        crops.append(('sub_surface', orig_img[gy:gy2, gx:gx2]))
+                            center_x, center_y = (bx1 + bx2) // 2, (by1 + by2) // 2
+                            crops.append(('sub_center', orig_img[max(0, center_y - sub_h // 2):min(h, center_y + sub_h // 2), max(0, center_x - sub_w // 2):min(w, center_x + sub_w // 2)]))
+                            crops.append(('sub_mid_right', orig_img[min(h - sub_h, by1 + int(bh * 0.50)):min(h, by1 + int(bh * 0.50) + sub_h), min(w - sub_w, bx1 + int(bw * 0.65)):min(w, bx1 + int(bw * 0.65) + sub_w)]))
+                            crops.append(('sub_mid_left', orig_img[min(h - sub_h, by1 + int(bh * 0.50)):min(h, by1 + int(bh * 0.50) + sub_h), max(0, bx1 + int(bw * 0.15)):min(w, bx1 + int(bw * 0.15) + sub_w)]))
 
                     # Connector head subcrop for structured assemblies like cable
                     if clean_product == 'cable' and bh > 250:
@@ -327,7 +320,11 @@ class InferencePipeline:
                             continue
                         with infer_ctx:
                             cls_results = self.classifier_model(crop, verbose=False)[0]
-                        probs_data = cls_results.probs.data.cpu().numpy()
+                            probs_data = cls_results.probs.data.cpu().numpy()
+                            top1_idx = cls_results.probs.top1
+                            top1_conf = float(cls_results.probs.top1conf)
+                            cls_names = cls_results.names
+                            del cls_results
 
                         if cand_indices:
                             cand_probs = {self.classifier_model.names[i]: float(probs_data[i]) for i in cand_indices}
@@ -344,12 +341,10 @@ class InferencePipeline:
                                 best_cond_conf = cond_c
                                 best_class = top_cls
                         else:
-                            top1_idx = cls_results.probs.top1
-                            top1_conf = float(cls_results.probs.top1conf)
                             if top1_conf > best_raw_conf:
                                 best_raw_conf = top1_conf
                                 best_cond_conf = top1_conf
-                                best_class = cls_results.names[top1_idx]
+                                best_class = cls_names[top1_idx]
 
                     if best_class:
                         resolved_cls = resolve_class_name(best_class)
