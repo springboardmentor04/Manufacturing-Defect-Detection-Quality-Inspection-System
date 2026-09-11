@@ -16,8 +16,14 @@ router = APIRouter()
 @router.post("/login", response_model=Token)
 def login(login_data: LoginRequest, db: Session = Depends(get_db)):
     # Support logging in with either username or email address
+    identifier = (login_data.username or login_data.email or "").strip()
+    if not identifier:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username or email is required",
+        )
     user = db.query(User).filter(
-        (User.username == login_data.username) | (User.email == login_data.username)
+        (User.username == identifier) | (User.email == identifier)
     ).first()
     if not user or not verify_password(login_data.password, user.hashed_password):
         raise HTTPException(

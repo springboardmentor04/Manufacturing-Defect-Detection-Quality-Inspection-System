@@ -26,7 +26,8 @@ class UserResponse(BaseModel):
 
 # Auth schemas
 class LoginRequest(BaseModel):
-    username: str
+    username: Optional[str] = None
+    email: Optional[str] = None
     password: str
 
 # Product & Batch Schemas
