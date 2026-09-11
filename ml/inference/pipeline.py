@@ -235,9 +235,9 @@ class InferencePipeline:
                             all_raw_boxes.append((b.xyxy[0].tolist(), float(b.conf[0]), int(b.cls[0])))
 
                     try:
-                        res_1024 = self.model(image_path, conf=det_conf, imgsz=1024, verbose=False)[0]
-                        if res_1024 is not None and getattr(res_1024, "boxes", None) is not None:
-                            for b in res_1024.boxes:
+                        res_768 = self.model(image_path, conf=det_conf, imgsz=768, verbose=False)[0]
+                        if res_768 is not None and getattr(res_768, "boxes", None) is not None:
+                            for b in res_768.boxes:
                                 all_raw_boxes.append((b.xyxy[0].tolist(), float(b.conf[0]), int(b.cls[0])))
                     except Exception:
                         pass
@@ -319,9 +319,9 @@ class InferencePipeline:
                                         crops.append(('sub_surface', orig_img[gy:gy2, gx:gx2]))
 
                     # Connector head subcrop for structured assemblies like cable
-                    if clean_product == 'cable' and bh > 300:
-                        ch_y2 = by1 + int(bh * 0.75)
-                        crops.append(('connector_head', orig_img[by1:ch_y2, bx1:bx2]))
+                    if clean_product == 'cable' and bh > 250:
+                        crops.append(('connector_head', orig_img[by1:by1 + int(bh * 0.75), bx1:bx2]))
+                        crops.append(('head_tight', orig_img[by1:by1 + int(bh * 0.60), bx1:bx2]))
 
                     best_class = None
                     best_raw_conf = 0.0
@@ -408,6 +408,9 @@ class InferencePipeline:
                 overall_level = d["severity_level"]
                 
             final_defects.append(d)
+
+        # Prioritize most severe defect first
+        final_defects.sort(key=lambda d: d.get("severity_score", 0), reverse=True)
             
         processing_time_ms = round((time.time() - start_time) * 1000, 2)
         
