@@ -1,4 +1,5 @@
 import os
+import gc
 import uuid
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
