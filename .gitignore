@@ -161,6 +161,7 @@ pytest-cache-files-*/
 yolov8n*.pt
 ml/models/defect_classifier/
 ml/models/defect_classifier_v2/
+!ml/models/defect_classifier_v2/weights/weights/best.pt
 ml/models/mvtec_100_epochs/
 ml/models/mvtec_defect_model_v2/
 ml/models/*backup*.pt
