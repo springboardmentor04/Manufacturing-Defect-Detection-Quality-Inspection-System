@@ -328,10 +328,11 @@ async def create_and_run_inspection(
     db.add(img)
     db.commit()
     
-    # 3. Run prediction directly on main thread with clean memory context
+    # 3. Run prediction in threadpool so asyncio event loop remains responsive
     processed_path = os.path.join(settings.UPLOAD_DIR, f"{os.path.splitext(filename)[0]}_processed.jpg")
     try:
-        results = pipeline.inspect_image(
+        results = await run_in_threadpool(
+            pipeline.inspect_image,
             filepath,
             processed_image_path=processed_path,
             product_name=product_name,
