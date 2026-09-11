@@ -151,6 +151,12 @@ def _serialize_inspection(inspection: Inspection):
         "confidence": primary.confidence if primary else None,
         "ai_decision": qd.ai_decision if qd else "PASS", "human_decision": qd.human_decision if qd else None,
         "final_decision": qd.final_decision if qd else "PASS", "override_reason": qd.override_reason if qd else None,
+        "quality_decision": None if not qd else {
+            "ai_decision": qd.ai_decision or "PASS",
+            "human_decision": qd.human_decision,
+            "final_decision": qd.final_decision or "PASS",
+            "override_reason": qd.override_reason,
+        },
         "severity_score": sev.total_score if sev else 0.0, "severity_level": sev.level if sev else "LOW",
         "model_version": "Configured model", "model_status": analysis.model_status if analysis else "UNKNOWN",
         "model_message": analysis.model_message if analysis else None, "processing_time_ms": inspection.processing_time_ms,
