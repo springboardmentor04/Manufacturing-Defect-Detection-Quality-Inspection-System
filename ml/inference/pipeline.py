@@ -92,6 +92,7 @@ def resolve_classifier_path(explicit_path: str | None = None) -> str | None:
 
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
     candidates.extend([
+        os.path.join(project_root, "ml", "models", "defect_classifier_v2", "weights", "weights", "best.pt"),
         os.path.join(project_root, "ml", "models", "defect_classifier_v2", "weights", "best.pt"),
         os.path.join(project_root, "ml", "models", "defect_classifier", "best.pt"),
         os.path.join(project_root, "runs", "classify", "runs", "classify", "train", "weights", "best.pt"),
@@ -150,9 +151,7 @@ class InferencePipeline:
         self.class_resolution_info = describe_model_classes({})
         
         self.classifier_model = None
-        # In memory-constrained production environments (Render 512MB limit),
-        # only load single primary YOLO best.pt detector to prevent OOM
-        enable_classifier = os.getenv("ENABLE_CLASSIFIER_MODEL", "false").lower() in ("1", "true", "yes")
+        enable_classifier = os.getenv("ENABLE_CLASSIFIER_MODEL", "true").lower() in ("1", "true", "yes")
         if enable_classifier:
             self.classifier_path = resolve_classifier_path(classifier_path)
         else:

@@ -6,7 +6,7 @@ from pydantic import ValidationError
 from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.database.session import SessionLocal
-from app.models.all_models import User
+from app.models.all_models import User, Role
 from types import SimpleNamespace
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"/api/auth/login")
