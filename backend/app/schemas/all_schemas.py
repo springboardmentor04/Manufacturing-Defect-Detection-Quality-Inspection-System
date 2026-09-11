@@ -63,6 +63,8 @@ class BatchResponse(BaseModel):
 # Inspection Schemas
 class DetectionSchema(BaseModel):
     defect_type: str
+    defect_category: Optional[str] = None
+    detector_class: Optional[str] = "defect"
     product_category: Optional[str] = None
     suggested_defect_type: Optional[str] = None
     defect_present: Optional[bool] = None
@@ -96,9 +98,14 @@ class InspectionResponse(BaseModel):
     id: int
     batch_id: Optional[int] = None
     product_id: Optional[int] = None
+    defect_detected: Optional[bool] = None
+    detector_class: Optional[str] = "defect"
     defect_type: Optional[str] = None
+    defect_category: Optional[str] = None
     product_category: Optional[str] = None
     confidence: Optional[float] = None
+    classification_confidence: Optional[float] = None
+    detection_confidence: Optional[float] = None
     created_at: Any = None
     processing_time_ms: float = 0.0
     detections: List[DetectionSchema] = []

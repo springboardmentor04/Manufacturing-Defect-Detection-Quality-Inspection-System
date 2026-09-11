@@ -54,13 +54,19 @@ def _store_prediction_results(db: Session, inspection: Inspection, results: dict
 
     stored = []
     for defect in results["defects"]:
+        display_name = defect.get("defect_category") or category_label(defect["type"], defect.get("product_category"))
+        if defect.get("classification_confidence") is not None and defect["classification_confidence"] < 40.0:
+            display_name = "Classification Uncertain"
+        elif not display_name or display_name.lower() in ("defect", "none", "no_defect"):
+            display_name = category_label(defect["type"], defect.get("product_category")) or "Defect"
+
         detection = Detection(
             inspection_id=inspection.id,
             defect_type=defect["type"],
             product_category=defect.get("product_category"),
             suggested_defect_type=defect.get("suggested_defect_type"),
             defect_present=True,
-            defect_display_name=category_label(defect["type"], defect.get("product_category")),
+            defect_display_name=display_name,
             detection_confidence=defect.get("detection_confidence", defect["confidence"]),
             classification_confidence=defect.get("classification_confidence"),
             confidence=defect["confidence"],
@@ -114,14 +120,16 @@ def _serialize_inspection(inspection: Inspection):
     bounding_boxes = [{
         "box": [d.bbox_x1, d.bbox_y1, d.bbox_x2, d.bbox_y2],
         "label": d.defect_type,
+        "detector_class": "defect",
         "defect_type": d.defect_type,
+        "defect_category": d.defect_display_name or category_label(d.defect_type, d.product_category) or "Defect",
         "product_category": d.product_category,
         "suggested_defect_type": d.suggested_defect_type,
         "defect_present": d.defect_present,
         "defect_display_name": d.defect_display_name,
         "detection_confidence": d.detection_confidence,
         "classification_confidence": d.classification_confidence,
-        "category": category_label(d.defect_type, d.product_category),
+        "category": d.defect_display_name or category_label(d.defect_type, d.product_category) or "Defect",
         "conf": d.confidence,
         "area": d.area,
         "assessment": _assessment_response(d.assessment),
@@ -143,34 +151,59 @@ def _serialize_inspection(inspection: Inspection):
         "status": "active", "created_at": inspection.batch.created_at.isoformat() if inspection.batch.created_at else "",
     }
     primary = inspection.detections[0] if inspection.detections else None
+    primary_category = None
+    if primary:
+        if primary.classification_confidence is not None and primary.classification_confidence < 40.0:
+            primary_category = "Classification Uncertain"
+        else:
+            primary_category = primary.defect_display_name or category_label(primary.defect_type, primary.product_category)
+            if not primary_category or primary_category.lower() in ("defect", "normal", "none"):
+                primary_category = "Classification Uncertain" if len(inspection.detections) > 0 else "Normal"
+
     return {
-        "id": inspection.id, "product_id": inspection.batch.product_id if inspection.batch else 0,
-        "batch_id": inspection.batch_id, "image_path": image_path, "processed_image_path": processed_image_path, "ai_status": "COMPLETED",
+        "id": inspection.id,
+        "product_id": inspection.batch.product_id if inspection.batch else 0,
+        "batch_id": inspection.batch_id,
+        "image_path": image_path,
+        "processed_image_path": processed_image_path,
+        "ai_status": "COMPLETED",
+        "defect_detected": len(inspection.detections) > 0,
+        "detector_class": "defect",
         "defect_type": primary.defect_type if primary else None,
+        "defect_category": primary_category,
         "product_category": primary.product_category if (primary and primary.product_category) else (product.name if product else None),
         "confidence": primary.confidence if primary else None,
-        "ai_decision": qd.ai_decision if qd else "PASS", "human_decision": qd.human_decision if qd else None,
-        "final_decision": qd.final_decision if qd else "PASS", "override_reason": qd.override_reason if qd else None,
+        "classification_confidence": primary.classification_confidence if primary else None,
+        "detection_confidence": primary.detection_confidence if primary else (primary.confidence if primary else None),
+        "ai_decision": qd.ai_decision if qd else "PASS",
+        "human_decision": qd.human_decision if qd else None,
+        "final_decision": qd.final_decision if qd else "PASS",
+        "override_reason": qd.override_reason if qd else None,
         "quality_decision": None if not qd else {
             "ai_decision": qd.ai_decision or "PASS",
             "human_decision": qd.human_decision,
             "final_decision": qd.final_decision or "PASS",
             "override_reason": qd.override_reason,
         },
-        "severity_score": sev.total_score if sev else 0.0, "severity_level": sev.level if sev else "LOW",
-        "model_version": "Configured model", "model_status": analysis.model_status if analysis else "UNKNOWN",
-        "model_message": analysis.model_message if analysis else None, "processing_time_ms": inspection.processing_time_ms,
+        "severity_score": sev.total_score if sev else 0.0,
+        "severity_level": sev.level if sev else "LOW",
+        "model_version": "Configured model",
+        "model_status": analysis.model_status if analysis else "UNKNOWN",
+        "model_message": analysis.model_message if analysis else None,
+        "processing_time_ms": inspection.processing_time_ms,
         "created_at": inspection.created_at.isoformat() if inspection.created_at else "",
         "bounding_boxes": bounding_boxes,
         "detections": [{
             "defect_type": d.defect_type,
+            "defect_category": d.defect_display_name or category_label(d.defect_type, d.product_category) or "Defect",
+            "detector_class": "defect",
             "product_category": d.product_category,
             "suggested_defect_type": d.suggested_defect_type,
             "defect_present": d.defect_present,
             "defect_display_name": d.defect_display_name,
             "detection_confidence": d.detection_confidence,
             "classification_confidence": d.classification_confidence,
-            "category": category_label(d.defect_type, d.product_category),
+            "category": d.defect_display_name or category_label(d.defect_type, d.product_category) or "Defect",
             "label": d.defect_type,
             "confidence": d.confidence,
             "bbox_x1": d.bbox_x1,

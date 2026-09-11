@@ -13,7 +13,7 @@ os.environ["ULTRALYTICS_AUTOINSTALL"] = "0"
 os.environ["YOLO_OFFLINE"] = "True"
 
 import cv2
-from ml.quality.assessment_engine import assess_defect, assess_inspection
+from ml.quality.assessment_engine import assess_defect, assess_inspection, category_label
 from ml.inference.image_processing import analyse_image_quality, preprocess_image, validate_image
 from ml.inference.class_resolution import describe_model_classes, resolve_detection_class, resolve_class_name
 
@@ -253,7 +253,20 @@ class InferencePipeline:
                         crop = orig_img[cy1:cy2, cx1:cx2]
                         with infer_ctx:
                             cls_results = self.classifier_model(crop, verbose=False)[0]
-                        clean_product = product_name.strip().lower() if product_name else None
+                        
+                        clean_product = None
+                        if product_name:
+                            raw_p = product_name.strip().lower()
+                            for cat in [
+                                "bottle", "cable", "capsule", "carpet", "grid", "hazelnut",
+                                "leather", "metal_nut", "pill", "screw", "tile", "toothbrush",
+                                "transistor", "wood", "zipper"
+                            ]:
+                                if cat in raw_p.replace(" ", "_").replace("-", "_") or cat.replace("_", "") in raw_p.replace(" ", "").replace("-", ""):
+                                    clean_product = cat
+                                    break
+                            if not clean_product:
+                                clean_product = raw_p
                         
                         top1_idx = cls_results.probs.top1
                         top1_conf = float(cls_results.probs.top1conf)
@@ -287,8 +300,14 @@ class InferencePipeline:
                         classification_source = "classifier"
                         classifier_conf = top1_conf
 
+                display_category = category_label(defect_type, product_category)
+                if classifier_conf > 0 and (classifier_conf * 100) < 40.0:
+                    display_category = "Classification Uncertain"
+
                 raw_defects.append({
                     "type": defect_type,
+                    "defect_category": display_category,
+                    "detector_class": "defect",
                     "confidence": conf * 100,
                     "bbox": [x1, y1, x2, y2],
                     "area": area,

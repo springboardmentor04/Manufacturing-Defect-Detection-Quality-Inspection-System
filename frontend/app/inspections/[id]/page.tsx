@@ -405,6 +405,28 @@ export default function InspectionResultPage() {
                     <span className="font-mono text-slate-800">Batch #{inspection.batch_id}</span>
                   </div>
                 )}
+                {inspection.defect_category && (
+                  <div className="py-2.5 flex justify-between">
+                    <span className="text-slate-500">Defect Category:</span>
+                    <span className="font-bold text-rose-600">{formatDefectType(inspection.defect_category) || inspection.defect_category}</span>
+                  </div>
+                )}
+                {inspection.detector_class && (
+                  <div className="py-2.5 flex justify-between">
+                    <span className="text-slate-500">Detector Class:</span>
+                    <span className="font-mono text-slate-700">{inspection.detector_class}</span>
+                  </div>
+                )}
+                {inspection.classification_confidence !== undefined && inspection.classification_confidence !== null && (
+                  <div className="py-2.5 flex justify-between">
+                    <span className="text-slate-500">Classification Confidence:</span>
+                    <span className="font-mono font-semibold text-slate-800">
+                      {inspection.classification_confidence <= 1.0
+                        ? (inspection.classification_confidence * 100).toFixed(1)
+                        : Number(inspection.classification_confidence).toFixed(1)}%
+                    </span>
+                  </div>
+                )}
                 <div className="py-2.5 flex justify-between">
                   <span className="text-slate-500">Quality Decision:</span>
                   <span className={`font-bold ${finalDecision === 'PASS' ? 'text-emerald-600' : 'text-rose-600'}`}>
@@ -438,27 +460,38 @@ export default function InspectionResultPage() {
                 </div>
               ) : (
                 <div className="space-y-2.5 max-h-[320px] overflow-y-auto">
-                  {normalizedDetections.map((defect: any, idx: number) => (
-                    <div
-                      key={idx}
-                      onClick={() => setActiveDefect(defect)}
-                      className={`p-3 rounded-lg border transition-all cursor-pointer ${
-                        activeDefect === defect
-                          ? 'border-blue-500 bg-blue-50/50'
-                          : 'border-slate-200 hover:border-slate-300 bg-white'
-                      }`}
-                    >
-                      <div className="flex justify-between items-start">
-                        <p className="font-bold text-slate-800 text-sm">{formatDefectType(defect.type) || defect.type}</p>
-                        <span className="text-xs font-mono font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-100">
-                          {defect.conf.toFixed(1)}% conf
-                        </span>
+                  {normalizedDetections.map((defect: any, idx: number) => {
+                    const defectCat = defect.defect_category || defect.category || (defect.type !== 'defect' ? defect.type : null) || 'Defect';
+                    const displayCat = formatDefectType(defectCat) || defectCat;
+                    return (
+                      <div
+                        key={idx}
+                        onClick={() => setActiveDefect(defect)}
+                        className={`p-3 rounded-lg border transition-all cursor-pointer ${
+                          activeDefect === defect
+                            ? 'border-blue-500 bg-blue-50/50'
+                            : 'border-slate-200 hover:border-slate-300 bg-white'
+                        }`}
+                      >
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="font-bold text-slate-800 text-sm">
+                              Defect Category: <span className="text-rose-600">{displayCat}</span>
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              Detector: <span className="font-mono text-slate-600">{defect.detector_class || 'defect'}</span>
+                            </p>
+                          </div>
+                          <span className="text-xs font-mono font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-100">
+                            {defect.conf.toFixed(1)}% conf
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-400 mt-1 font-mono">
+                          Box: [{defect.x1.toFixed(0)}, {defect.y1.toFixed(0)}, {defect.x2.toFixed(0)}, {defect.y2.toFixed(0)}]
+                        </p>
                       </div>
-                      <p className="text-xs text-slate-400 mt-1 font-mono">
-                        Box: [{defect.x1.toFixed(0)}, {defect.y1.toFixed(0)}, {defect.x2.toFixed(0)}, {defect.y2.toFixed(0)}]
-                      </p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

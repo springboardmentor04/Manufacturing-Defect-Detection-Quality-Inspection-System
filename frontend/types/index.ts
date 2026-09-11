@@ -35,7 +35,13 @@ export type QualityDecisionType = 'PASS' | 'FAIL' | 'REVIEW' | 'REWORK';
 
 export interface DetectionSchema {
   defect_type: string;
+  defect_category?: string;
+  detector_class?: string;
+  defect_display_name?: string;
+  category?: string;
   confidence: number;
+  detection_confidence?: number;
+  classification_confidence?: number;
   bbox_x1: number;
   bbox_y1: number;
   bbox_x2: number;
@@ -58,8 +64,14 @@ export interface Inspection {
   image_path?: string;
   processed_image_path?: string | null;
   ai_status?: string;
+  defect_detected?: boolean;
+  detector_class?: string;
   defect_type?: string;
+  defect_category?: string;
+  product_category?: string;
   confidence?: number;
+  classification_confidence?: number;
+  detection_confidence?: number;
   severity_score?: number;
   severity_level?: string;
   ai_decision?: QualityDecisionType | string;
