@@ -2,6 +2,16 @@ import time
 import os
 import gc
 from contextlib import nullcontext
+
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+os.environ["YOLO_VERBOSE"] = "False"
+os.environ["ULTRALYTICS_AUTOINSTALL"] = "0"
+os.environ["YOLO_OFFLINE"] = "True"
+
 import cv2
 from ml.quality.assessment_engine import assess_defect, assess_inspection
 from ml.inference.image_processing import analyse_image_quality, preprocess_image, validate_image
@@ -140,7 +150,13 @@ class InferencePipeline:
         self.class_resolution_info = describe_model_classes({})
         
         self.classifier_model = None
-        self.classifier_path = resolve_classifier_path(classifier_path)
+        # In memory-constrained production environments (Render 512MB limit),
+        # only load single primary YOLO best.pt detector to prevent OOM
+        enable_classifier = os.getenv("ENABLE_CLASSIFIER_MODEL", "false").lower() in ("1", "true", "yes")
+        if enable_classifier:
+            self.classifier_path = resolve_classifier_path(classifier_path)
+        else:
+            self.classifier_path = None
 
         try:
             from ultralytics import YOLO

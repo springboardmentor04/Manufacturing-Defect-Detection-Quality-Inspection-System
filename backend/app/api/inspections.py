@@ -302,26 +302,18 @@ async def create_and_run_inspection(
         db.delete(inspection)
         db.commit()
         raise HTTPException(status_code=400, detail=str(error))
-    except Exception:
-        try:
-            results = await run_in_threadpool(
-                pipeline.inspect_image,
-                filepath,
-                processed_image_path=processed_path,
-                product_name=product_name
-            )
-        except Exception as error:
-            # A failed inference must not persist as a (fake) successful inspection.
-            for leftover in (filepath, processed_path):
-                try:
-                    if leftover and os.path.isfile(leftover):
-                        os.remove(leftover)
-                except OSError:
-                    pass
-            db.delete(img)
-            db.delete(inspection)
-            db.commit()
-            raise HTTPException(status_code=500, detail=f"AI inference failed: {error}")
+    except Exception as error:
+        # A failed inference must not persist as a (fake) successful inspection.
+        for leftover in (filepath, processed_path):
+            try:
+                if leftover and os.path.isfile(leftover):
+                    os.remove(leftover)
+            except OSError:
+                pass
+        db.delete(img)
+        db.delete(inspection)
+        db.commit()
+        raise HTTPException(status_code=500, detail=f"AI inference failed: {error}")
     db.add(InspectionImage(inspection_id=inspection.id, file_path=processed_path, image_type="processed"))
     quality = results["image_quality"]
     db.add(ImageAnalysis(inspection_id=inspection.id, width=results["image_info"]["width"], height=results["image_info"]["height"], file_size_bytes=results["image_info"]["file_size_bytes"], brightness=quality["brightness"], contrast=quality["contrast"], sharpness=quality["sharpness"], quality_status=quality["quality_status"], warning=quality["warning"], model_status=results["model_status"], model_message=results["model_message"]))
