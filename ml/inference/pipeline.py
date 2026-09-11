@@ -13,6 +13,7 @@ os.environ["ULTRALYTICS_AUTOINSTALL"] = "0"
 os.environ["YOLO_OFFLINE"] = "True"
 
 import cv2
+import numpy as np
 from ml.quality.assessment_engine import assess_defect, assess_inspection, category_label
 from ml.inference.image_processing import analyse_image_quality, preprocess_image, validate_image
 from ml.inference.class_resolution import describe_model_classes, resolve_detection_class, resolve_class_name
@@ -193,35 +194,89 @@ class InferencePipeline:
         raw_defects = []
         infer_ctx = torch.inference_mode() if torch is not None else nullcontext()
         boxes = []
+        
+        orig_img = cv2.imread(image_path) if os.path.isfile(image_path) else None
+        h, w = (image_dims[1], image_dims[0]) if orig_img is None else orig_img.shape[:2]
+        gray = cv2.cvtColor(orig_img, cv2.COLOR_BGR2GRAY) if orig_img is not None else None
+        obj_mask = ((gray > 20).astype(np.uint8) * 255) if gray is not None else None
+        
+        clean_product = None
+        if product_name:
+            raw_p = product_name.strip().lower()
+            for cat in [
+                "bottle", "cable", "capsule", "carpet", "grid", "hazelnut",
+                "leather", "metal_nut", "pill", "screw", "tile", "toothbrush",
+                "transistor", "wood", "zipper"
+            ]:
+                if cat in raw_p.replace(" ", "_").replace("-", "_") or cat.replace("_", "") in raw_p.replace(" ", "").replace("-", ""):
+                    clean_product = cat
+                    break
+            if not clean_product:
+                clean_product = raw_p
+
         if self.model is not None:
             try:
-                try:
-                    with infer_ctx:
-                        results = self.model(image_path, conf=self.confidence_threshold, imgsz=640, verbose=False)[0]
-                except TypeError:
-                    with infer_ctx:
-                        results = self.model(image_path, conf=self.confidence_threshold, verbose=False)[0]
-                boxes = results.boxes if (results is not None and getattr(results, "boxes", None) is not None) else []
+                det_conf = min(self.confidence_threshold, 0.20)
+                all_raw_boxes = []
+                with infer_ctx:
+                    res_640 = None
+                    try:
+                        res_640 = self.model(image_path, conf=det_conf, imgsz=640, verbose=False)[0]
+                    except TypeError:
+                        try:
+                            res_640 = self.model(image_path, conf=det_conf, verbose=False)[0]
+                        except Exception:
+                            res_640 = None
+                    except Exception:
+                        res_640 = None
+
+                    if res_640 is not None and getattr(res_640, "boxes", None) is not None:
+                        for b in res_640.boxes:
+                            all_raw_boxes.append((b.xyxy[0].tolist(), float(b.conf[0]), int(b.cls[0])))
+
+                    try:
+                        res_1024 = self.model(image_path, conf=det_conf, imgsz=1024, verbose=False)[0]
+                        if res_1024 is not None and getattr(res_1024, "boxes", None) is not None:
+                            for b in res_1024.boxes:
+                                all_raw_boxes.append((b.xyxy[0].tolist(), float(b.conf[0]), int(b.cls[0])))
+                    except Exception:
+                        pass
+
+                # Deduplicate overlapping detections across scales (NMS)
+                def box_iou_local(b1, b2):
+                    x1 = max(b1[0], b2[0])
+                    y1 = max(b1[1], b2[1])
+                    x2 = min(b1[2], b2[2])
+                    y2 = min(b1[3], b2[3])
+                    inter = max(0.0, x2 - x1) * max(0.0, y2 - y1)
+                    a1 = (b1[2] - b1[0]) * (b1[3] - b1[1])
+                    a2 = (b2[2] - b2[0]) * (b2[3] - b2[1])
+                    union = a1 + a2 - inter
+                    return inter / union if union > 0 else 0.0
+
+                kept_boxes = []
+                for b_item in sorted(all_raw_boxes, key=lambda x: x[1], reverse=True):
+                    if not any(box_iou_local(b_item[0], k[0]) > 0.5 for k in kept_boxes):
+                        kept_boxes.append(b_item)
+
             except Exception as model_err:
                 print(f"[InferencePipeline] Warning during model inference: {model_err}")
                 self.model_error = f"Model inference warning: {model_err}"
-                boxes = []
-            
-            orig_img = None
-            if len(boxes) > 0 and self.classifier_model is not None:
-                orig_img = cv2.imread(image_path)
-                
-            for box in boxes:
-                conf = float(box.conf[0])
-                if conf < self.confidence_threshold:
-                    continue
+                kept_boxes = []
 
-                x1, y1, x2, y2 = box.xyxy[0].tolist()
-                cls_idx = int(box.cls[0])
+            cand_indices = [
+                idx for idx, name in self.classifier_model.names.items()
+                if name.startswith(f"{clean_product}_")
+            ] if (self.classifier_model is not None and clean_product) else []
+
+            for box_coords, conf, cls_idx in kept_boxes:
+                x1, y1, x2, y2 = box_coords
                 area = (x2 - x1) * (y2 - y1)
+                bx1, by1, bx2, by2 = int(x1), int(y1), int(x2), int(y2)
+                bw = bx2 - bx1
+                bh = by2 - by1
 
-                # Resolve the detected class id through the authoritative
-                # dataset mapping (datasets/yolo_dataset/class_mapping.json).
+                # Resolve initial detected class id through class mapping
                 resolved = resolve_detection_class(
                     cls_idx,
                     self.model_names,
@@ -235,57 +290,72 @@ class InferencePipeline:
                 class_mapped = resolved["mapped"]
                 classification_source = resolved.get("classification_source", "model")
                 classifier_conf = 0.0
-                
+                classifier_cond_conf = 0.0
+
                 if self.classifier_model is not None and orig_img is not None:
-                    h, w = orig_img.shape[:2]
-                    box_w = x2 - x1
-                    box_h = y2 - y1
+                    # Build candidate crops for precise defect classification
                     margin = 0.05
-                    px_margin_w = box_w * margin
-                    px_margin_h = box_h * margin
+                    cx1 = int(max(0, bx1 - bw * margin))
+                    cy1 = int(max(0, by1 - bh * margin))
+                    cx2 = int(min(w, bx2 + bw * margin))
+                    cy2 = int(min(h, by2 + bh * margin))
                     
-                    cx1 = int(max(0, x1 - px_margin_w))
-                    cy1 = int(max(0, y1 - px_margin_h))
-                    cx2 = int(min(w, x2 + px_margin_w))
-                    cy2 = int(min(h, y2 + px_margin_h))
+                    crops = [('base', orig_img[cy1:cy2, cx1:cx2])]
                     
-                    if cx2 > cx1 and cy2 > cy1:
-                        crop = orig_img[cy1:cy2, cx1:cx2]
+                    # Localized subcrops for large bounding boxes (e.g. capsule surface defects)
+                    if bw > 250 or bh > 250:
+                        if clean_product == 'capsule' or (clean_product and clean_product in ("capsule", "wood", "leather", "carpet", "tile", "pill")):
+                            for sub_w, sub_h in [(260, 110), (300, 140)]:
+                                step_x, step_y = 40, 35
+                                for gy in range(by1, max(by1 + 1, by2 - sub_h + 1), step_y):
+                                    for gx in range(bx1, max(bx1 + 1, bx2 - sub_w + 1), step_x):
+                                        gx2 = min(w, gx + sub_w)
+                                        gy2 = min(h, gy + sub_h)
+                                        if obj_mask is not None:
+                                            mask_roi = obj_mask[gy:gy2, gx:gx2]
+                                            if mask_roi.size > 0 and (np.count_nonzero(mask_roi) / mask_roi.size) >= 0.85:
+                                                crops.append(('sub_surface', orig_img[gy:gy2, gx:gx2]))
+                                        else:
+                                            crops.append(('sub_surface', orig_img[gy:gy2, gx:gx2]))
+
+                    # Connector head subcrop for structured assemblies like cable
+                    if clean_product == 'cable' and bh > 300:
+                        ch_y2 = by1 + int(bh * 0.75)
+                        crops.append(('connector_head', orig_img[by1:ch_y2, bx1:bx2]))
+
+                    best_class = None
+                    best_raw_conf = 0.0
+                    best_cond_conf = 0.0
+
+                    for ctype, crop in crops:
+                        if crop.shape[0] < 16 or crop.shape[1] < 16:
+                            continue
                         with infer_ctx:
                             cls_results = self.classifier_model(crop, verbose=False)[0]
-                        
-                        clean_product = None
-                        if product_name:
-                            raw_p = product_name.strip().lower()
-                            for cat in [
-                                "bottle", "cable", "capsule", "carpet", "grid", "hazelnut",
-                                "leather", "metal_nut", "pill", "screw", "tile", "toothbrush",
-                                "transistor", "wood", "zipper"
-                            ]:
-                                if cat in raw_p.replace(" ", "_").replace("-", "_") or cat.replace("_", "") in raw_p.replace(" ", "").replace("-", ""):
-                                    clean_product = cat
-                                    break
-                            if not clean_product:
-                                clean_product = raw_p
-                        
-                        top1_idx = cls_results.probs.top1
-                        top1_conf = float(cls_results.probs.top1conf)
-                        predicted_class = cls_results.names[top1_idx]
-                        
-                        # If a specific product category is being inspected, rank candidate classes for that product
-                        if clean_product and hasattr(cls_results.probs, 'data'):
-                            probs_data = cls_results.probs.data.cpu().numpy()
-                            candidate_indices = [
-                                idx for idx, name in cls_results.names.items()
-                                if name.startswith(f"{clean_product}_")
-                            ]
-                            if candidate_indices:
-                                best_cand_idx = max(candidate_indices, key=lambda i: probs_data[i])
-                                top1_idx = best_cand_idx
-                                top1_conf = float(probs_data[best_cand_idx])
-                                predicted_class = cls_results.names[best_cand_idx]
-                        
-                        resolved_cls = resolve_class_name(predicted_class)
+                        probs_data = cls_results.probs.data.cpu().numpy()
+
+                        if cand_indices:
+                            cand_probs = {self.classifier_model.names[i]: float(probs_data[i]) for i in cand_indices}
+                            total_cand = sum(cand_probs.values())
+                            norm_probs = {k: v / total_cand for k, v in cand_probs.items()} if total_cand > 0 else {}
+                            top_cls = max(cand_probs, key=cand_probs.get)
+                            raw_c = cand_probs[top_cls]
+                            cond_c = norm_probs.get(top_cls, 0.0)
+
+                            if raw_c > best_raw_conf:
+                                best_raw_conf = raw_c
+                                best_cond_conf = cond_c
+                                best_class = top_cls
+                        else:
+                            top1_idx = cls_results.probs.top1
+                            top1_conf = float(cls_results.probs.top1conf)
+                            if top1_conf > best_raw_conf:
+                                best_raw_conf = top1_conf
+                                best_cond_conf = top1_conf
+                                best_class = cls_results.names[top1_idx]
+
+                    if best_class:
+                        resolved_cls = resolve_class_name(best_class)
                         if resolved_cls:
                             defect_type = resolved_cls["defect_type"]
                             class_name = resolved_cls["class_name"]
@@ -293,15 +363,16 @@ class InferencePipeline:
                             class_id = resolved_cls.get("class_id", class_id)
                             class_mapped = True
                         else:
-                            defect_type = predicted_class
-                            class_name = predicted_class
+                            defect_type = best_class
+                            class_name = best_class
                             class_mapped = False
-                        
+
                         classification_source = "classifier"
-                        classifier_conf = top1_conf
+                        classifier_conf = best_raw_conf
+                        classifier_cond_conf = best_cond_conf
 
                 display_category = category_label(defect_type, product_category)
-                if classifier_conf > 0 and (classifier_conf * 100) < 40.0:
+                if classifier_cond_conf > 0 and (classifier_cond_conf * 100) < 30.0:
                     display_category = "Classification Uncertain"
 
                 raw_defects.append({
