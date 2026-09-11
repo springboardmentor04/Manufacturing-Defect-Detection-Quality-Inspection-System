@@ -216,6 +216,7 @@ class InferencePipeline:
                 clean_product = raw_p
 
         if self.model is not None:
+            gc.collect()
             try:
                 det_conf = min(self.confidence_threshold, 0.20)
                 all_raw_boxes = []
@@ -235,15 +236,7 @@ class InferencePipeline:
                         for b in res_640.boxes:
                             all_raw_boxes.append((b.xyxy[0].tolist(), float(b.conf[0]), int(b.cls[0])))
 
-                    try:
-                        res_768 = self.model(image_path, conf=det_conf, imgsz=768, verbose=False)[0]
-                        if res_768 is not None and getattr(res_768, "boxes", None) is not None:
-                            for b in res_768.boxes:
-                                all_raw_boxes.append((b.xyxy[0].tolist(), float(b.conf[0]), int(b.cls[0])))
-                    except Exception:
-                        pass
-
-                # Deduplicate overlapping detections across scales (NMS)
+                # Deduplicate overlapping detections (NMS)
                 def box_iou_local(b1, b2):
                     x1 = max(b1[0], b2[0])
                     y1 = max(b1[1], b2[1])
@@ -314,19 +307,20 @@ class InferencePipeline:
                                     gy2 = min(h, gy + sub_h)
                                     if obj_mask is not None:
                                         mask_roi = obj_mask[gy:gy2, gx:gx2]
-                                        if mask_roi.size > 0 and (np.count_nonzero(mask_roi) / mask_roi.size) >= 0.85:
+                                        if mask_roi.size > 0 and (np.count_nonzero(mask_roi) / mask_roi.size) >= 0.80:
                                             crops.append(('sub_surface', orig_img[gy:gy2, gx:gx2]))
                                     else:
                                         crops.append(('sub_surface', orig_img[gy:gy2, gx:gx2]))
 
                     # Connector head subcrop for structured assemblies like cable
                     if clean_product == 'cable' and bh > 250:
-                        crops.append(('connector_head', orig_img[by1:by1 + int(bh * 0.75), bx1:bx2]))
-                        crops.append(('head_tight', orig_img[by1:by1 + int(bh * 0.60), bx1:bx2]))
+                        crops.append(('connector_top', orig_img[by1:by1 + int(bh * 0.50), max(0, bx1 - 30):min(w, bx2 + 30)]))
+                        crops.append(('connector_head', orig_img[by1:by1 + int(bh * 0.60), bx1:bx2]))
 
                     best_class = None
                     best_raw_conf = 0.0
                     best_cond_conf = 0.0
+                    best_score = 0.0
 
                     for ctype, crop in crops:
                         if crop.shape[0] < 16 or crop.shape[1] < 16:
@@ -342,8 +336,10 @@ class InferencePipeline:
                             top_cls = max(cand_probs, key=cand_probs.get)
                             raw_c = cand_probs[top_cls]
                             cond_c = norm_probs.get(top_cls, 0.0)
+                            score = raw_c * cond_c
 
-                            if raw_c > best_raw_conf:
+                            if score > best_score:
+                                best_score = score
                                 best_raw_conf = raw_c
                                 best_cond_conf = cond_c
                                 best_class = top_cls
@@ -410,8 +406,14 @@ class InferencePipeline:
                 
             final_defects.append(d)
 
-        # Prioritize most severe defect first
-        final_defects.sort(key=lambda d: d.get("severity_score", 0), reverse=True)
+        # Prioritize most severe and specific defect first
+        def defect_priority(d):
+            type_name = str(d.get("type", "")).lower()
+            bonus = 15 if ("missing" in type_name or "broken" in type_name or "crack" in type_name or "scratch" in type_name) else 0
+            cls_c = d.get("classification_confidence") or d.get("confidence") or 0.0
+            return (d.get("severity_score", 0) + bonus, cls_c)
+
+        final_defects.sort(key=defect_priority, reverse=True)
             
         processing_time_ms = round((time.time() - start_time) * 1000, 2)
         
