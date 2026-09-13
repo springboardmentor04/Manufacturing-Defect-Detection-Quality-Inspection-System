@@ -1,0 +1,9 @@
+{
+  "name": "visioninspect-ai",
+  "version": "2.4.0",
+  "private": true,
+  "scripts": {
+    "vercel-build": "cd frontend && npm install && npm run build",
+    "build": "cd frontend && npm install && npm run build"
+  }
+}

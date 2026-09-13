@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MOCK_INSPECTION_SAMPLES } from '../data/mockData';
 import { calculateSeverityScore } from '../utils/severityCalculator';
+import { REPORTS_API_URL } from '../config/api';
 import { 
   Camera, Upload, Eye, Layers, Sliders, CheckCircle2, XCircle, 
   Download, Sparkles, Cpu, FileText, Play, Square, Check, X
@@ -443,7 +444,7 @@ export const InspectionWorkspace = () => {
                   onClick={async () => {
                     setManualVerdictOverride(true);
                     try {
-                      await fetch('http://localhost:8000/api/reports', {
+                      await fetch(REPORTS_API_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -481,7 +482,7 @@ export const InspectionWorkspace = () => {
                   onClick={async () => {
                     setManualVerdictOverride(false);
                     try {
-                      await fetch('http://localhost:8000/api/reports', {
+                      await fetch(REPORTS_API_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -575,7 +576,7 @@ export const InspectionWorkspace = () => {
               <button
                 onClick={async () => {
                   try {
-                    await fetch('http://localhost:8000/api/reports', {
+                    await fetch(REPORTS_API_URL, {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({

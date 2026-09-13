@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MOCK_RECENT_INSPECTIONS } from '../data/mockData';
+import { REPORTS_API_URL } from '../config/api';
 import { 
   ClipboardCheck, Search, Download, Eye, Database, RefreshCw
 } from 'lucide-react';
@@ -14,7 +15,7 @@ export const QualityControlCenter = () => {
   const fetchReports = async () => {
     setIsLoading(true);
     try {
-      const url = `http://localhost:8000/api/reports?verdict=${filterVerdict}${searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : ''}`;
+      const url = `${REPORTS_API_URL}?verdict=${filterVerdict}${searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : ''}`;
       const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
