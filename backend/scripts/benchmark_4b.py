@@ -3,6 +3,7 @@ import sys
 import time
 import glob
 import statistics
+# pyrefly: ignore [missing-import]
 import torch
 from pymongo import MongoClient
 from datetime import datetime
@@ -11,6 +12,7 @@ from datetime import datetime
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../ai-model')))
 
+# pyrefly: ignore [missing-import]
 from inference.yolo_infer import YOLOInferenceEngine
 
 # Configuration

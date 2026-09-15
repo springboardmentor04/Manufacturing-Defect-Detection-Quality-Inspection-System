@@ -26,14 +26,16 @@ Thumbs.db
 # Project specific
 uploads/*
 !uploads/.gitkeep
-dataset/
-weights/
-runs/
-logs/
+/dataset/
+/weights/
+/runs/
+/logs/
 backend/uploads/*
 !backend/uploads/.gitkeep
 ai-model/yolo/dataset/images/
 ai-model/dataset/mvtec_ad/
 ai-model/yolo_cls_data/
+!ai-model/yolo/models/optimized_run/weights/best.pt
+
 
 
