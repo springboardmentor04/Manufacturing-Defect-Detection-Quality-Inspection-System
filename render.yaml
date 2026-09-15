@@ -1,0 +1,55 @@
+services:
+  # -------------------------------------------------------------------------
+  # VisionInspect AI - Backend (FastAPI + YOLO Defect Detection)
+  # -------------------------------------------------------------------------
+  - type: web
+    name: visioninspect-backend
+    env: python
+    rootDir: backend
+    plan: starter
+    buildCommand: |
+      apt-get update && apt-get install -y libgl1 libglib2.0-0
+      pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /docs
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: PROJECT_NAME
+        value: "VisionInspect AI"
+      - key: API_VERSION
+        value: "1.0.0"
+      - key: DATABASE_NAME
+        value: "visioninspect_db"
+      - key: MONGODB_URL
+        sync: false # Set securely in Render dashboard
+      - key: SECRET_KEY
+        generateValue: true # Render will generate a random secure secret
+      - key: ALGORITHM
+        value: "HS256"
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "60"
+      - key: USE_REAL_AI
+        value: "True"
+      - key: YOLO_CONF_THRESHOLD
+        value: "0.15"
+      - key: CORS_ORIGINS
+        value: '["https://visioninspect-frontend.onrender.com", "http://localhost:3000"]'
+
+  # -------------------------------------------------------------------------
+  # VisionInspect AI - Frontend (Next.js 15)
+  # -------------------------------------------------------------------------
+  - type: web
+    name: visioninspect-frontend
+    env: node
+    rootDir: frontend
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        value: https://visioninspect-backend.onrender.com
