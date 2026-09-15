@@ -44,16 +44,53 @@ class DatasetService:
             size_in_bytes /= 1024.0
         return f"{size_in_bytes:.1f} PB"
 
+    DEFAULT_CATEGORIES = [
+        "bottle", "cable", "capsule", "carpet", "grid",
+        "hazelnut", "leather", "metal_nut", "pill", "screw",
+        "tile", "toothbrush", "transistor", "wood", "zipper"
+    ]
+
     def scan_categories(self) -> List[Dict[str, Any]]:
-        """Scan all categories in the mvtec dataset folder."""
+        """Scan all categories in the mvtec dataset folder or return supported taxonomy categories."""
         if DatasetService._categories_cache is not None:
             return DatasetService._categories_cache
             
         if not self.base_path.exists():
-            return []
+            # Fallback for production environments where raw datasets are not stored on server
+            taxonomy_path = self.base_path.parents[1] / "ai-model" / "yolo" / "taxonomy.json"
+            cats_list = self.DEFAULT_CATEGORIES
+            if taxonomy_path.exists():
+                try:
+                    import json
+                    with open(taxonomy_path, "r") as f:
+                        tax = json.load(f)
+                        mapped = set()
+                        for c_list in tax.get("mapping", {}).values():
+                            mapped.update(c_list)
+                        if mapped:
+                            cats_list = sorted(list(mapped))
+                except Exception:
+                    pass
+
+            categories = [
+                {
+                    "name": name,
+                    "train_images": 0,
+                    "test_images": 0,
+                    "ground_truth_images": 0,
+                    "total_size_bytes": 0,
+                    "formatted_size": "0 B",
+                    "status": "Production AI Ready",
+                    "is_valid": True
+                }
+                for name in cats_list
+            ]
+            DatasetService._categories_cache = categories
+            return DatasetService._categories_cache
             
         categories = []
         for item in self.base_path.iterdir():
+
             if item.is_dir():
                 # Expected subfolders
                 train_dir = item / "train"

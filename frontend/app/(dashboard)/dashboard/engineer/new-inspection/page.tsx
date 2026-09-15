@@ -47,6 +47,17 @@ export default function NewInspectionPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const DEFAULT_CATEGORIES: Category[] = [
+    { name: "bottle", is_valid: true }, { name: "cable", is_valid: true },
+    { name: "capsule", is_valid: true }, { name: "carpet", is_valid: true },
+    { name: "grid", is_valid: true }, { name: "hazelnut", is_valid: true },
+    { name: "leather", is_valid: true }, { name: "metal_nut", is_valid: true },
+    { name: "pill", is_valid: true }, { name: "screw", is_valid: true },
+    { name: "tile", is_valid: true }, { name: "toothbrush", is_valid: true },
+    { name: "transistor", is_valid: true }, { name: "wood", is_valid: true },
+    { name: "zipper", is_valid: true }
+  ];
+
   // Fetch categories on mount
   useEffect(() => {
     const fetchCategories = async () => {
@@ -56,15 +67,21 @@ export default function NewInspectionPage() {
         });
         if (res.ok) {
           const data = await res.json();
-          setCategories(data);
-          if (data.length > 0) setSelectedCategory(data[0].name);
+          if (Array.isArray(data) && data.length > 0) {
+            setCategories(data);
+            setSelectedCategory(data[0].name);
+            return;
+          }
         }
       } catch (err) {
         console.error("Failed to load categories:", err);
       }
+      setCategories(DEFAULT_CATEGORIES);
+      setSelectedCategory(DEFAULT_CATEGORIES[0].name);
     };
     fetchCategories();
   }, []);
+
 
   // Cleanup camera on unmount
   useEffect(() => {

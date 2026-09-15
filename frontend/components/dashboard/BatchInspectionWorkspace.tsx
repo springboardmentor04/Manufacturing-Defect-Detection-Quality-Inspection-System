@@ -29,6 +29,13 @@ export function BatchInspectionWorkspace() {
   const { user } = useAuth();
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
+  const DEFAULT_CATEGORIES = [
+    { name: "bottle" }, { name: "cable" }, { name: "capsule" }, { name: "carpet" },
+    { name: "grid" }, { name: "hazelnut" }, { name: "leather" }, { name: "metal_nut" },
+    { name: "pill" }, { name: "screw" }, { name: "tile" }, { name: "toothbrush" },
+    { name: "transistor" }, { name: "wood" }, { name: "zipper" }
+  ];
+
   useEffect(() => {
     setMounted(true);
     const fetchCategories = async () => {
@@ -36,15 +43,21 @@ export function BatchInspectionWorkspace() {
         const res = await fetch(`${baseUrl}/api/v1/dataset/categories`);
         if (res.ok) {
           const data = await res.json();
-          setCategories(data);
-          if (data.length > 0) setSelectedCategory(data[0].name);
+          if (Array.isArray(data) && data.length > 0) {
+            setCategories(data);
+            setSelectedCategory(data[0].name);
+            return;
+          }
         }
       } catch (err) {
         console.error("Failed to load categories:", err);
       }
+      setCategories(DEFAULT_CATEGORIES);
+      setSelectedCategory(DEFAULT_CATEGORIES[0].name);
     };
     fetchCategories();
   }, [baseUrl]);
+
 
   const validateFile = (selectedFile: File) => {
     const validTypes = ["image/jpeg", "image/jpg", "image/png"];

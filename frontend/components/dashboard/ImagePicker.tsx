@@ -20,21 +20,35 @@ export function ImagePicker() {
   const [categories, setCategories] = useState<{name: string}[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
 
+  const DEFAULT_CATEGORIES = [
+    { name: "bottle" }, { name: "cable" }, { name: "capsule" }, { name: "carpet" },
+    { name: "grid" }, { name: "hazelnut" }, { name: "leather" }, { name: "metal_nut" },
+    { name: "pill" }, { name: "screw" }, { name: "tile" }, { name: "toothbrush" },
+    { name: "transistor" }, { name: "wood" }, { name: "zipper" }
+  ];
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/dataset/categories`);
         if (res.ok) {
           const data = await res.json();
-          setCategories(data);
-          if (data.length > 0) setSelectedCategory(data[0].name);
+          if (Array.isArray(data) && data.length > 0) {
+            setCategories(data);
+            setSelectedCategory(data[0].name);
+            return;
+          }
         }
       } catch (err) {
         console.error("Failed to load categories:", err);
       }
+      // Fallback
+      setCategories(DEFAULT_CATEGORIES);
+      setSelectedCategory(DEFAULT_CATEGORIES[0].name);
     };
     fetchCategories();
   }, []);
+
 
   const validateFile = (selectedFile: File) => {
     setError("");
