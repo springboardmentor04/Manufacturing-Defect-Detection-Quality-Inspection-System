@@ -1,0 +1,223 @@
+{
+    "classes": [
+        "bent",
+        "bent_lead",
+        "bent_wire",
+        "broken",
+        "broken_large",
+        "broken_small",
+        "broken_teeth",
+        "cable_swap",
+        "color",
+        "combined",
+        "contamination",
+        "crack",
+        "cut",
+        "cut_inner_insulation",
+        "cut_lead",
+        "cut_outer_insulation",
+        "damaged_case",
+        "defective",
+        "fabric_border",
+        "fabric_interior",
+        "faulty_imprint",
+        "flip",
+        "fold",
+        "glue",
+        "glue_strip",
+        "gray_stroke",
+        "hole",
+        "liquid",
+        "manipulated_front",
+        "metal_contamination",
+        "misplaced",
+        "missing_cable",
+        "missing_wire",
+        "oil",
+        "pill_type",
+        "poke",
+        "poke_insulation",
+        "print",
+        "rough",
+        "scratch",
+        "scratch_head",
+        "scratch_neck",
+        "split_teeth",
+        "squeeze",
+        "squeezed_teeth",
+        "thread",
+        "thread_side",
+        "thread_top"
+    ],
+    "mapping": {
+        "broken_large": [
+            "bottle"
+        ],
+        "broken_small": [
+            "bottle"
+        ],
+        "contamination": [
+            "bottle",
+            "pill"
+        ],
+        "bent_wire": [
+            "cable"
+        ],
+        "cable_swap": [
+            "cable"
+        ],
+        "combined": [
+            "cable",
+            "pill",
+            "wood",
+            "zipper"
+        ],
+        "cut_inner_insulation": [
+            "cable"
+        ],
+        "cut_outer_insulation": [
+            "cable"
+        ],
+        "missing_cable": [
+            "cable"
+        ],
+        "missing_wire": [
+            "cable"
+        ],
+        "poke_insulation": [
+            "cable"
+        ],
+        "crack": [
+            "capsule",
+            "hazelnut",
+            "pill",
+            "tile"
+        ],
+        "faulty_imprint": [
+            "capsule",
+            "pill"
+        ],
+        "poke": [
+            "capsule",
+            "leather"
+        ],
+        "scratch": [
+            "capsule",
+            "metal_nut",
+            "pill",
+            "wood"
+        ],
+        "squeeze": [
+            "capsule"
+        ],
+        "color": [
+            "carpet",
+            "leather",
+            "metal_nut",
+            "pill",
+            "wood"
+        ],
+        "cut": [
+            "carpet",
+            "hazelnut",
+            "leather"
+        ],
+        "hole": [
+            "carpet",
+            "hazelnut",
+            "wood"
+        ],
+        "metal_contamination": [
+            "carpet",
+            "grid"
+        ],
+        "thread": [
+            "carpet",
+            "grid"
+        ],
+        "bent": [
+            "grid",
+            "metal_nut"
+        ],
+        "broken": [
+            "grid"
+        ],
+        "glue": [
+            "grid",
+            "leather"
+        ],
+        "print": [
+            "hazelnut"
+        ],
+        "fold": [
+            "leather"
+        ],
+        "flip": [
+            "metal_nut"
+        ],
+        "pill_type": [
+            "pill"
+        ],
+        "manipulated_front": [
+            "screw"
+        ],
+        "scratch_head": [
+            "screw"
+        ],
+        "scratch_neck": [
+            "screw"
+        ],
+        "thread_side": [
+            "screw"
+        ],
+        "thread_top": [
+            "screw"
+        ],
+        "glue_strip": [
+            "tile"
+        ],
+        "gray_stroke": [
+            "tile"
+        ],
+        "oil": [
+            "tile"
+        ],
+        "rough": [
+            "tile",
+            "zipper"
+        ],
+        "defective": [
+            "toothbrush"
+        ],
+        "bent_lead": [
+            "transistor"
+        ],
+        "cut_lead": [
+            "transistor"
+        ],
+        "damaged_case": [
+            "transistor"
+        ],
+        "misplaced": [
+            "transistor"
+        ],
+        "liquid": [
+            "wood"
+        ],
+        "broken_teeth": [
+            "zipper"
+        ],
+        "fabric_border": [
+            "zipper"
+        ],
+        "fabric_interior": [
+            "zipper"
+        ],
+        "split_teeth": [
+            "zipper"
+        ],
+        "squeezed_teeth": [
+            "zipper"
+        ]
+    }
+}

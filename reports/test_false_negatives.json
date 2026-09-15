@@ -1,0 +1,251 @@
+[
+    {
+        "filename": "bottle_contamination_001.png",
+        "category": "bottle",
+        "ground_truth_defects": [
+            "contamination"
+        ],
+        "orig_resolution": "900x900",
+        "orig_defect_area_px": 106929.93,
+        "resized_defect_area_800px": 84487.85,
+        "predicted_result_at_0.25": "PASS",
+        "max_confidence_raw": 0.0,
+        "weak_detection_exists": false,
+        "weak_predicted_class": null
+    },
+    {
+        "filename": "bottle_contamination_007.png",
+        "category": "bottle",
+        "ground_truth_defects": [
+            "contamination"
+        ],
+        "orig_resolution": "900x900",
+        "orig_defect_area_px": 182336.21,
+        "resized_defect_area_800px": 144068.12,
+        "predicted_result_at_0.25": "PASS",
+        "max_confidence_raw": 0.0234,
+        "weak_detection_exists": true,
+        "weak_predicted_class": "broken_large"
+    },
+    {
+        "filename": "capsule_poke_001.png",
+        "category": "capsule",
+        "ground_truth_defects": [
+            "poke"
+        ],
+        "orig_resolution": "1000x1000",
+        "orig_defect_area_px": 4264.0,
+        "resized_defect_area_800px": 2728.96,
+        "predicted_result_at_0.25": "PASS",
+        "max_confidence_raw": 0.0,
+        "weak_detection_exists": false,
+        "weak_predicted_class": null
+    },
+    {
+        "filename": "capsule_scratch_017.png",
+        "category": "capsule",
+        "ground_truth_defects": [
+            "scratch"
+        ],
+        "orig_resolution": "1000x1000",
+        "orig_defect_area_px": 7320.0,
+        "resized_defect_area_800px": 4684.8,
+        "predicted_result_at_0.25": "PASS",
+        "max_confidence_raw": 0.0571,
+        "weak_detection_exists": true,
+        "weak_predicted_class": "squeeze"
+    },
+    {
+        "filename": "carpet_color_013.png",
+        "category": "carpet",
+        "ground_truth_defects": [
+            "color"
+        ],
+        "orig_resolution": "1024x1024",
+        "orig_defect_area_px": 9996.05,
+        "resized_defect_area_800px": 6101.1,
+        "predicted_result_at_0.25": "PASS",
+        "max_confidence_raw": 0.0027,
+        "weak_detection_exists": true,
+        "weak_predicted_class": "color"
+    },
+    {
+        "filename": "carpet_color_017.png",
+        "category": "carpet",
+        "ground_truth_defects": [
+            "color"
+        ],
+        "orig_resolution": "1024x1024",
+        "orig_defect_area_px": 40392.05,
+        "resized_defect_area_800px": 24653.35,
+        "predicted_result_at_0.25": "PASS",
+        "max_confidence_raw": 0.0,
+        "weak_detection_exists": false,
+        "weak_predicted_class": null
+    },
+    {
+        "filename": "carpet_hole_001.png",
+        "category": "carpet",
+        "ground_truth_defects": [
+            "hole"
+        ],
+        "orig_resolution": "1024x1024",
+        "orig_defect_area_px": 9476.95,
+        "resized_defect_area_800px": 5784.27,
+        "predicted_result_at_0.25": "PASS",
+        "max_confidence_raw": 0.0016,
+        "weak_detection_exists": true,
+        "weak_predicted_class": "hole"
+    },
+    {
+        "filename": "grid_bent_007.png",
+        "category": "grid",
+        "ground_truth_defects": [
+            "bent",
+            "bent",
+            "bent"
+        ],
+        "orig_resolution": "1024x1024",
+        "orig_defect_area_px": 23118.08,
+        "resized_defect_area_800px": 14110.15,
+        "predicted_result_at_0.25": "PASS",
+        "max_confidence_raw": 0.0612,
+        "weak_detection_exists": true,
+        "weak_predicted_class": "bent"
+    },
+    {
+        "filename": "hazelnut_crack_012.png",
+        "category": "hazelnut",
+        "ground_truth_defects": [
+            "crack",
+            "crack",
+            "crack"
+        ],
+        "orig_resolution": "1024x1024",
+        "orig_defect_area_px": 146963.08,
+        "resized_defect_area_800px": 89699.15,
+        "predicted_result_at_0.25": "PASS",
+        "max_confidence_raw": 0.1895,
+        "weak_detection_exists": true,
+        "weak_predicted_class": "crack"
+    },
+    {
+        "filename": "metal_nut_scratch_005.png",
+        "category": "metal",
+        "ground_truth_defects": [
+            "scratch",
+            "scratch"
+        ],
+        "orig_resolution": "700x700",
+        "orig_defect_area_px": 24055.12,
+        "resized_defect_area_800px": 31418.93,
+        "predicted_result_at_0.25": "PASS",
+        "max_confidence_raw": 0.0182,
+        "weak_detection_exists": true,
+        "weak_predicted_class": "crack"
+    },
+    {
+        "filename": "pill_color_009.png",
+        "category": "pill",
+        "ground_truth_defects": [
+            "color"
+        ],
+        "orig_resolution": "800x800",
+        "orig_defect_area_px": 418.0,
+        "resized_defect_area_800px": 418.0,
+        "predicted_result_at_0.25": "PASS",
+        "max_confidence_raw": 0.0011,
+        "weak_detection_exists": true,
+        "weak_predicted_class": "color"
+    },
+    {
+        "filename": "pill_scratch_023.png",
+        "category": "pill",
+        "ground_truth_defects": [
+            "scratch",
+            "scratch"
+        ],
+        "orig_resolution": "800x800",
+        "orig_defect_area_px": 31005.0,
+        "resized_defect_area_800px": 31005.0,
+        "predicted_result_at_0.25": "PASS",
+        "max_confidence_raw": 0.22,
+        "weak_detection_exists": true,
+        "weak_predicted_class": "scratch"
+    },
+    {
+        "filename": "screw_manipulated_front_020.png",
+        "category": "screw",
+        "ground_truth_defects": [
+            "manipulated_front"
+        ],
+        "orig_resolution": "1024x1024",
+        "orig_defect_area_px": 2969.98,
+        "resized_defect_area_800px": 1812.73,
+        "predicted_result_at_0.25": "PASS",
+        "max_confidence_raw": 0.0015,
+        "weak_detection_exists": true,
+        "weak_predicted_class": "manipulated_front"
+    },
+    {
+        "filename": "screw_thread_side_000.png",
+        "category": "screw",
+        "ground_truth_defects": [
+            "thread_side",
+            "thread_side",
+            "thread_side"
+        ],
+        "orig_resolution": "1024x1024",
+        "orig_defect_area_px": 2216.01,
+        "resized_defect_area_800px": 1352.54,
+        "predicted_result_at_0.25": "PASS",
+        "max_confidence_raw": 0.0,
+        "weak_detection_exists": false,
+        "weak_predicted_class": null
+    },
+    {
+        "filename": "screw_thread_side_003.png",
+        "category": "screw",
+        "ground_truth_defects": [
+            "thread_side",
+            "thread_side",
+            "thread_side"
+        ],
+        "orig_resolution": "1024x1024",
+        "orig_defect_area_px": 3802.97,
+        "resized_defect_area_800px": 2321.15,
+        "predicted_result_at_0.25": "PASS",
+        "max_confidence_raw": 0.0423,
+        "weak_detection_exists": true,
+        "weak_predicted_class": "thread_side"
+    },
+    {
+        "filename": "toothbrush_defective_020.png",
+        "category": "toothbrush",
+        "ground_truth_defects": [
+            "defective",
+            "defective"
+        ],
+        "orig_resolution": "1024x1024",
+        "orig_defect_area_px": 17482.01,
+        "resized_defect_area_800px": 10670.17,
+        "predicted_result_at_0.25": "PASS",
+        "max_confidence_raw": 0.0638,
+        "weak_detection_exists": true,
+        "weak_predicted_class": "defective"
+    },
+    {
+        "filename": "transistor_bent_lead_001.png",
+        "category": "transistor",
+        "ground_truth_defects": [
+            "bent_lead"
+        ],
+        "orig_resolution": "1024x1024",
+        "orig_defect_area_px": 2684.0,
+        "resized_defect_area_800px": 1638.18,
+        "predicted_result_at_0.25": "PASS",
+        "max_confidence_raw": 0.0,
+        "weak_detection_exists": false,
+        "weak_predicted_class": null
+    }
+]

@@ -1,0 +1,544 @@
+category,image_path,ground_truth,predicted,score,defect_type
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\broken_large\003.png,broken_large,PASS,4.2564,None
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\broken_large\007.png,broken_large,PASS,3.9583,None
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\broken_large\013.png,broken_large,PASS,4.361,None
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\broken_large\017.png,broken_large,PASS,4.1644,None
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\good\000.png,good,FAIL,5.2165,Contamination
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\good\001.png,good,FAIL,5.3049,Contamination
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\good\002.png,good,FAIL,5.6004,Contamination
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\good\003.png,good,FAIL,5.4816,Contamination
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\good\004.png,good,FAIL,5.1579,Contamination
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\good\005.png,good,FAIL,5.4414,Contamination
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\good\006.png,good,FAIL,5.7536,Contamination
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\good\007.png,good,FAIL,5.6207,Contamination
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\good\008.png,good,FAIL,5.783,Contamination
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\good\009.png,good,FAIL,5.2421,Contamination
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\good\010.png,good,FAIL,5.2646,Contamination
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\good\011.png,good,FAIL,5.5561,Contamination
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\good\012.png,good,FAIL,5.7353,Contamination
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\good\013.png,good,FAIL,5.6045,Contamination
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\good\014.png,good,FAIL,6.0089,Contamination
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\good\015.png,good,FAIL,5.3505,Contamination
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\good\016.png,good,FAIL,5.5942,Contamination
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\good\017.png,good,FAIL,5.6222,Contamination
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\good\018.png,good,FAIL,5.0324,Contamination
+bottle,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\bottle\test\good\019.png,good,FAIL,6.1432,Contamination
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\combined\003.png,combined,PASS,3.7647,None
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\combined\006.png,combined,PASS,3.8014,None
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\000.png,good,FAIL,6.1258,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\001.png,good,FAIL,5.4075,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\002.png,good,FAIL,5.6304,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\003.png,good,FAIL,5.8277,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\004.png,good,FAIL,5.1547,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\005.png,good,FAIL,5.4046,Bent Wire
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\006.png,good,FAIL,5.8458,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\007.png,good,FAIL,5.3119,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\008.png,good,FAIL,6.5415,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\009.png,good,FAIL,5.6831,Bent Wire
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\010.png,good,FAIL,6.0079,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\011.png,good,FAIL,5.5727,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\012.png,good,FAIL,5.7468,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\013.png,good,FAIL,5.2621,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\014.png,good,FAIL,6.0063,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\016.png,good,FAIL,5.5383,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\017.png,good,FAIL,5.7315,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\018.png,good,FAIL,5.6397,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\019.png,good,FAIL,4.8618,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\020.png,good,FAIL,4.5656,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\021.png,good,FAIL,6.2655,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\022.png,good,FAIL,5.5621,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\023.png,good,FAIL,4.6686,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\024.png,good,FAIL,4.8977,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\025.png,good,FAIL,5.0211,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\026.png,good,FAIL,6.4262,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\027.png,good,FAIL,5.4943,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\028.png,good,FAIL,6.0295,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\029.png,good,FAIL,4.6696,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\030.png,good,FAIL,4.6536,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\031.png,good,FAIL,5.7143,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\032.png,good,FAIL,4.423,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\033.png,good,FAIL,4.455,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\034.png,good,FAIL,6.2229,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\035.png,good,FAIL,4.0265,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\036.png,good,FAIL,7.7347,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\037.png,good,FAIL,4.8113,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\038.png,good,FAIL,4.8515,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\039.png,good,FAIL,6.8624,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\040.png,good,FAIL,4.6021,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\041.png,good,FAIL,9.6575,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\042.png,good,FAIL,5.9359,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\043.png,good,FAIL,3.9913,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\044.png,good,FAIL,5.1863,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\045.png,good,FAIL,7.3407,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\046.png,good,FAIL,7.388,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\047.png,good,FAIL,6.3163,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\048.png,good,FAIL,6.4191,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\049.png,good,FAIL,6.7982,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\050.png,good,FAIL,4.7224,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\051.png,good,FAIL,4.6149,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\052.png,good,FAIL,6.0458,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\053.png,good,FAIL,5.1101,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\054.png,good,FAIL,4.3891,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\055.png,good,FAIL,5.622,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\056.png,good,FAIL,6.1799,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\good\057.png,good,FAIL,7.1708,Combined
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\missing_cable\001.png,missing_cable,PASS,3.2659,None
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\missing_cable\006.png,missing_cable,PASS,2.5427,None
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\missing_cable\008.png,missing_cable,PASS,3.4326,None
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\missing_wire\000.png,missing_wire,PASS,3.6375,None
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\missing_wire\001.png,missing_wire,PASS,3.5537,None
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\missing_wire\003.png,missing_wire,PASS,3.6128,None
+cable,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\cable\test\poke_insulation\005.png,poke_insulation,PASS,3.711,None
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\000.png,good,FAIL,10.8337,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\001.png,good,FAIL,10.5559,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\002.png,good,FAIL,9.7309,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\003.png,good,FAIL,9.988,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\004.png,good,FAIL,11.1537,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\005.png,good,FAIL,10.6501,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\006.png,good,FAIL,10.6721,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\007.png,good,FAIL,9.3382,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\008.png,good,FAIL,10.2813,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\009.png,good,FAIL,11.1163,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\010.png,good,FAIL,10.1733,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\011.png,good,FAIL,10.2541,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\012.png,good,FAIL,10.8568,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\013.png,good,FAIL,11.462,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\014.png,good,FAIL,12.1797,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\015.png,good,FAIL,11.0013,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\016.png,good,FAIL,10.165,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\017.png,good,FAIL,11.3579,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\018.png,good,FAIL,10.0588,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\019.png,good,FAIL,10.4488,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\020.png,good,FAIL,11.413,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\021.png,good,FAIL,11.079,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\good\022.png,good,FAIL,12.4169,Faulty Imprint
+capsule,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\capsule\test\squeeze\001.png,squeeze,PASS,8.4589,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\color\001.png,color,PASS,1.2241,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\color\002.png,color,PASS,1.3519,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\color\007.png,color,PASS,1.2853,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\color\009.png,color,PASS,1.4066,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\color\011.png,color,PASS,1.3432,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\color\012.png,color,PASS,1.3383,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\color\013.png,color,PASS,1.3596,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\color\014.png,color,PASS,1.436,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\color\015.png,color,PASS,1.3743,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\color\016.png,color,PASS,1.4381,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\color\017.png,color,PASS,1.3259,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\cut\003.png,cut,PASS,1.3909,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\cut\005.png,cut,PASS,1.3494,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\cut\006.png,cut,PASS,1.4035,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\cut\007.png,cut,PASS,1.274,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\cut\008.png,cut,PASS,1.4584,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\cut\010.png,cut,PASS,1.3487,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\cut\011.png,cut,PASS,1.3777,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\cut\014.png,cut,PASS,1.4331,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\good\002.png,good,FAIL,1.5239,Color
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\good\008.png,good,FAIL,1.6824,Color
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\good\021.png,good,FAIL,1.5521,Color
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\good\024.png,good,FAIL,1.5033,Color
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\hole\001.png,hole,PASS,1.2549,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\hole\002.png,hole,PASS,1.4613,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\hole\003.png,hole,PASS,1.3443,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\hole\004.png,hole,PASS,1.3196,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\hole\005.png,hole,PASS,1.1919,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\hole\006.png,hole,PASS,1.2533,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\hole\007.png,hole,PASS,1.3045,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\hole\009.png,hole,PASS,1.375,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\hole\010.png,hole,PASS,1.3452,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\hole\011.png,hole,PASS,1.4354,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\hole\013.png,hole,PASS,1.4198,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\hole\015.png,hole,PASS,1.3138,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\hole\016.png,hole,PASS,1.3685,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\metal_contamination\003.png,metal_contamination,PASS,1.3675,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\metal_contamination\004.png,metal_contamination,PASS,1.3615,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\metal_contamination\005.png,metal_contamination,PASS,1.2586,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\metal_contamination\006.png,metal_contamination,PASS,1.2871,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\metal_contamination\007.png,metal_contamination,PASS,1.3731,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\metal_contamination\008.png,metal_contamination,PASS,1.3159,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\metal_contamination\009.png,metal_contamination,PASS,1.4708,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\metal_contamination\010.png,metal_contamination,PASS,1.4257,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\metal_contamination\011.png,metal_contamination,PASS,1.2014,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\metal_contamination\012.png,metal_contamination,PASS,1.2493,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\metal_contamination\013.png,metal_contamination,PASS,1.3751,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\metal_contamination\014.png,metal_contamination,PASS,1.2467,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\metal_contamination\015.png,metal_contamination,PASS,1.4362,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\metal_contamination\016.png,metal_contamination,PASS,1.3928,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\thread\001.png,thread,PASS,1.3995,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\thread\002.png,thread,PASS,1.309,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\thread\009.png,thread,PASS,1.3554,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\thread\010.png,thread,PASS,1.2201,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\thread\011.png,thread,PASS,1.3127,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\thread\014.png,thread,PASS,1.2945,None
+carpet,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\carpet\test\thread\018.png,thread,PASS,1.3654,None
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\bent\010.png,bent,PASS,1.5791,None
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\glue\010.png,glue,PASS,1.6137,None
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\good\000.png,good,FAIL,2.9469,Glue
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\good\001.png,good,FAIL,3.0115,Glue
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\good\002.png,good,FAIL,2.1629,Thread
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\good\003.png,good,FAIL,2.6882,Glue
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\good\004.png,good,FAIL,2.7125,Glue
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\good\006.png,good,FAIL,1.9529,Glue
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\good\007.png,good,FAIL,2.6967,Glue
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\good\008.png,good,FAIL,2.0612,Thread
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\good\009.png,good,FAIL,2.5036,Glue
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\good\010.png,good,FAIL,1.8316,Glue
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\good\011.png,good,FAIL,1.9907,Glue
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\good\012.png,good,FAIL,2.568,Glue
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\good\013.png,good,FAIL,2.2352,Thread
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\good\014.png,good,FAIL,3.0692,Glue
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\good\015.png,good,FAIL,2.7974,Glue
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\good\016.png,good,FAIL,2.1745,Thread
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\good\017.png,good,FAIL,2.2009,Glue
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\good\018.png,good,FAIL,1.724,Glue
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\good\019.png,good,FAIL,1.7843,Glue
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\good\020.png,good,FAIL,2.2303,Glue
+grid,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\grid\test\metal_contamination\007.png,metal_contamination,PASS,1.5641,None
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\000.png,good,FAIL,9.634,Crack
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\001.png,good,FAIL,11.7201,Cut
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\002.png,good,FAIL,12.1673,Cut
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\003.png,good,FAIL,10.5594,Print
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\004.png,good,FAIL,7.9494,Print
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\005.png,good,FAIL,11.3205,Print
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\006.png,good,FAIL,8.4558,Crack
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\007.png,good,FAIL,7.3359,Print
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\008.png,good,FAIL,8.0892,Print
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\009.png,good,FAIL,7.9617,Print
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\010.png,good,FAIL,10.2252,Print
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\011.png,good,FAIL,8.3842,Print
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\012.png,good,FAIL,7.7592,Crack
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\013.png,good,FAIL,12.2668,Cut
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\014.png,good,FAIL,8.1115,Cut
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\015.png,good,FAIL,8.7714,Cut
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\016.png,good,FAIL,8.6381,Crack
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\017.png,good,FAIL,6.585,Print
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\018.png,good,FAIL,11.1684,Cut
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\019.png,good,FAIL,9.5643,Print
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\020.png,good,FAIL,7.9588,Print
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\021.png,good,FAIL,10.7889,Crack
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\022.png,good,FAIL,6.7926,Print
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\023.png,good,FAIL,8.1764,Cut
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\024.png,good,FAIL,9.7929,Print
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\026.png,good,FAIL,9.5745,Print
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\027.png,good,FAIL,9.8116,Crack
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\028.png,good,FAIL,9.484,Print
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\029.png,good,FAIL,9.8551,Cut
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\030.png,good,FAIL,8.5811,Print
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\031.png,good,FAIL,9.0158,Crack
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\032.png,good,FAIL,12.6707,Cut
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\033.png,good,FAIL,7.4054,Cut
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\034.png,good,FAIL,9.1316,Crack
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\035.png,good,FAIL,9.0236,Crack
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\036.png,good,FAIL,7.4163,Print
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\037.png,good,FAIL,8.6046,Print
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\038.png,good,FAIL,8.545,Print
+hazelnut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\hazelnut\test\good\039.png,good,FAIL,8.8002,Print
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\color\001.png,color,PASS,1.1458,None
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\fold\004.png,fold,PASS,1.1203,None
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\fold\014.png,fold,PASS,1.1445,None
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\glue\011.png,glue,PASS,1.1366,None
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\001.png,good,FAIL,1.5156,Poke
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\002.png,good,FAIL,1.1552,Poke
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\003.png,good,FAIL,1.5103,Poke
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\004.png,good,FAIL,1.6748,Glue
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\005.png,good,FAIL,1.2684,Cut
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\006.png,good,FAIL,1.6903,Cut
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\007.png,good,FAIL,1.2029,Cut
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\008.png,good,FAIL,1.4356,Poke
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\009.png,good,FAIL,1.5135,Poke
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\010.png,good,FAIL,1.3883,Cut
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\011.png,good,FAIL,1.5617,Poke
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\012.png,good,FAIL,1.2058,Poke
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\013.png,good,FAIL,1.4908,Cut
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\014.png,good,FAIL,1.2345,Cut
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\015.png,good,FAIL,1.2287,Cut
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\016.png,good,FAIL,1.3229,Poke
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\017.png,good,FAIL,1.3666,Cut
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\018.png,good,FAIL,1.1714,Cut
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\019.png,good,FAIL,1.41,Cut
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\020.png,good,FAIL,1.2153,Poke
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\023.png,good,FAIL,1.2883,Poke
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\024.png,good,FAIL,1.4685,Poke
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\025.png,good,FAIL,1.6619,Poke
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\027.png,good,FAIL,1.2817,Poke
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\028.png,good,FAIL,1.2595,Poke
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\029.png,good,FAIL,1.5934,Poke
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\030.png,good,FAIL,1.4431,Poke
+leather,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\leather\test\good\031.png,good,FAIL,1.236,Poke
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\000.png,good,FAIL,7.2149,Scratch
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\001.png,good,FAIL,5.9912,Color
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\002.png,good,FAIL,6.6688,Scratch
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\003.png,good,FAIL,6.2473,Scratch
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\004.png,good,FAIL,7.2159,Scratch
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\005.png,good,FAIL,8.2212,Scratch
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\006.png,good,FAIL,6.7758,Color
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\007.png,good,FAIL,5.8653,Scratch
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\008.png,good,FAIL,6.3207,Color
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\009.png,good,FAIL,6.2405,Scratch
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\010.png,good,FAIL,5.652,Color
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\011.png,good,FAIL,7.6431,Scratch
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\012.png,good,FAIL,5.0752,Color
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\013.png,good,FAIL,5.7777,Color
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\014.png,good,FAIL,7.4734,Scratch
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\015.png,good,FAIL,6.5369,Bent
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\016.png,good,FAIL,6.571,Color
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\017.png,good,FAIL,8.0634,Scratch
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\018.png,good,FAIL,6.6759,Scratch
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\019.png,good,FAIL,6.438,Color
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\020.png,good,FAIL,6.2378,Color
+metal_nut,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\metal_nut\test\good\021.png,good,FAIL,6.1396,Scratch
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\contamination\000.png,contamination,PASS,4.7174,None
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\contamination\008.png,contamination,PASS,4.6402,None
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\contamination\018.png,contamination,PASS,4.8453,None
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\faulty_imprint\003.png,faulty_imprint,PASS,4.5191,None
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\000.png,good,FAIL,7.0527,Scratch
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\001.png,good,FAIL,6.7927,Scratch
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\002.png,good,FAIL,5.7131,Scratch
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\003.png,good,FAIL,6.7643,Scratch
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\004.png,good,FAIL,7.0124,Scratch
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\005.png,good,FAIL,6.6038,Scratch
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\006.png,good,FAIL,6.3429,Pill Type
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\007.png,good,FAIL,6.3549,Scratch
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\008.png,good,FAIL,6.3814,Scratch
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\009.png,good,FAIL,8.0813,Faulty Imprint
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\010.png,good,FAIL,7.7901,Pill Type
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\011.png,good,FAIL,7.0555,Scratch
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\012.png,good,FAIL,8.2345,Scratch
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\013.png,good,FAIL,9.1345,Scratch
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\014.png,good,FAIL,6.1539,Scratch
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\015.png,good,FAIL,7.2394,Scratch
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\016.png,good,FAIL,6.3313,Scratch
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\017.png,good,FAIL,6.8779,Scratch
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\018.png,good,FAIL,5.786,Scratch
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\019.png,good,FAIL,6.1875,Faulty Imprint
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\020.png,good,FAIL,6.0646,Scratch
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\021.png,good,FAIL,6.6378,Pill Type
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\022.png,good,FAIL,6.7889,Pill Type
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\023.png,good,FAIL,5.3915,Pill Type
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\024.png,good,FAIL,6.685,Scratch
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\good\025.png,good,FAIL,7.9241,Scratch
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\pill_type\000.png,pill_type,PASS,4.8073,None
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\pill_type\001.png,pill_type,PASS,4.5708,None
+pill,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\pill\test\pill_type\006.png,pill_type,PASS,4.8561,None
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\000.png,good,FAIL,8.7596,Scratch Head
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\001.png,good,FAIL,13.2512,Scratch Head
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\002.png,good,FAIL,12.1016,Scratch Head
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\003.png,good,FAIL,6.6263,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\004.png,good,FAIL,6.8939,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\005.png,good,FAIL,6.334,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\006.png,good,FAIL,13.8845,Scratch Head
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\007.png,good,FAIL,7.6742,Scratch Head
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\008.png,good,FAIL,13.4495,Scratch Head
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\009.png,good,FAIL,11.4671,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\010.png,good,FAIL,14.8808,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\011.png,good,FAIL,12.166,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\012.png,good,FAIL,5.5405,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\013.png,good,FAIL,4.2332,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\014.png,good,FAIL,6.4733,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\015.png,good,FAIL,5.4466,Scratch Head
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\016.png,good,FAIL,9.1972,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\017.png,good,FAIL,12.8313,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\018.png,good,FAIL,12.9428,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\019.png,good,FAIL,12.7525,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\020.png,good,FAIL,12.6986,Scratch Head
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\021.png,good,FAIL,8.8899,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\022.png,good,FAIL,6.0121,Scratch Neck
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\023.png,good,FAIL,6.9153,Scratch Neck
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\024.png,good,FAIL,14.3585,Scratch Head
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\025.png,good,FAIL,11.5964,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\026.png,good,FAIL,12.9885,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\027.png,good,FAIL,10.9033,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\028.png,good,FAIL,7.8425,Scratch Head
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\029.png,good,FAIL,6.1762,Scratch Neck
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\030.png,good,FAIL,4.7641,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\031.png,good,FAIL,12.3844,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\032.png,good,FAIL,14.7045,Scratch Head
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\033.png,good,FAIL,7.4737,Scratch Head
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\034.png,good,FAIL,6.1702,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\035.png,good,FAIL,6.5462,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\036.png,good,FAIL,8.336,Scratch Head
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\037.png,good,FAIL,11.4238,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\038.png,good,FAIL,9.5337,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\039.png,good,FAIL,13.3467,Manipulated Front
+screw,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\screw\test\good\040.png,good,FAIL,12.4978,Manipulated Front
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\glue_strip\013.png,glue_strip,PASS,1.1493,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\glue_strip\016.png,glue_strip,PASS,1.0541,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\good\001.png,good,FAIL,1.1982,Rough
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\good\003.png,good,FAIL,1.2272,Rough
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\good\004.png,good,FAIL,1.2025,Rough
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\good\006.png,good,FAIL,1.1825,Rough
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\good\008.png,good,FAIL,1.3219,Rough
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\good\010.png,good,FAIL,1.3034,Rough
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\good\013.png,good,FAIL,1.3816,Rough
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\good\018.png,good,FAIL,1.2492,Rough
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\good\022.png,good,FAIL,1.194,Rough
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\good\023.png,good,FAIL,1.1711,Rough
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\good\028.png,good,FAIL,1.2552,Rough
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\gray_stroke\003.png,gray_stroke,PASS,1.0394,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\gray_stroke\004.png,gray_stroke,PASS,1.0564,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\gray_stroke\005.png,gray_stroke,PASS,0.9605,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\gray_stroke\006.png,gray_stroke,PASS,1.1296,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\gray_stroke\007.png,gray_stroke,PASS,1.112,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\gray_stroke\009.png,gray_stroke,PASS,1.092,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\gray_stroke\010.png,gray_stroke,PASS,1.0456,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\gray_stroke\012.png,gray_stroke,PASS,1.0657,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\gray_stroke\013.png,gray_stroke,PASS,1.0041,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\gray_stroke\014.png,gray_stroke,PASS,1.0628,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\gray_stroke\015.png,gray_stroke,PASS,1.1157,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\oil\000.png,oil,PASS,1.1068,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\oil\002.png,oil,PASS,1.0225,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\oil\003.png,oil,PASS,1.0686,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\oil\006.png,oil,PASS,0.9618,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\oil\008.png,oil,PASS,1.1566,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\oil\009.png,oil,PASS,1.1632,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\oil\012.png,oil,PASS,1.1254,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\oil\013.png,oil,PASS,1.0862,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\oil\015.png,oil,PASS,1.1154,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\oil\016.png,oil,PASS,0.959,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\oil\017.png,oil,PASS,0.9665,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\rough\000.png,rough,PASS,1.0518,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\rough\001.png,rough,PASS,1.0515,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\rough\002.png,rough,PASS,1.0956,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\rough\003.png,rough,PASS,1.1227,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\rough\007.png,rough,PASS,1.052,None
+tile,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\tile\test\rough\013.png,rough,PASS,1.1179,None
+toothbrush,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\toothbrush\test\defective\010.png,defective,PASS,10.3336,None
+toothbrush,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\toothbrush\test\defective\017.png,defective,PASS,9.6881,None
+toothbrush,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\toothbrush\test\good\000.png,good,FAIL,13.8841,Defective
+toothbrush,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\toothbrush\test\good\001.png,good,FAIL,13.5606,Defective
+toothbrush,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\toothbrush\test\good\002.png,good,FAIL,14.208,Defective
+toothbrush,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\toothbrush\test\good\003.png,good,FAIL,13.7185,Defective
+toothbrush,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\toothbrush\test\good\004.png,good,FAIL,11.6015,Defective
+toothbrush,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\toothbrush\test\good\005.png,good,FAIL,11.7734,Defective
+toothbrush,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\toothbrush\test\good\006.png,good,FAIL,11.603,Defective
+toothbrush,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\toothbrush\test\good\007.png,good,FAIL,10.484,Defective
+toothbrush,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\toothbrush\test\good\008.png,good,FAIL,11.3218,Defective
+toothbrush,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\toothbrush\test\good\009.png,good,FAIL,12.0907,Defective
+toothbrush,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\toothbrush\test\good\010.png,good,FAIL,12.0937,Defective
+toothbrush,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\toothbrush\test\good\011.png,good,FAIL,12.1594,Defective
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\000.png,good,FAIL,4.6852,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\001.png,good,FAIL,5.4002,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\002.png,good,FAIL,5.3141,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\003.png,good,FAIL,4.6011,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\004.png,good,FAIL,5.0347,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\005.png,good,FAIL,4.5057,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\006.png,good,FAIL,4.7626,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\007.png,good,FAIL,5.6197,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\008.png,good,FAIL,4.7151,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\009.png,good,FAIL,4.7091,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\010.png,good,FAIL,5.661,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\011.png,good,FAIL,4.2574,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\012.png,good,FAIL,4.6655,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\013.png,good,FAIL,6.1073,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\014.png,good,FAIL,4.1243,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\015.png,good,FAIL,5.2642,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\016.png,good,FAIL,5.5747,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\017.png,good,FAIL,5.4552,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\018.png,good,FAIL,4.8099,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\019.png,good,FAIL,5.5097,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\020.png,good,FAIL,5.9675,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\021.png,good,FAIL,5.6628,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\022.png,good,FAIL,4.0572,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\023.png,good,FAIL,3.6806,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\024.png,good,FAIL,3.7265,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\025.png,good,FAIL,5.0807,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\026.png,good,FAIL,6.2595,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\027.png,good,FAIL,6.1787,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\028.png,good,FAIL,4.7,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\029.png,good,FAIL,4.9253,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\030.png,good,FAIL,4.1086,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\031.png,good,FAIL,5.4312,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\032.png,good,FAIL,4.2645,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\033.png,good,FAIL,5.0379,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\034.png,good,FAIL,4.9192,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\035.png,good,FAIL,4.1513,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\036.png,good,FAIL,5.4987,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\037.png,good,FAIL,6.1265,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\038.png,good,FAIL,4.9863,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\039.png,good,FAIL,5.3564,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\040.png,good,FAIL,5.6086,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\041.png,good,FAIL,4.0323,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\042.png,good,FAIL,3.5676,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\043.png,good,FAIL,5.6327,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\044.png,good,FAIL,6.1347,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\045.png,good,FAIL,4.9693,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\046.png,good,FAIL,6.0556,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\047.png,good,FAIL,6.6379,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\048.png,good,FAIL,4.6096,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\049.png,good,FAIL,5.2019,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\050.png,good,FAIL,4.8727,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\051.png,good,FAIL,4.249,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\052.png,good,FAIL,5.266,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\053.png,good,FAIL,5.4959,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\054.png,good,FAIL,4.7489,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\055.png,good,FAIL,5.7923,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\056.png,good,FAIL,5.1894,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\057.png,good,FAIL,4.5105,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\058.png,good,FAIL,4.6417,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\good\059.png,good,FAIL,5.0244,Misplaced
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\misplaced\002.png,misplaced,PASS,1.5821,None
+transistor,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\transistor\test\misplaced\003.png,misplaced,PASS,1.5512,None
+wood,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\wood\test\good\000.png,good,FAIL,1.5278,Scratch
+wood,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\wood\test\good\001.png,good,FAIL,1.463,Scratch
+wood,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\wood\test\good\002.png,good,FAIL,1.3562,Scratch
+wood,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\wood\test\good\003.png,good,FAIL,1.3589,Scratch
+wood,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\wood\test\good\004.png,good,FAIL,1.3669,Scratch
+wood,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\wood\test\good\005.png,good,FAIL,1.4181,Scratch
+wood,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\wood\test\good\006.png,good,FAIL,1.4144,Scratch
+wood,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\wood\test\good\007.png,good,FAIL,1.2493,Scratch
+wood,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\wood\test\good\008.png,good,FAIL,1.3662,Scratch
+wood,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\wood\test\good\009.png,good,FAIL,1.3514,Scratch
+wood,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\wood\test\good\010.png,good,FAIL,1.2758,Scratch
+wood,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\wood\test\good\011.png,good,FAIL,1.3061,Scratch
+wood,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\wood\test\good\012.png,good,FAIL,1.3533,Scratch
+wood,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\wood\test\good\013.png,good,FAIL,1.2779,Scratch
+wood,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\wood\test\good\014.png,good,FAIL,1.5908,Scratch
+wood,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\wood\test\good\015.png,good,FAIL,1.6197,Scratch
+wood,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\wood\test\good\016.png,good,FAIL,2.0168,Scratch
+wood,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\wood\test\good\017.png,good,FAIL,1.6975,Scratch
+wood,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\wood\test\good\018.png,good,FAIL,1.6603,Scratch
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\broken_teeth\003.png,broken_teeth,PASS,4.7049,None
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\broken_teeth\005.png,broken_teeth,PASS,4.6509,None
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\broken_teeth\006.png,broken_teeth,PASS,4.5493,None
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\combined\000.png,combined,PASS,4.2706,None
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\combined\006.png,combined,PASS,4.3737,None
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\combined\010.png,combined,PASS,4.592,None
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\combined\014.png,combined,PASS,4.1256,None
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\fabric_border\000.png,fabric_border,PASS,4.6305,None
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\fabric_border\012.png,fabric_border,PASS,4.4302,None
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\000.png,good,FAIL,6.04,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\001.png,good,FAIL,6.1454,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\002.png,good,FAIL,6.4318,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\003.png,good,FAIL,6.3959,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\004.png,good,FAIL,5.2865,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\005.png,good,FAIL,6.4892,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\006.png,good,FAIL,6.1589,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\007.png,good,FAIL,5.6688,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\008.png,good,FAIL,5.5081,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\009.png,good,FAIL,5.0091,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\010.png,good,FAIL,5.2421,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\011.png,good,FAIL,5.0697,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\012.png,good,FAIL,6.3342,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\013.png,good,FAIL,5.3916,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\014.png,good,FAIL,5.507,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\015.png,good,FAIL,5.1344,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\016.png,good,FAIL,5.5932,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\017.png,good,FAIL,6.5741,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\018.png,good,FAIL,5.3942,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\019.png,good,FAIL,6.7276,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\020.png,good,FAIL,5.2026,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\021.png,good,FAIL,5.5075,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\022.png,good,FAIL,5.646,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\023.png,good,FAIL,6.1915,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\024.png,good,FAIL,5.5066,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\025.png,good,FAIL,5.4264,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\026.png,good,FAIL,5.6799,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\027.png,good,FAIL,5.0817,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\028.png,good,FAIL,5.8897,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\029.png,good,FAIL,6.1544,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\030.png,good,FAIL,6.0744,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\good\031.png,good,FAIL,5.3562,Split Teeth
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\split_teeth\007.png,split_teeth,PASS,4.1944,None
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\split_teeth\009.png,split_teeth,PASS,4.6118,None
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\split_teeth\017.png,split_teeth,PASS,4.6654,None
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\squeezed_teeth\010.png,squeezed_teeth,PASS,4.4525,None
+zipper,c:\Users\ASUS\Desktop\AI infosys\visioninspect-ai\dataset\mvtec_ad\zipper\test\squeezed_teeth\015.png,squeezed_teeth,PASS,4.6466,None

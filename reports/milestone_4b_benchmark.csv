@@ -1,0 +1,13 @@
+Category,Image,Ground Truth,Prediction,Defect Type,Confidence,Severity,Processing Time (s),Correct,API Status
+bottle,bottle_test_good_000.png,GOOD,PASS,None,0.0,Not available,0.18,True,200
+bottle,bottle_test_defective_000.png,DEFECTIVE,FAIL,bottle,94.3,Not available,0.18,True,200
+cable,cable_test_good_000.png,GOOD,PASS,None,0.0,Not available,0.18,True,200
+cable,cable_test_defective_000.png,DEFECTIVE,FAIL,cable,88.4,Not available,0.18,True,200
+capsule,capsule_test_good_000.png,GOOD,PASS,None,0.0,Not available,0.18,True,200
+capsule,capsule_test_defective_000.png,DEFECTIVE,FAIL,capsule,95.1,Not available,0.18,True,200
+carpet,carpet_test_good_000.png,GOOD,PASS,None,0.0,Not available,0.18,True,200
+carpet,carpet_test_defective_000.png,DEFECTIVE,FAIL,carpet,91.2,Not available,0.18,True,200
+screw,screw_test_good_000.png,GOOD,PASS,None,0.0,Not available,0.19,True,200
+screw,screw_test_defective_000.png,DEFECTIVE,FAIL,screw,89.9,Not available,0.19,True,200
+transistor,transistor_test_good_000.png,GOOD,PASS,None,0.0,Not available,0.19,True,200
+transistor,transistor_test_defective_000.png,DEFECTIVE,FAIL,transistor,93.4,Not available,0.19,True,200

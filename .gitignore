@@ -1,14 +1,39 @@
-# Node dependencies
+# Dependencies
 node_modules/
-**/node_modules/
-
-# Python virtual environments
-venv/
-.venv/
-
-# Python cache
 __pycache__/
-*.pyc
-
-# Environment variables
+*.py[cod]
+*$py.class
+venv/
+env/
 .env
+.env.*
+.venv/
+.next/
+out/
+build/
+dist/
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Project specific
+uploads/*
+!uploads/.gitkeep
+dataset/
+weights/
+runs/
+logs/
+backend/uploads/*
+!backend/uploads/.gitkeep
+ai-model/yolo/dataset/images/
+ai-model/dataset/mvtec_ad/
+ai-model/yolo_cls_data/
+
+
