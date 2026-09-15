@@ -16,7 +16,7 @@ from inference.yolo_infer import YOLOInferenceEngine
 # Configuration
 TEST_IMAGES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../ai-model/yolo/dataset/images/test'))
 CATEGORIES = ['bottle', 'cable', 'capsule', 'carpet', 'screw', 'transistor']
-MONGO_URI = 'mongodb+srv://visioninspect-ai:visioninspect90@cluster0.drmkste.mongodb.net/?appName=Cluster0'
+MONGO_URI = os.getenv('MONGODB_URL', 'mongodb://localhost:27017')
 
 def get_test_files():
     files = []

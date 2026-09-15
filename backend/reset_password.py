@@ -1,3 +1,4 @@
+import os
 import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
 from passlib.context import CryptContext
@@ -5,8 +6,9 @@ from passlib.context import CryptContext
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 async def reset():
-    client = AsyncIOMotorClient('mongodb+srv://visioninspect-ai:visioninspect90@cluster0.drmkste.mongodb.net/?appName=Cluster0')
-    db = client.visioninspect_db
+    mongo_url = os.getenv('MONGODB_URL', 'mongodb://localhost:27017')
+    client = AsyncIOMotorClient(mongo_url)
+    db = client[os.getenv('DATABASE_NAME', 'visioninspect_db')]
     
     # Generate the exact hash for the password the user is typing
     new_hash = pwd_context.hash('Shivam@9080')
