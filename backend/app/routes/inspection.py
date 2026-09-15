@@ -31,11 +31,16 @@ async def create_inspection(
     while await db.inspections.find_one({"inspection_id": inspection_id}):
         inspection_id = await generate_inspection_id()
         
+    # Ensure engineer_id and employee_id are bound to the authenticated user
+    engineer_id = current_user.id
+    employee_id = current_user.employee_id or inspection_in.employee_id
+    engineer_name = current_user.name or inspection_in.engineer_name
+
     inspection_doc = {
         "inspection_id": inspection_id,
-        "engineer_id": inspection_in.engineer_id,
-        "employee_id": inspection_in.employee_id,
-        "engineer_name": inspection_in.engineer_name,
+        "engineer_id": engineer_id,
+        "employee_id": employee_id,
+        "engineer_name": engineer_name,
         "dataset_category": inspection_in.dataset_category,
         "image_path": inspection_in.image_path,
         "original_filename": inspection_in.original_filename,
@@ -70,9 +75,13 @@ async def get_inspections(
 ):
     query = {}
     
-    # Role check: Engineers only see their own
+    # Role check: Engineers see their inspections by id or employee_id
     if current_user.role not in ["ADMIN", "FACTORY_SUPERVISOR"]:
-        query["engineer_id"] = current_user.id
+        query["$or"] = [
+            {"engineer_id": current_user.id},
+            {"employee_id": current_user.employee_id}
+        ]
+
         
     if search:
         query["$or"] = [

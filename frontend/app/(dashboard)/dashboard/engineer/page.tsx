@@ -13,6 +13,8 @@ import { DetectionPreview, Inspection } from "@/components/dashboard/DetectionPr
 import { RecentInspectionsTable } from "@/components/dashboard/RecentInspectionsTable";
 import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
 import { ClientOnly } from "@/components/ClientOnly";
+import { useAuth } from "@/lib/auth-context";
+
 
 // KPI Cards Data
 const stats = [
@@ -25,26 +27,32 @@ const stats = [
 export default function EngineerDashboard() {
   const [inspections, setInspections] = useState<Inspection[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { user, token } = useAuth();
+
+  const fetchInspections = async () => {
+    try {
+      const authToken = token || localStorage.getItem("visioninspect_auth_token");
+      if (!authToken) return;
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/inspections?limit=10&sort=newest`, {
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setInspections(data.items || []);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchInspections = async () => {
-      try {
-        const token = localStorage.getItem("visioninspect_auth_token");
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/inspections?limit=10&sort=newest`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setInspections(data.items);
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchInspections();
-  }, []);
+    const interval = setInterval(fetchInspections, 5000);
+    return () => clearInterval(interval);
+  }, [token, user]);
+
 
   const latestInspection = inspections.length > 0 ? inspections[0] : null;
 
