@@ -12,7 +12,13 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     
     # CORS Configuration
-    CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    CORS_ORIGINS: List[str] = [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:8000",
+        "https://manufacturing-defect-detection-quality-o65m.onrender.com"
+    ]
     
     # Database Settings
     MONGODB_URL: str = "mongodb://localhost:27017"
@@ -30,6 +36,20 @@ class Settings(BaseSettings):
     class Config:
         case_sensitive = True
         env_file = ".env"
+
+    @classmethod
+    def parse_cors_origins(cls, v):
+        if isinstance(v, str):
+            import json
+            try:
+                parsed = json.loads(v)
+                if isinstance(parsed, list):
+                    return [item for item in parsed if item != "*"]
+            except Exception:
+                return [item.strip() for item in v.split(",") if item.strip() and item.strip() != "*"]
+        elif isinstance(v, list):
+            return [item for item in v if item != "*"]
+        return v
 
 # Instantiate settings to be imported across the application
 settings = Settings()

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Upload, X, FileImage, Loader2, CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { getApiBaseUrl } from "@/lib/api";
 
 export function ImagePicker() {
   const [isDragging, setIsDragging] = useState(false);
@@ -30,7 +31,8 @@ export function ImagePicker() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/dataset/categories`);
+        const baseUrl = getApiBaseUrl();
+        const res = await fetch(`${baseUrl}/api/v1/dataset/categories`);
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data) && data.length > 0) {
@@ -108,7 +110,7 @@ export function ImagePicker() {
       formData.append("file", file);
       
       const token = localStorage.getItem("visioninspect_auth_token");
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const baseUrl = getApiBaseUrl();
 
       const uploadRes = await fetch(`${baseUrl}/api/v1/upload/image`, {
         method: "POST",

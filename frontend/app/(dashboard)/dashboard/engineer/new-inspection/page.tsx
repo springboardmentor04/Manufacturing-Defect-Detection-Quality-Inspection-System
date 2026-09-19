@@ -7,6 +7,8 @@ import { useAuth } from "@/lib/auth-context";
 import { ClientOnly } from "@/components/ClientOnly";
 import { DetectionPreview } from "@/components/dashboard/DetectionPreview";
 
+import { getApiBaseUrl } from "@/lib/api";
+
 // Types
 type Category = { name: string; is_valid: boolean };
 type InspectionRecord = {
@@ -22,6 +24,7 @@ type InspectionRecord = {
   processing_time?: number;
   bounding_boxes?: number[][];
   segmentation_masks?: number[][][];
+  error_message?: string;
 };
 
 export default function NewInspectionPage() {
@@ -62,7 +65,8 @@ export default function NewInspectionPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/dataset/categories?t=${Date.now()}`, {
+        const baseUrl = getApiBaseUrl();
+        const res = await fetch(`${baseUrl}/api/v1/dataset/categories?t=${Date.now()}`, {
           cache: 'no-store'
         });
         if (res.ok) {
@@ -82,6 +86,39 @@ export default function NewInspectionPage() {
     fetchCategories();
   }, []);
 
+  // Poll for completion once inspection is created
+  useEffect(() => {
+    if (!createdInspection) return;
+    
+    // If already finished, stop polling
+    if (createdInspection.status === "Completed" || createdInspection.status === "Failed") {
+      return;
+    }
+
+    const token = localStorage.getItem("visioninspect_auth_token");
+    const baseUrl = getApiBaseUrl();
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`${baseUrl}/api/v1/inspections/${createdInspection.inspection_id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const updated = await res.json();
+          setCreatedInspection(updated);
+          // If modal is currently open, keep it in sync
+          setSelectedInspection(prev => (prev ? updated : null));
+          if (updated.status === "Completed" || updated.status === "Failed") {
+            clearInterval(interval);
+          }
+        }
+      } catch (err) {
+        console.error("Polling inspection error:", err);
+      }
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [createdInspection?.inspection_id, createdInspection?.status]);
 
   // Cleanup camera on unmount
   useEffect(() => {
@@ -187,7 +224,7 @@ export default function NewInspectionPage() {
       // 1. Upload Image
       const formData = new FormData();
       formData.append("file", imageFile);
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const baseUrl = getApiBaseUrl();
       const token = localStorage.getItem("visioninspect_auth_token");
       
       const uploadRes = await fetch(`${baseUrl}/api/v1/upload/image`, {
@@ -245,18 +282,20 @@ export default function NewInspectionPage() {
     setIsFetchingDetails(true);
     try {
       const token = localStorage.getItem("visioninspect_auth_token");
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const baseUrl = getApiBaseUrl();
       const res = await fetch(`${baseUrl}/api/v1/inspections/${createdInspection.inspection_id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
-        setSelectedInspection(await res.json());
+        const data = await res.json();
+        setSelectedInspection(data);
       } else {
-        alert("Failed to fetch latest inspection details.");
+        setSelectedInspection(createdInspection);
       }
     } catch (err) {
       console.error("Failed to fetch details", err);
-      alert("Error fetching inspection details.");
+      // Fall back to showing current inspection info in modal
+      setSelectedInspection(createdInspection);
     } finally {
       setIsFetchingDetails(false);
     }

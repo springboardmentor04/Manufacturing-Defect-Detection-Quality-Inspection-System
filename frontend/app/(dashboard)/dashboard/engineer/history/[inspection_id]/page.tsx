@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { ChevronLeft, Trash2, Clock, AlertCircle, CheckCircle2, RefreshCcw, FileImage, User, HardDrive, Calendar, Activity, BarChart3, Image as ImageIcon } from "lucide-react";
 import Link from "next/link";
 import { ClientOnly } from "@/components/ClientOnly";
+import { getApiBaseUrl, getFullImageUrl } from "@/lib/api";
 
 type Inspection = {
   inspection_id: string;
@@ -73,7 +74,8 @@ export default function InspectionDetailPage() {
     setError(null);
     try {
       const token = localStorage.getItem("visioninspect_auth_token");
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/inspections/${inspection_id}`, {
+      const baseUrl = getApiBaseUrl();
+      const res = await fetch(`${baseUrl}/api/v1/inspections/${inspection_id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -117,7 +119,8 @@ export default function InspectionDetailPage() {
     if (!confirm("Are you sure you want to delete this inspection? This action cannot be undone.")) return;
     try {
       const token = localStorage.getItem("visioninspect_auth_token");
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/inspections/${inspection_id}`, {
+      const baseUrl = getApiBaseUrl();
+      const res = await fetch(`${baseUrl}/api/v1/inspections/${inspection_id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -171,9 +174,7 @@ export default function InspectionDetailPage() {
     );
   }
 
-  const imageUrl = inspection.image_path.startsWith('http') 
-    ? inspection.image_path 
-    : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${inspection.image_path}`;
+  const imageUrl = getFullImageUrl(inspection.image_path);
 
   return (
     <ClientOnly>

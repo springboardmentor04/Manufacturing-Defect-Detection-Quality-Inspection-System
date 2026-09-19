@@ -24,9 +24,23 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 # Configure CORS
+origins = settings.parse_cors_origins(settings.CORS_ORIGINS) if hasattr(settings, "parse_cors_origins") else settings.CORS_ORIGINS
+if isinstance(origins, str):
+    import json
+    try:
+        origins = json.loads(origins)
+    except Exception:
+        origins = [origins]
+
+# Ensure Render frontend and common local origins are always allowed
+frontend_render_origin = "https://manufacturing-defect-detection-quality-o65m.onrender.com"
+if isinstance(origins, list) and frontend_render_origin not in origins:
+    origins.append(frontend_render_origin)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=origins if origins else ["*"],
+    allow_origin_regex=r"https://.*\.onrender\.com",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

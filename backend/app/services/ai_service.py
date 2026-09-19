@@ -65,9 +65,6 @@ class MockAIService(BaseAIService):
         
         return update_data
 
-    async def process_inspection(self, inspection_id: str, db):
-        pass
-
 def get_ai_service():
     if settings.USE_REAL_AI:
         from app.services.real_ai_service import RealAIService

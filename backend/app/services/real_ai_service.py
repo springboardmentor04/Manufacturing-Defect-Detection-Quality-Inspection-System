@@ -181,12 +181,14 @@ class RealAIService(BaseAIService):
             return api_response
             
         except Exception as e:
-            logger.error(f"RealAIService Error for {inspection_id}: {str(e)}")
+            logger.error(f"RealAIService Error for {inspection_id}: {str(e)}", exc_info=True)
             
+            error_msg = str(e)
+            # If it's a category mismatch, provide an actionable status
             error_data = {
                 "status": "Failed",
                 "ai_status": "Failed",
-                "error_message": str(e),
+                "error_message": error_msg,
                 "completed_at": datetime.utcnow()
             }
             

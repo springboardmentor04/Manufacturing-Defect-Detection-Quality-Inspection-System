@@ -6,6 +6,7 @@ import { Search, Filter, ChevronLeft, ChevronRight, Eye, Trash2, Clock, AlertCir
 import Link from "next/link";
 import { ClientOnly } from "@/components/ClientOnly";
 import { DetectionPreview } from "@/components/dashboard/DetectionPreview";
+import { getApiBaseUrl } from "@/lib/api";
 
 type Inspection = {
   inspection_id: string;
@@ -43,7 +44,8 @@ export default function HistoryPage() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/dataset/categories`);
+      const baseUrl = getApiBaseUrl();
+      const res = await fetch(`${baseUrl}/api/v1/dataset/categories`);
       if (res.ok) {
         setCategories(await res.json());
       }
@@ -56,6 +58,7 @@ export default function HistoryPage() {
     setIsLoading(true);
     try {
       const token = localStorage.getItem("visioninspect_auth_token");
+      const baseUrl = getApiBaseUrl();
       
       const params = new URLSearchParams({
         page: page.toString(),
@@ -67,7 +70,7 @@ export default function HistoryPage() {
       if (statusFilter) params.append("status", statusFilter);
       if (categoryFilter) params.append("category", categoryFilter);
       
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/inspections?${params.toString()}`, {
+      const res = await fetch(`${baseUrl}/api/v1/inspections?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -95,7 +98,8 @@ export default function HistoryPage() {
     if (!confirm("Are you sure you want to delete this inspection?")) return;
     try {
       const token = localStorage.getItem("visioninspect_auth_token");
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/inspections/${id}`, {
+      const baseUrl = getApiBaseUrl();
+      const res = await fetch(`${baseUrl}/api/v1/inspections/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -111,14 +115,20 @@ export default function HistoryPage() {
     // Fetch full details for the modal
     try {
       const token = localStorage.getItem("visioninspect_auth_token");
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/inspections/${id}`, {
+      const baseUrl = getApiBaseUrl();
+      const res = await fetch(`${baseUrl}/api/v1/inspections/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
         setSelectedInspection(await res.json());
+      } else {
+        const fallback = inspections.find(item => item.inspection_id === id);
+        if (fallback) setSelectedInspection(fallback as any);
       }
     } catch (err) {
       console.error("Failed to fetch inspection details", err);
+      const fallback = inspections.find(item => item.inspection_id === id);
+      if (fallback) setSelectedInspection(fallback as any);
     }
   };
 

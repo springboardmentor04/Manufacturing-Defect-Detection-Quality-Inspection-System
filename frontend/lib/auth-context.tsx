@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { getApiBaseUrl } from "@/lib/api";
 
 export type Role = "QUALITY_ENGINEER" | "FACTORY_SUPERVISOR" | "ADMIN" | null;
 
@@ -47,8 +48,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const storedToken = localStorage.getItem("visioninspect_auth_token");
       if (storedToken) {
         try {
-          // Fetch user data from backend
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/auth/me`, {
+          const baseUrl = getApiBaseUrl();
+          const response = await fetch(`${baseUrl}/api/v1/auth/me`, {
             headers: {
               Authorization: `Bearer ${storedToken}`,
             },
