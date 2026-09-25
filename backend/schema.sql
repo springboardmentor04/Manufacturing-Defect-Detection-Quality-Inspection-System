@@ -1,0 +1,3 @@
+-- Reference schema. In normal startup SQLAlchemy creates the tables.
+-- PostgreSQL enum values correspond to the application models.
+-- For production, use Alembic migrations rather than create_all.

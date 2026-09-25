@@ -1,14 +1,32 @@
-# Node dependencies
-node_modules/
-**/node_modules/
-
-# Python virtual environments
-venv/
+# Python
 .venv/
-
-# Python cache
 __pycache__/
 *.pyc
+*.pyo
 
-# Environment variables
+# Environment / secrets
 .env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+node_modules/
+
+# Generated storage
+storage/original/*
+storage/annotated/*
+!storage/original/.gitkeep
+!storage/annotated/.gitkeep
+
+# Training outputs
+runs/
+
+# OS files
+.DS_Store
+Thumbs.db
+dataset/

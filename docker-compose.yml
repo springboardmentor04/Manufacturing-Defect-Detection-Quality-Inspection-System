@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: visioninspect
+      POSTGRES_USER: visioninspect
+      POSTGRES_PASSWORD: visioninspect
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U visioninspect -d visioninspect"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  backend:
+    build: .
+    environment:
+      DATABASE_URL: postgresql+psycopg://visioninspect:visioninspect@db:5432/visioninspect
+      JWT_SECRET: change-me-before-production
+      MODEL_PATH: models/best.pt
+      UPLOAD_DIRECTORY: storage
+      MAX_FILE_SIZE_MB: 10
+      MODEL_VERSION: YOLO-V1
+      ALLOWED_ORIGINS: "*"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  pgdata:

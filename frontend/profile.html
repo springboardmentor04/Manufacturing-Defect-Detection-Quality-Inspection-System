@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Profile & Settings | VisionInspect AI</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app"></div>
+    <script src="js/api.js"></script>
+    <script>
+        requireAuth();
+        const u = getUser();
+        shell(
+            "User Profile & System Settings",
+            "Account credentials, active role permissions, and backend API endpoints",
+            `
+            <div class="grid-2" style="margin-bottom:28px">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">User Account Details</div>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:16px">
+                        <div>
+                            <div style="font-size:12px; color:var(--text-muted)">Full Name</div>
+                            <div style="font-size:16px; font-weight:700; color:var(--text-primary); margin-top:2px">${escapeHtml(u.full_name)}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:12px; color:var(--text-muted)">Email Address</div>
+                            <div style="font-size:16px; font-weight:700; color:var(--text-primary); margin-top:2px">${escapeHtml(u.email)}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:12px; color:var(--text-muted)">Assigned Role</div>
+                            <div style="margin-top:4px">
+                                ${u.role === 'QUALITY_ENGINEER' ? '<span class="role-badge role-qe">QUALITY ENGINEER</span>' : '<span class="role-badge role-pm">PRODUCT MANAGER</span>'}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:24px; padding-top:20px; border-top:1px solid var(--border-color)">
+                        <button class="btn btn-danger" onclick="logout()">Sign Out of Portal</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">System Environment & API Status</div>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:16px">
+                        <div>
+                            <div style="font-size:12px; color:var(--text-muted)">API Endpoint Base</div>
+                            <div style="font-family:var(--font-mono); font-size:13px; color:var(--cyan); margin-top:2px">${escapeHtml(API)}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:12px; color:var(--text-muted)">YOLO Model Weights</div>
+                            <div style="font-size:14px; font-weight:600; color:var(--emerald); margin-top:2px">models/best.pt (73 Defect Classes Loaded)</div>
+                        </div>
+                        <div>
+                            <div style="font-size:12px; color:var(--text-muted)">Database Layer</div>
+                            <div style="font-size:14px; font-weight:600; color:var(--text-primary); margin-top:2px">PostgreSQL / SQLite Dual Engine</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `
+        );
+    </script>
+</body>
+</html>

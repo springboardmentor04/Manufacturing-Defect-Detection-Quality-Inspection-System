@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Register | VisionInspect AI</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="auth-wrapper">
+        <main class="auth-card">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px">
+                <div class="logo-icon">◈</div>
+                <h1 style="font-size:24px; font-weight:800; color:var(--text-primary)">VisionInspect <span style="color:var(--cyan)">AI</span></h1>
+            </div>
+            <p style="color:var(--text-secondary); font-size:14px; margin-bottom:28px">Create Industrial Quality Engineering Account</p>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input id="fullName" type="text" placeholder="e.g. Sarah Connor" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Work Email</label>
+                    <input id="email" type="email" placeholder="sarah@manufacturing.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="role">Account Role</label>
+                    <select id="role" required>
+                        <option value="QUALITY_ENGINEER">Quality Engineer (QE) - Product Inspection & Review</option>
+                        <option value="PRODUCT_MANAGER">Product Manager (PM) - Manufacturing Analytics & Line Quality</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input id="password" type="password" placeholder="••••••••" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm">Confirm Password</label>
+                    <input id="confirm" type="password" placeholder="••••••••" required>
+                </div>
+
+                <button class="btn btn-primary" style="width:100%; margin-top:8px" type="submit">
+                    Create Account →
+                </button>
+
+                <p id="msg" style="margin-top:14px; font-size:13px; color:var(--rose); font-weight:600; text-align:center"></p>
+            </form>
+
+            <p style="color:var(--text-muted); font-size:13px; text-align:center; margin-top:24px">
+                Already registered? <a href="login.html" style="color:var(--cyan); font-weight:600; text-decoration:none">Sign In</a>
+            </p>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

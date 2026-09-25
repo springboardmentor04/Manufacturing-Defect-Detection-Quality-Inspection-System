@@ -1,0 +1,42 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: visioninspect_db
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-visioninspect}
+      POSTGRES_USER: ${POSTGRES_USER:-visioninspect}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-visioninspect_secure_pwd_2026}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-visioninspect} -d ${POSTGRES_DB:-visioninspect}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: visioninspect_app
+    restart: always
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-visioninspect}:${POSTGRES_PASSWORD:-visioninspect_secure_pwd_2026}@db:5432/${POSTGRES_DB:-visioninspect}
+      JWT_SECRET: ${JWT_SECRET:-prod_jwt_secret_key_visioninspect_2026}
+      MODEL_PATH: models/best.pt
+      UPLOAD_DIRECTORY: storage
+      MAX_FILE_SIZE_MB: 10
+      MODEL_VERSION: YOLO-V1
+      ALLOWED_ORIGINS: "*"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./storage:/app/storage
+      - ./models:/app/models
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
